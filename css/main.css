@@ -208,11 +208,17 @@ header {
     color: #444;
     text-decoration: none;
     padding: 0.5rem 0;
-    transition: color 0.4s ease; /* MOD: 移除 transform transition */
+    /* MOD: 增加 transform transition */
+    transition: color 0.4s ease, transform 0.3s ease;
     line-height: 1.1;
+    /* MOD: 增加 transform-origin 確保從左側放大 */
+    transform-origin: left center;
+    transform: scale(1); /* ADD: 增加基礎 scale */
 }
 .project-item a:hover {
     color: var(--primary-color);
+    /* MOD: 增加 hover 放大效果 */
+    transform: scale(1.05);
 }
 .right-column {
     text-align: right;
@@ -296,6 +302,7 @@ header {
     /* ADD: 重置 project-item a 的 transform */
     .project-item a {
         transform: none;
+        transform-origin: left center; /* 保持一致 */
     }
     .project-item a:hover {
         transform: none;
