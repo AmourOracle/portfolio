@@ -89,7 +89,7 @@ header {
     font-weight: 700;
     margin: 0;
     color: var(--primary-color);
-    line-height: 0.8;
+    line-height: 1.0; /* MOD: 修正 'g' 'y' 裁切問題 */
     transition: opacity 0.3s ease-in-out;
     overflow: hidden; 
 }
@@ -99,8 +99,8 @@ header {
 
 /* --- INDEX 頁面專用 --- */
 .portfolio-container {
-    /* MOD: 調整欄位比例，右欄改為 10vw */
-    grid-template-columns: 1.5fr 1fr 10vw;
+    /* MOD: 調整欄位比例，左欄改為 40vw */
+    grid-template-columns: 40vw 1fr 10vw;
 }
 .profile-block { 
     display: flex; 
@@ -108,15 +108,36 @@ header {
     align-items: flex-end; 
     flex-shrink: 0; /* MOD: 確保底部區塊不被壓縮 */
 }
-.image-placeholder { width: 90px; aspect-ratio: 9 / 16; background-color: #222; border: 1px solid var(--divider-color); display: flex; justify-content: center; align-items: center; text-align: center; font-size: 0.7rem; color: var(--secondary-color); }
+.image-placeholder {
+    /* MOD: 調整為 16:9 橫式 */
+    width: 120px;
+    aspect-ratio: 16 / 9;
+    background-color: #222;
+    border: 1px solid var(--divider-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--secondary-color);
+}
 /* ADD: 讓圖片填滿 placeholder */
 .image-placeholder img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-.contact-links ul { list-style: none; padding: 0; margin: 0 0 0.5rem 0; }
-.contact-links li { margin-bottom: 0.5rem; }
+.contact-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0.5rem 0;
+    /* MOD: 水平排列 */
+    display: flex;
+    gap: 1.5rem;
+}
+.contact-links li {
+    margin-bottom: 0; /* MOD: 移除垂直 margin */
+}
 .contact-links a { color: var(--secondary-color); text-decoration: none; font-family: var(--font-mono); font-size: 0.9rem; transition: color 0.3s ease; }
 .contact-links a:hover { color: var(--primary-color); }
 .center-column {
@@ -134,7 +155,16 @@ header {
     /* ADD: 啟動 3D 透視 (slot 效果) */
     perspective: 300px;
     perspective-origin: center 50%;
+    
+    /* ADD: 隱藏滾動條 */
+    scrollbar-width: none; /* For Firefox */
 }
+
+/* ADD: 隱藏滾動條 for Chrome, Safari, Opera */
+.center-column::-webkit-scrollbar {
+    display: none;
+}
+
 .project-list {
     list-style: none;
     margin: 0;
