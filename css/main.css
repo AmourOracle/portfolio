@@ -65,11 +65,11 @@ header {
 
 /* ADD: 左欄頂部 (標題區) */
 .left-column-top {
-    height: 50vh; /* MOD: 設定高度為螢幕 50% */
+    /* MOD: 移除 50vh 高度，改用 padding-top 對齊 */
+    padding-top: 5rem; /* MOD: 與 .center-column 對齊 */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 標題置頂 */
-    overflow-y: auto; /* 若標題過長可滾動 */
     flex-shrink: 0;
 }
 
@@ -83,15 +83,15 @@ header {
 }
 
 .name-block { position: relative; }
-.name-block .label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--secondary-color); position: absolute; top: -1.5rem; left: 0.2rem; }
+.name-block .label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--secondary-color); position: absolute; top: 3.5rem; /* MOD: 配合 5rem padding */ left: 0.2rem; }
 .name-block h1 {
     font-size: clamp(4rem, 12vw, 9rem);
     font-weight: 700;
     margin: 0;
     color: var(--primary-color);
-    line-height: 1.0; /* MOD: 修正 'g' 'y' 裁切問題 */
+    line-height: 1.1; /* MOD: 修正 'g' 'y' 裁切問題 */
     transition: opacity 0.3s ease-in-out;
-    overflow: hidden; 
+    /* MOD: 移除 overflow: hidden 解決裁切 */
 }
 .info-divider-block { border-top: 1px solid var(--divider-color); padding-top: 1rem; margin-top: 1.5rem; display: flex; gap: 1.5rem; }
 .info-divider-block .label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--secondary-color); min-width: 100px; }
@@ -99,8 +99,8 @@ header {
 
 /* --- INDEX 頁面專用 --- */
 .portfolio-container {
-    /* MOD: 調整欄位比例，左欄改為 40vw */
-    grid-template-columns: 40vw 1fr 10vw;
+    /* MOD: 調整欄位比例，左欄改為 30vw */
+    grid-template-columns: 30vw 1fr 10vw;
 }
 .profile-block { 
     display: flex; 
@@ -109,8 +109,8 @@ header {
     flex-shrink: 0; /* MOD: 確保底部區塊不被壓縮 */
 }
 .image-placeholder {
-    /* MOD: 調整為 16:9 橫式 */
-    width: 120px;
+    /* MOD: 調整為 16:9 橫式並放大 */
+    width: 240px; /* MOD: 放大一倍 */
     aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
@@ -141,9 +141,10 @@ header {
 .contact-links a { color: var(--secondary-color); text-decoration: none; font-family: var(--font-mono); font-size: 0.9rem; transition: color 0.3s ease; }
 .contact-links a:hover { color: var(--primary-color); }
 .center-column {
-    padding-top: 0; /* MOD: 移除頂部 padding，改由 project-list 控制 */
+    padding-top: 5rem; /* MOD: 增加頂部 padding，與左欄對齊 */
     overflow-y: auto;
     padding-right: 1rem;
+    box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
     /* ADD: 增加上下漸變遮罩，模擬陰影 */
     mask-image: linear-gradient(
         to bottom,
@@ -169,8 +170,7 @@ header {
     list-style: none;
     margin: 0;
     padding: 0;
-    /* ADD: 增加上下 padding，讓項目可以滾動到遮罩區域 */
-    padding-top: 5rem;
+    /* MOD: 移除 padding-top，改由 .center-column 控制 */
     padding-bottom: 5rem;
     /* ADD: 配合 perspective */
     transform-style: preserve-3d;
@@ -246,10 +246,17 @@ header {
     .left-column-top, .left-column-middle {
         height: auto;
         overflow: visible;
+        padding-top: 0; /* MOD: 重置 padding */
+    }
+    .name-block .label {
+        position: absolute;
+        top: -1.5rem; /* MOD: 恢復手機版 label 位置 */
+        left: 0.2rem;
     }
     .center-column, .project-content-column {
         overflow-y: visible;
         padding-right: 0; /* 恢復預設滾動 */
+        padding-top: 0; /* MOD: 重置 padding */
         mask-image: none; /* ADD: 移除遮罩效果 */
         perspective: none; /* ADD: 移除 3D 效果 */
     }
