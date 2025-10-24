@@ -6,7 +6,7 @@
     --background-color: #121212;
     --text-color: #e0e0e0;
     --primary-color: #ffffff;
-    --secondary-color: #a0a0a0;
+    --secondary-color: #a0a0e0;
     --divider-color: #333;
     --font-main: 'Montserrat', sans-serif;
     --font-mono: 'Roboto Mono', monospace;
@@ -65,8 +65,8 @@ header {
 
 /* ADD: 左欄頂部 (標題區) */
 .left-column-top {
-    /* MOD: 移除 50vh 高度，改用 padding-top 對齊 */
-    padding-top: 5rem; /* MOD: 與 .center-column 對齊 */
+    /* MOD: 減少 padding-top 以縮小上方空位 */
+    padding-top: 2rem; /* MOD: 與 .center-column 對齊 */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 標題置頂 */
@@ -83,7 +83,14 @@ header {
 }
 
 .name-block { position: relative; }
-.name-block .label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--secondary-color); position: absolute; top: 3.5rem; /* MOD: 配合 5rem padding */ left: 0.2rem; }
+.name-block .label { 
+    font-family: var(--font-mono); 
+    font-size: 0.8rem; 
+    color: var(--secondary-color); 
+    position: absolute; 
+    top: 0.5rem; /* MOD: 配合 2rem padding (2rem - 1.5rem) */ 
+    left: 0.2rem; 
+}
 .name-block h1 {
     font-size: clamp(4rem, 12vw, 9rem);
     font-weight: 700;
@@ -141,7 +148,7 @@ header {
 .contact-links a { color: var(--secondary-color); text-decoration: none; font-family: var(--font-mono); font-size: 0.9rem; transition: color 0.3s ease; }
 .contact-links a:hover { color: var(--primary-color); }
 .center-column {
-    padding-top: 5rem; /* MOD: 增加頂部 padding，與左欄對齊 */
+    padding-top: 2rem; /* MOD: 減少頂部 padding，與左欄對齊 */
     overflow-y: auto;
     padding-right: 1rem;
     box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
@@ -153,9 +160,7 @@ header {
         black 85%,
         transparent 100%
     );
-    /* ADD: 啟動 3D 透視 (slot 效果) */
-    perspective: 300px;
-    perspective-origin: center 50%;
+    /* MOD: 移除 3D 透視效果，修復視覺破圖 */
     
     /* ADD: 隱藏滾動條 */
     scrollbar-width: none; /* For Firefox */
@@ -171,9 +176,8 @@ header {
     margin: 0;
     padding: 0;
     /* MOD: 移除 padding-top，改由 .center-column 控制 */
-    padding-bottom: 5rem;
-    /* ADD: 配合 perspective */
-    transform-style: preserve-3d;
+    padding-bottom: 2rem; /* MOD: 配合頂部 padding 調整 */
+    /* MOD: 移除 3D 效果 */
 }
 .project-item a {
     display: block;
@@ -182,15 +186,13 @@ header {
     color: #444;
     text-decoration: none;
     padding: 0.5rem 0;
-    transition: color 0.4s ease, transform 0.4s ease; /* MOD: 增加 transform transition */
+    transition: color 0.4s ease; /* MOD: 移除 transform transition */
     line-height: 1.1;
-    /* ADD: 預設傾斜，製造 3D 效果 */
-    transform: rotateX(15deg);
+    /* MOD: 移除 3D 效果 */
 }
 .project-item a:hover {
     color: var(--primary-color);
-    /* ADD: hover 時變平並拉近，突出顯示 */
-    transform: rotateX(0deg) translateZ(25px);
+    /* MOD: 移除 3D 效果 */
 }
 .right-column {
     text-align: right;
