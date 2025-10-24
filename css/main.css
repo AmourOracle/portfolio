@@ -172,9 +172,9 @@ header {
 .contact-links a:hover { color: var(--primary-color); }
 
 .center-column {
-    padding-top: 2rem; /* MOD: 減少頂部 padding，與左欄對齊 */
+    /* MOD: 增加 padding-left: 2rem 來解決裁切問題 */
+    padding: 2rem 1rem 0 2rem;
     overflow-y: auto;
-    padding-right: 1rem;
     box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
     /* ADD: 增加上下漸變遮罩，模擬陰影 */
     mask-image: linear-gradient(
@@ -208,18 +208,18 @@ header {
     color: #444;
     text-decoration: none;
     padding: 0.5rem 0;
-    /* MOD: 增加 transform transition */
-    transition: color 0.4s ease, transform 0.3s ease;
+    /* MOD: 優化 transform transition 為 ease-out */
+    transition: color 0.4s ease, transform 0.3s ease-out;
     line-height: 1.1;
     /* MOD: 增加 transform-origin 確保從左側放大 */
     transform-origin: left center;
-    /* MOD: 增加基礎 scale 和 translate */
-    transform: scale(1) translateX(0);
+    /* MOD: 移除基礎 scale(1) */
+    transform: translateX(0);
 }
 .project-item a:hover {
     color: var(--primary-color);
-    /* MOD: 增加 hover 放大與左移效果 */
-    transform: scale(1.05) translateX(-1.5rem);
+    /* MOD: 移除 scale(1.05)，只保留 translateX */
+    transform: translateX(-1.5rem);
 }
 .right-column {
     text-align: right;
@@ -291,7 +291,8 @@ header {
     .center-column, .project-content-column {
         overflow-y: visible;
         padding-right: 0; /* 恢復預設滾動 */
-        padding-top: 0; /* MOD: 重置 padding */
+        /* MOD: 重置 padding-left */
+        padding: 0;
         mask-image: none; /* ADD: 移除遮罩效果 */
         perspective: none; /* ADD: 移除 3D 效果 */
     }
