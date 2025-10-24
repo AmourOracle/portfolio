@@ -1,168 +1,161 @@
-Portfolio 網站開發指南 v1.0
+Sywan Portfolio 專案開發指南 v1.0
 
-這份文件旨在總結目前的開發進度，並提供一個清晰的後續開發與部署藍圖。
+這份文件是 Sywan 個人作品集網站的官方開發指南，旨在統一定義專案架構、開發流程與內容管理規範。
 
-1. 專案進度總結
+1. 核心理念：內容與結構分離
 
-我們已經成功地完成了網站的核心頁面原型開發，包含了以下幾個關鍵部分：
+本專案的核心架構理念是將「網站內容」與「網站結構」完全分離。
 
-載入動畫 (Loading Animation):
+網站結構 (Structure): 由 index.html, project.html, main.css, index.js, project.js 等檔案定義。這些檔案負責網站的版面、外觀和互動邏S輯。
 
-檔案: FEAT_portfolioLoader_v3.0_full-replication.html
+網站內容 (Content): 所有的作品文字、圖片路徑和其他資訊，全部集中儲存在 data/projects.json 這個檔案中。
 
-特色: 採用了靈感參考中的動態字體排印 (Kinetic Typography) 風格，結合了多層次、多方向的滾動效果，視覺衝擊力強。
+優點:
 
-首頁 (Index Page):
+易於維護: 當您需要新增、刪除或修改一個作品時，您只需要編輯 data/projects.json 檔案，完全不需要更動任何 HTML 或 JavaScript 程式碼。
 
-檔案: FIX_portfolioIndex_v1.3_滾動修正.html
+結構清晰: 程式碼保持乾淨，只專注於功能實現。
 
-特色:
+高擴充性: 未來要增加更多類型的內容（例如部落格文章）也只需新增一個 JSON 檔案和對應的頁面範本即可。
 
-三欄式佈局: 參考專業設計網站，版面清晰、具現代感。
+2. 專案檔案結構
 
-懸停預覽 (Hover Preview): 滑鼠懸停於作品列表時，左側欄位會即時更新對應的作品資訊，互動體驗流暢。
-
-固定 Header: 頂部有固定的 Header 和 Logo，並帶有陰影效果，增加頁面深度感。
-
-區域滾動: 鎖定整體頁面，僅讓中間的作品列表區域可以滾動，避免了版面混亂。
-
-專案內頁 (Project Page):
-
-檔案: FIX_portfolioProject_v1.1_滾動修正.html
-
-特色:
-
-佈局與首頁風格一致，維持視覺連貫性。
-
-左側為固定的專案描述，右側為可獨立滾動的作品圖片展示區。
-
-包含「返回 (Back)」按鈕，方便使用者導航。
-
-2. 使用 JSON 管理作品內容
-
-為了方便您未來新增、修改或刪除作品，我們將把所有作品資料從 HTML 中分離出來，集中存放在一個 projects.json 檔案中。
-
-步驟 1: 建立 projects.json 檔案
-這是一個範例檔案，您可以在此基礎上擴充您的作品集。(ADD_projectsData_v1.0_projects.json)
-
-步驟 2: 修改首頁 (index.html) 以讀取 JSON
-您需要在 HTML 中移除寫死的作品列表，並加入一段 JavaScript 程式碼，讓它在頁面載入時自動去讀取 projects.json，然後動態地生成列表。
-
-// 範例 JavaScript 程式碼 (應放在 index.html 的 <script> 標籤中)
-document.addEventListener('DOMContentLoaded', () => {
-    const projectList = document.getElementById('projectList');
-
-    fetch('./data/projects.json') // 讀取 JSON 檔案
-        .then(response => response.json())
-        .then(projects => {
-            projectList.innerHTML = ''; // 清空現有列表
-            projects.forEach(project => {
-                const listItem = document.createElement('li');
-                listItem.className = 'project-item';
-                // 將作品資料儲存在 data-* 屬性中，供 hover 效果使用
-                listItem.setAttribute('data-title', project.title);
-                listItem.setAttribute('data-bio', project.bio);
-                
-                // 建立連結，並透過 URL 參數傳遞作品 id
-                listItem.innerHTML = `<a href="project.html?id=${project.id}">${project.title}</a>`;
-                
-                projectList.appendChild(listItem);
-            });
-        });
-
-    // ... 原有的 hover 預覽功能的程式碼需保留 ...
-});
-
-
-步驟 3: 修改專案內頁 (project.html) 以顯示對應內容
-專案內頁需要知道該顯示哪一個作品的內容。我們利用 URL 參數 (例如 ?id=kinetic-poster) 來傳遞這個資訊。
-
-// 範例 JavaScript 程式碼 (應放在 project.html 的 <script> 標籤中)
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. 從 URL 取得作品 id
-    const urlParams = new URLSearchParams(window.location.search);
-    const projectId = urlParams.get('id');
-
-    if (projectId) {
-        // 2. 讀取 JSON 檔案
-        fetch('./data/projects.json')
-            .then(response => response.json())
-            .then(projects => {
-                // 3. 找到對應 id 的作品
-                const project = projects.find(p => p.id === projectId);
-
-                if (project) {
-                    // 4. 將作品資料填入頁面中
-                    document.title = `Project - ${project.title}`; // 更新網頁標題
-                    document.getElementById('projectTitle').textContent = project.title;
-                    document.getElementById('projectBio').textContent = project.bio;
-                    document.getElementById('projectInfo').innerHTML = project.info; // 使用 innerHTML 以支援 <br> 換行
-
-                    const imageContainer = document.getElementById('projectImages');
-                    imageContainer.innerHTML = ''; // 清空預設圖片
-                    project.images.forEach(imageUrl => {
-                        const img = document.createElement('img');
-                        img.src = imageUrl;
-                        img.alt = `${project.title} image`;
-                        imageContainer.appendChild(img);
-                    });
-                }
-            });
-    }
-});
-
-
-3. 檔案結構與部署建議
-
-為了方便管理與部署到 Github Pages，建議您採用以下檔案結構：
+所有檔案應依照以下結構進行組織，以便部署至 Github Pages：
 
 /sywan-portfolio/
 |
-|-- index.html              // 您的首頁 (由 FIX_portfolioIndex... 改名)
-|-- project.html            // 專案內頁範本 (由 FIX_portfolioProject... 改名)
-|-- loader.html             // 載入動畫頁面 (可選)
+|-- loader.html             // 載入動畫頁 (網站進入點)
+|-- index.html              // 網站首頁 (作品索引)
+|-- project.html            // 專案內頁 (作品範本)
 |
 |-- /data/
-|   |-- projects.json       // 您的作品資料庫
+|   |-- projects.json       // 唯一的作品資料庫 (Single Source of Truth)
 |
 |-- /css/
-|   |-- main.css            // 主要樣式檔案
+|   |-- main.css            // 網站所有共用樣式表
 |
 |-- /js/
-|   |-- index.js            // 首頁專用的 JavaScript
-|   |-- project.js          // 專案內頁專用的 JavaScript
+|   |-- index.js            // 僅用於 index.html 的腳本
+|   |-- project.js          // 僅用於 project.html 的腳本
 |
 |-- /assets/
-    |-- /images/
-        |-- kinetic-poster-01.jpg
-        |-- aura-branding-01.jpg
-        |-- ... (您所有的作品圖片)
+    |-- /images/            // 存放所有專案圖片
+        |-- kinetic-poster-cover-01.jpg
+        |-- kinetic-poster-main-01.jpg
+        |-- aura-branding-cover-01.jpg
+        |-- ...
 
 
-Github Pages 部署流程:
+3. 內容管理 (data/projects.json)
 
-建立倉庫: 在 Github 上建立一個新的公開倉庫 (repository)，例如命名為 sywan-portfolio。
+data/projects.json 是整個作品集的心臟。它是一個 JSON 陣列 (Array)，陣列中的每一個物件 (Object) 都代表一個作品。
 
-上傳檔案: 將您整理好的專案檔案全部上傳到這個倉庫中。
+專案物件結構詳解:
 
-啟用 Pages: 進入倉庫的 Settings -> Pages 頁面。
+{
+  "id": "kinetic-poster",
+  "number": "01",
+  "title": "Kinetic Poster",
+  "bio": "專案的簡短介紹，會顯示在首頁的 hover 預覽中。",
+  "info": "專案的詳細資訊 (角色、年份等)，支援 <br> 換行。",
+  "coverImage": "assets/images/kinetic-poster-cover-01.jpg",
+  "images": [
+    "assets/images/kinetic-poster-main-01.jpg",
+    "assets/images/kinetic-poster-main-02.jpg"
+  ]
+}
 
-選擇來源: 在 Build and deployment -> Source 中選擇 Deploy from a branch。
 
-選擇分支: 在 Branch 中選擇 main (或 master) 分支，資料夾選擇 /(root)，然後點擊 Save。
+"id": [必要] 專案的唯一識別符 (小寫英文，可用 - 連接)。這個 ID 會被用在 URL 中 (例如 project.html?id=kinetic-poster)，絕對不能重複。
 
-完成: 等待幾分鐘後，您的網站就會發佈在 https://<您的Github帳號>.github.io/sywan-portfolio/。
+"number": [必要] 專案的編號，會顯示在專案內頁的 NO. 旁邊。
 
-4. 下一步行動計畫
+"title": [必要] 專案的完整標題。
 
-重構檔案: 依照上述「檔案結構建議」整理您現有的 HTML 檔案，並將 CSS 和 JavaScript 程式碼分離出來。
+"bio": [必要] 專案的簡短介紹 (1-2句話)，用於首頁的 BIO 預覽區。
 
-建立 JSON 資料: 根據 ADD_projectsData_v1.0_projects.json 的範本，填寫您自己的真實作品資料。
+"info": [必要] 專案的詳細資訊 (例如角色、年份、工具)，用於專案內頁的 INFO 區塊。可以使用 <br> 標籤來換行。
 
-實現動態載入: 將上述 JavaScript 範例程式碼整合進您的 index.html 和 project.html 中，完成從 JSON 動態載入內容的功能。
+"coverImage": [必要] 首頁 hover 時顯示的預覽圖路徑。請務必遵循圖片命名規範。
 
-修復 Bug: 解決您之前在 index 頁面提到的 Bug。
+"images": [必要] 一個包含多張圖片路徑的陣列，用於專案內頁的圖片展示區。
 
-部署上線: 依照部署流程，將您的網站發佈到 Github Pages。
+4. 圖片命名規範
 
-這份指南涵蓋了從現狀到一個結構清晰、易於維護的專業作品集網站的完整路徑。
+為了方便管理，所有專案圖片都應存放在 /assets/images/ 資料夾中，並遵循以下命名規則：
+
+[專案ID]-[類型]-[編號].[副檔名]
+
+[專案ID]: 對應 projects.json 中的 id。 (例如 kinetic-poster)
+
+[類型]:
+
+cover: 用於首頁的預覽圖 (通常是直式)。
+
+main: 用於專案內頁的主要展示圖。
+
+detail: 專案細節圖。
+
+[編號]: 兩位數流水號，例如 01, 02。
+
+範例:
+
+kinetic-poster-cover-01.jpg (首頁預覽圖)
+
+kinetic-poster-main-01.jpg (專案內頁圖 1)
+
+kinetic-poster-main-02.jpg (專案內頁圖 2)
+
+5. 如何新增一個專案 (標準作業流程)
+
+準備圖片:
+
+依照上述命名規範，準備好您的 cover 圖片和 main 圖片。
+
+將所有圖片上傳到 /assets/images/ 資料夾中。
+
+編輯 JSON:
+
+打開 data/projects.json 檔案。
+
+在 [ 和 ] 之間，複製貼上一個現有的專案物件 (從 { 到 }，包含大括號)。
+
+注意: 請確保每個物件的 } 後面都有一個逗號 , (最後一個物件除外)。
+
+修改這個新物件中的所有欄位 (id, number, title, bio, info, coverImage, images)，填入新專案的資料。
+
+完成:
+
+儲存 projects.json 檔案。
+
+您不需要做任何其他事情。 網站將會自動讀取新的 JSON 資料，首頁列表和專案內頁會自動生成。
+
+6. 頁面邏輯
+
+loader.html:
+
+作為網站的進入點 (Entry Point)。
+
+顯示全螢幕的載入動畫 (來自 FEAT_portfolioLoader... 的設計)。
+
+使用 <meta http-equiv="refresh"> 標籤，在 5 秒後自動跳轉到 index.html。
+
+index.html (由 js/index.js 驅動):
+
+頁面載入時，js/index.js 會自動 fetch (抓取) data/projects.json 的內容。
+
+動態生成中間欄位的作品列表 (<li><a>...</a></li>)。
+
+將 title, bio, coverImage 存放在每個列表項的 data-* 屬性中。
+
+監聽滑鼠 mouseover 事件，讀取 data-* 屬性並即時更新左側欄位的標題、BIO 和預覽圖。
+
+project.html (由 js/project.js 驅動):
+
+頁面載入時，js/project.js 會讀取瀏覽器 URL 中的 ?id= 參數 (例如 kinetic-poster)。
+
+fetch (抓取) data/projects.json 的內容。
+
+在所有作品中，尋找 id 與 URL 參數相符的那個專案物件。
+
+找到後，將該物件中的 number, title, bio, info 和 images 陣列動態填入頁面範本中，完成專案頁面的渲染。
