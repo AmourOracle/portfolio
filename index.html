@@ -13,17 +13,18 @@
     </header>
 
     <main class="portfolio-container">
-        <!-- 左欄：個人資訊 & 作品預覽區 -->
+        <!-- 
+          MOD: index.html (v1.2)
+          - 將 .contact-links 區塊從 .profile-block 移至 nav.right-column
+        -->
         <aside class="left-column">
-            
-            <!-- MOD: 將左欄拆分為上、中、下三個區塊 -->
             <div class="left-column-top">
                 <div class="name-block">
                     <span class="label">NO.</span>
                     <h1 id="previewTitle">Sywan</h1>
                 </div>
             </div>
-
+            
             <div class="left-column-middle">
                 <div class="info-divider-block">
                     <span class="label">BIO</span>
@@ -40,13 +41,7 @@
                 <div class="image-placeholder">
                     <img id="previewImage" src="https://placehold.co/180x320/121212/121212?text=+" alt="Project preview">
                 </div>
-                <div class="contact-links">
-                    <ul>
-                        <li><a href="mailto:email@example.com">Email</a></li>
-                        <li><a href="#" target="_blank">Instagram</a></li>
-                        <li><a href="#" target="_blank">Behance</a></li>
-                    </ul>
-                </div>
+                <!-- .contact-links 已移至 right-column -->
             </div>
         </aside>
 
@@ -57,15 +52,24 @@
             </ul>
         </section>
 
-        <!-- 右欄：作品分類 -->
+        <!-- 右欄：作品分類 & 外部連結 -->
         <nav class="right-column">
             <div class="category-nav">
-                <!-- MOD: 移除 <h3>Expertise</h3> -->
+                <!-- <h3>Expertise</h3> 隱藏 -->
                 <ul>
                     <li><a href="#">Visual Identity</a></li>
                     <li><a href="#">Graphic Design</a></li>
                     <li><a href="#">UI/UX Design</a></li>
                     <li><a href="#">Photography</a></li>
+                </ul>
+            </div>
+            
+            <!-- MOD: .contact-links 從左欄移至此處 -->
+            <div class="contact-links">
+                <ul>
+                    <li><a href="mailto:email@example.com">Email</a></li>
+                    <li><a href="#" target="_blank">Instagram</a></li>
+                    <li><a href="#" target="_blank">Behance</a></li>
                 </ul>
             </div>
         </nav>
@@ -75,3 +79,4 @@
     <script src="js/index.js"></script>
 </body>
 </html>
+

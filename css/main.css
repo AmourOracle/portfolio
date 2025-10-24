@@ -58,14 +58,15 @@ header {
 .left-column {
     display: flex;
     flex-direction: column;
-    /* MOD: 移除 justify-content，改由 flex-grow 和 height 控制 */
     min-width: 0; /* 關鍵！防止 h1 內容撐開 fr 欄位 */
     height: 100%; /* 填滿 grid 區域高度 */
 }
 
 /* ADD: 左欄頂部 (標題區) */
 .left-column-top {
-    /* MOD: 減少 padding-top 以縮小上方空位 */
+    /* MOD: 固定高度為 50vh - header，讓 BIO 區從 50% 處開始 */
+    height: calc(50vh - 60px);
+    box-sizing: border-box; /* 確保 padding 不會增加高度 */
     padding-top: 2rem; /* MOD: 與 .center-column 對齊 */
     display: flex;
     flex-direction: column;
@@ -75,8 +76,8 @@ header {
 
 /* ADD: 左欄中部 (BIO/INFO 區) */
 .left-column-middle {
-    flex-grow: 1; /* 佔據頂部和底部之間的剩餘空間 */
-    min-height: 0;
+    height: auto; /* MOD: 高度自動 */
+    flex-shrink: 0; /* MOD: 不壓縮 */
     display: flex;
     flex-direction: column;
     justify-content: flex-start; /* 內容從此區塊頂部開始 */
@@ -113,8 +114,10 @@ header {
 }
 .profile-block { 
     display: flex; 
-    gap: 1rem; 
+    /* MOD: 移除 gap，因為連結已移走 */
     align-items: flex-end; 
+    /* MOD: 使用 margin-top: auto 將其推至底部 */
+    margin-top: auto;
     flex-shrink: 0; /* MOD: 確保底部區塊不被壓縮 */
 }
 .image-placeholder {
@@ -136,19 +139,38 @@ header {
     height: 100%;
     object-fit: cover;
 }
+
+/* MOD: contact-links 樣式改為 .right-column 中的版本 */
+.contact-links {
+    /* MOD: 推至底部 */
+    margin-top: auto;
+    padding-bottom: 0.5rem; /* 增加底部間距 */
+}
 .contact-links ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 0.5rem 0;
-    /* MOD: 水平排列 */
+    margin: 0;
     display: flex;
-    gap: 1.5rem;
+    /* MOD: 響應式 gap */
+    gap: clamp(0.5rem, 1.5vw, 1.5rem);
+    /* MOD: 靠右對齊 */
+    justify-content: flex-end;
 }
 .contact-links li {
     margin-bottom: 0; /* MOD: 移除垂直 margin */
 }
-.contact-links a { color: var(--secondary-color); text-decoration: none; font-family: var(--font-mono); font-size: 0.9rem; transition: color 0.3s ease; }
+.contact-links a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    /* MOD: 響應式字體，確保能塞進 10vw */
+    font-size: clamp(0.6rem, 1.3vw, 0.9rem);
+    transition: color 0.3s ease;
+    /* MOD: 確保連結不換行 */
+    white-space: nowrap;
+}
 .contact-links a:hover { color: var(--primary-color); }
+
 .center-column {
     padding-top: 2rem; /* MOD: 減少頂部 padding，與左欄對齊 */
     overflow-y: auto;
@@ -162,7 +184,6 @@ header {
         black 85%,
         transparent 100%
     );
-    /* MOD: 移除 3D 透視效果，修復視覺破圖 */
     
     /* ADD: 隱藏滾動條 */
     scrollbar-width: none; /* For Firefox */
@@ -179,7 +200,6 @@ header {
     padding: 0;
     /* MOD: 移除 padding-top，改由 .center-column 控制 */
     padding-bottom: 2rem; /* MOD: 配合頂部 padding 調整 */
-    /* MOD: 移除 3D 效果 */
 }
 .project-item a {
     display: block;
@@ -190,18 +210,22 @@ header {
     padding: 0.5rem 0;
     transition: color 0.4s ease; /* MOD: 移除 transform transition */
     line-height: 1.1;
-    /* MOD: 移除 3D 效果 */
 }
 .project-item a:hover {
     color: var(--primary-color);
-    /* MOD: 移除 3D 效果 */
 }
 .right-column {
     text-align: right;
     display: flex;
     flex-direction: column;
+    /* MOD: 移除 justify-content: center */
+    /* MOD: 確保 .right-column 佔滿高度 */
+    height: 100%;
+}
+.category-nav {
     /* MOD: 垂直置中 */
-    justify-content: center;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 .category-nav h3 {
     /* MOD: 隱藏 Expertise 標題 */
