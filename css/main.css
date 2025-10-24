@@ -213,12 +213,13 @@ header {
     line-height: 1.1;
     /* MOD: 增加 transform-origin 確保從左側放大 */
     transform-origin: left center;
-    transform: scale(1); /* ADD: 增加基礎 scale */
+    /* MOD: 增加基礎 scale 和 translate */
+    transform: scale(1) translateX(0);
 }
 .project-item a:hover {
     color: var(--primary-color);
-    /* MOD: 增加 hover 放大效果 */
-    transform: scale(1.05);
+    /* MOD: 增加 hover 放大與左移效果 */
+    transform: scale(1.05) translateX(-1.5rem);
 }
 .right-column {
     text-align: right;
