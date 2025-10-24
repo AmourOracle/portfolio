@@ -15,11 +15,16 @@
     <main class="portfolio-container">
         <!-- 左欄：個人資訊 & 作品預覽區 -->
         <aside class="left-column">
-            <div>
+            
+            <!-- MOD: 將左欄拆分為上、中、下三個區塊 -->
+            <div class="left-column-top">
                 <div class="name-block">
                     <span class="label">NO.</span>
                     <h1 id="previewTitle">Sywan</h1>
                 </div>
+            </div>
+
+            <div class="left-column-middle">
                 <div class="info-divider-block">
                     <span class="label">BIO</span>
                     <p id="previewBio">A visual designer based in Taiwan, focusing on creating compelling brand identities and digital experiences.</p>
@@ -29,6 +34,7 @@
                     <p>This space is reserved for future content or additional information about a project.</p>
                 </div>
             </div>
+
             <div class="profile-block">
                 <!-- 修改：將 div 換成 img 標籤，並加上 id -->
                 <div class="image-placeholder">
@@ -54,7 +60,7 @@
         <!-- 右欄：作品分類 -->
         <nav class="right-column">
             <div class="category-nav">
-                <h3>Expertise</h3>
+                <!-- MOD: 移除 <h3>Expertise</h3> -->
                 <ul>
                     <li><a href="#">Visual Identity</a></li>
                     <li><a href="#">Graphic Design</a></li>
@@ -69,4 +75,3 @@
     <script src="js/index.js"></script>
 </body>
 </html>
-

@@ -58,9 +58,30 @@ header {
 .left-column {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    min-width: 0; /* ADD: 關鍵修正！防止 h1 內容撐開 fr 欄位 */
+    /* MOD: 移除 justify-content，改由 flex-grow 和 height 控制 */
+    min-width: 0; /* 關鍵！防止 h1 內容撐開 fr 欄位 */
+    height: 100%; /* 填滿 grid 區域高度 */
 }
+
+/* ADD: 左欄頂部 (標題區) */
+.left-column-top {
+    height: 50vh; /* MOD: 設定高度為螢幕 50% */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* 標題置頂 */
+    overflow-y: auto; /* 若標題過長可滾動 */
+    flex-shrink: 0;
+}
+
+/* ADD: 左欄中部 (BIO/INFO 區) */
+.left-column-middle {
+    flex-grow: 1; /* 佔據頂部和底部之間的剩餘空間 */
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* 內容從此區塊頂部開始 */
+}
+
 .name-block { position: relative; }
 .name-block .label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--secondary-color); position: absolute; top: -1.5rem; left: 0.2rem; }
 .name-block h1 {
@@ -70,10 +91,7 @@ header {
     color: var(--primary-color);
     line-height: 0.8;
     transition: opacity 0.3s ease-in-out;
-    /* MOD: 移除 white-space: nowrap 和 text-overflow，允許標題換行 */
-    overflow: hidden; /* 保留 overflow: hidden 以防萬一 */
-    /* white-space: nowrap; (REMOVED) */
-    /* text-overflow: ellipsis; (REMOVED) */
+    overflow: hidden; 
 }
 .info-divider-block { border-top: 1px solid var(--divider-color); padding-top: 1rem; margin-top: 1.5rem; display: flex; gap: 1.5rem; }
 .info-divider-block .label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--secondary-color); min-width: 100px; }
@@ -81,10 +99,15 @@ header {
 
 /* --- INDEX 頁面專用 --- */
 .portfolio-container {
-    /* MOD: 改回 fr 比例，更具彈性 */
-    grid-template-columns: 1.5fr 1.2fr 0.8fr;
+    /* MOD: 調整欄位比例，右欄改為 10vw */
+    grid-template-columns: 1.5fr 1fr 10vw;
 }
-.profile-block { display: flex; gap: 1rem; align-items: flex-end; }
+.profile-block { 
+    display: flex; 
+    gap: 1rem; 
+    align-items: flex-end; 
+    flex-shrink: 0; /* MOD: 確保底部區塊不被壓縮 */
+}
 .image-placeholder { width: 90px; aspect-ratio: 9 / 16; background-color: #222; border: 1px solid var(--divider-color); display: flex; justify-content: center; align-items: center; text-align: center; font-size: 0.7rem; color: var(--secondary-color); }
 /* ADD: 讓圖片填滿 placeholder */
 .image-placeholder img {
@@ -139,11 +162,26 @@ header {
     /* ADD: hover 時變平並拉近，突出顯示 */
     transform: rotateX(0deg) translateZ(25px);
 }
-.right-column { text-align: right; display: flex; flex-direction: column; justify-content: space-between; }
-.category-nav h3 { font-family: var(--font-mono); font-weight: 700; color: var(--secondary-color); margin-bottom: 1.5rem; font-size: 0.9rem; }
+.right-column {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    /* MOD: 垂直置中 */
+    justify-content: center;
+}
+.category-nav h3 {
+    /* MOD: 隱藏 Expertise 標題 */
+    display: none;
+}
 .category-nav ul { list-style: none; padding: 0; margin: 0; }
 .category-nav li { margin-bottom: 1rem; }
-.category-nav a { color: var(--secondary-color); text-decoration: none; font-size: 1rem; transition: color 0.3s ease; }
+.category-nav a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    /* MOD: 使用 clamp 實現響應式字體 */
+    font-size: clamp(0.7rem, 1.2vw, 1rem);
+    transition: color 0.3s ease;
+}
 .category-nav a:hover { color: var(--primary-color); }
 
 /* --- PROJECT 頁面專用 --- */
@@ -168,7 +206,17 @@ header {
     body { padding-top: 60px; overflow: auto; /* 在手機上恢復 body 滾動 */ }
     header { height: 60px; }
     .portfolio-container, .project-container { grid-template-columns: 1fr; padding: 2rem; height: auto; /* 恢復自動高度 */ }
-    .left-column { position: static; height: auto; margin-bottom: 3rem; gap: 2rem; }
+    .left-column { 
+        position: static; 
+        height: auto; 
+        margin-bottom: 3rem; 
+        gap: 2rem; 
+    }
+    /* ADD: 重置手機版的左欄結構 */
+    .left-column-top, .left-column-middle {
+        height: auto;
+        overflow: visible;
+    }
     .center-column, .project-content-column {
         overflow-y: visible;
         padding-right: 0; /* 恢復預設滾動 */
