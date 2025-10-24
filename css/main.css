@@ -92,13 +92,15 @@ header {
     left: 0.2rem; 
 }
 .name-block h1 {
-    font-size: clamp(4rem, 12vw, 9rem);
+    /* MOD: 縮小字級以適應 30vw 欄寬 */
+    font-size: clamp(3rem, 10vw, 7rem);
     font-weight: 700;
     margin: 0;
     color: var(--primary-color);
     line-height: 1.1; /* MOD: 修正 'g' 'y' 裁切問題 */
     transition: opacity 0.3s ease-in-out;
-    /* MOD: 移除 overflow: hidden 解決裁切 */
+    /* ADD: 強制長單字換行，防止溢出 */
+    word-break: break-word;
 }
 .info-divider-block { border-top: 1px solid var(--divider-color); padding-top: 1rem; margin-top: 1.5rem; display: flex; gap: 1.5rem; }
 .info-divider-block .label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--secondary-color); min-width: 100px; }
