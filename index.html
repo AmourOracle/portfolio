@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sywan - Visual Designer Portfolio</title>
+    <!-- 連結外部 CSS 檔案 -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <a href="index.html" class="logo">SYWAN</a>
+    </header>
+
+    <main class="portfolio-container">
+        <!-- 左欄：個人資訊 & 作品預覽區 -->
+        <aside class="left-column">
+            <div>
+                <div class="name-block">
+                    <span class="label">NO.</span>
+                    <h1 id="previewTitle">Sywan</h1>
+                </div>
+                <div class="info-divider-block">
+                    <span class="label">BIO</span>
+                    <p id="previewBio">A visual designer based in Taiwan, focusing on creating compelling brand identities and digital experiences.</p>
+                </div>
+                <div class="info-divider-block">
+                    <span class="label">INFO</span>
+                    <p>This space is reserved for future content or additional information about a project.</p>
+                </div>
+            </div>
+            <div class="profile-block">
+                <!-- 修改：將 div 換成 img 標籤，並加上 id -->
+                <div class="image-placeholder">
+                    <img id="previewImage" src="https://placehold.co/180x320/121212/121212?text=+" alt="Project preview">
+                </div>
+                <div class="contact-links">
+                    <ul>
+                        <li><a href="mailto:email@example.com">Email</a></li>
+                        <li><a href="#" target="_blank">Instagram</a></li>
+                        <li><a href="#" target="_blank">Behance</a></li>
+                    </ul>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 中欄：作品列表 (將由 JS 動態生成) -->
+        <section class="center-column">
+            <ul class="project-list" id="projectList">
+                <!-- 內容將由 js/index.js 填入 -->
+            </ul>
+        </section>
+
+        <!-- 右欄：作品分類 -->
+        <nav class="right-column">
+            <div class="category-nav">
+                <h3>Expertise</h3>
+                <ul>
+                    <li><a href="#">Visual Identity</a></li>
+                    <li><a href="#">Graphic Design</a></li>
+                    <li><a href="#">UI/UX Design</a></li>
+                    <li><a href="#">Photography</a></li>
+                </ul>
+            </div>
+        </nav>
+    </main>
+
+    <!-- 連結外部 JavaScript 檔案 -->
+    <script src="js/index.js"></script>
+</body>
+</html>
+

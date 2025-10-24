@@ -1,0 +1,57 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // 獲取頁面上需要更新的元素
+    const projectNumberElement = document.getElementById('projectNumber');
+    const projectTitleElement = document.getElementById('projectTitle');
+    const projectBioElement = document.getElementById('projectBio');
+    const projectInfoElement = document.getElementById('projectInfo');
+    const imageContainer = document.getElementById('projectImages');
+
+    // 1. 從 URL 取得作品 id
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+
+    if (projectId) {
+        // 2. 讀取 JSON 檔案
+        fetch('./data/projects.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(projects => {
+                // 3. 找到對應 id 的作品
+                const project = projects.find(p => p.id === projectId);
+
+                if (project) {
+                    // 4. 將作品資料填入頁面中
+                    document.title = `Project - ${project.title}`; // 更新網頁標題
+                    projectNumberElement.textContent = `NO. ${project.number}`;
+                    projectTitleElement.textContent = project.title;
+                    projectBioElement.textContent = project.bio;
+                    projectInfoElement.innerHTML = project.info; // 使用 innerHTML 以支援 <br> 換行
+
+                    imageContainer.innerHTML = ''; // 清空預設圖片
+                    project.images.forEach(imageUrl => {
+                        const img = document.createElement('img');
+                        img.src = imageUrl;
+                        img.alt = `${project.title} image`;
+                        imageContainer.appendChild(img);
+                    });
+                } else {
+                    // 如果找不到對應的 project id
+                    projectTitleElement.textContent = 'Project Not Found';
+                    projectBioElement.textContent = 'Please check the project ID and try again.';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching project data:', error);
+                projectTitleElement.textContent = 'Error';
+                projectBioElement.textContent = 'Could not load project data.';
+            });
+    } else {
+        // 如果 URL 中沒有 id
+        projectTitleElement.textContent = 'No Project Selected';
+        projectBioElement.textContent = 'Please select a project from the main page.';
+    }
+});

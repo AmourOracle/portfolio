@@ -1,0 +1,65 @@
+[
+  {
+    "id": "kinetic-poster",
+    "number": "01",
+    "title": "Kinetic Poster",
+    "bio": "An experimental typography project exploring motion and form. Capturing the dynamic energy of urban life through animated letterforms.",
+    "info": "Role: Art Direction, Motion Design<br>Year: 2024",
+    "coverImage": "https://placehold.co/180x320/222222/ffffff?text=Kinetic",
+    "images": [
+      "https://placehold.co/1200x800/222222/ffffff?text=Kinetic+Poster+01",
+      "https://placehold.co/1200x800/333333/ffffff?text=Kinetic+Poster+02",
+      "https://placehold.co/1200x1600/222222/ffffff?text=Kinetic+Poster+03"
+    ]
+  },
+  {
+    "id": "aura-branding",
+    "number": "02",
+    "title": "Aura Branding",
+    "bio": "Complete brand identity for a wellness startup. The design aims to convey tranquility and balance through a soft color palette and organic shapes.",
+    "info": "Role: Branding, VI Design<br>Year: 2023",
+    "coverImage": "https://placehold.co/180x320/5a5a5a/ffffff?text=Aura",
+    "images": [
+      "https://placehold.co/1200x800/5a5a5a/ffffff?text=Aura+Branding+01",
+      "https://placehold.co/1200x800/6b6b6b/ffffff?text=Aura+Branding+02"
+    ]
+  },
+  {
+    "id": "nomad-editorial",
+    "number": "03",
+    "title": "Nomad Editorial",
+    "bio": "Editorial design for a travel magazine. The layout focuses on immersive photography and clean, legible typography to tell compelling stories.",
+    "info": "Role: Editorial Design, Layout<br>Year: 2023",
+    "coverImage": "https://placehold.co/180x320/2a3b4c/ffffff?text=Nomad",
+    "images": [
+      "https://placehold.co/1200x800/2a3b4c/ffffff?text=Nomad+01",
+      "https://placehold.co/1200x800/3c4d5e/ffffff?text=Nomad+02",
+      "https://placehold.co/1200x800/4e5f70/ffffff?text=Nomad+03"
+    ]
+  },
+  {
+    "id": "coda-music-app",
+    "number": "04",
+    "title": "Coda Music App",
+    "bio": "UI/UX design for a music discovery application. The interface is designed to be intuitive, personalized, and visually engaging for music lovers.",
+    "info": "Role: UI/UX Design, Prototyping<br>Year: 2024",
+    "coverImage": "https://placehold.co/180x320/4a2a4a/ffffff?text=Coda",
+    "images": [
+      "https://placehold.co/1200x900/4a2a4a/ffffff?text=Coda+App+Screen+1",
+      "https://placehold.co/1200x900/5b3b5b/ffffff?text=Coda+App+Screen+2"
+    ]
+  },
+  {
+    "id": "still-life-photo",
+    "number": "05",
+    "title": "Still Life",
+    "bio": "A photography series that explores the beauty in everyday objects. The collection plays with light, shadow, and composition to create painterly images.",
+    "info": "Role: Photography, Art Direction<br>Year: 2022",
+    "coverImage": "https://placehold.co/180x320/1a1a1a/ffffff?text=Still",
+    "images": [
+      "https://placehold.co/1200x1500/1a1a1a/ffffff?text=Still+Life+I",
+      "https://placehold.co/1200x1500/2b2b2b/ffffff?text=Still+Life+II"
+    ]
+  }
+]
+

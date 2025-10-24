@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Meta Refresh: 5秒後自動跳轉到 index.html -->
+    <meta http-equiv="refresh" content="5;url=index.html">
+    <title>Sywan Portfolio - Loading...</title>
+    <style>
+        /* 這裡是載入動畫的完整 CSS，保持獨立以確保最快載入 */
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@700&display=swap');
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #e0e0e0;
+            --accent-color: #ff4d4d;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Oswald', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            text-transform: uppercase;
+        }
+        .scrolling-wrapper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200%; /* 兩倍高度用於無縫滾動 */
+            animation: scrollUp 40s linear infinite;
+        }
+        .content-block {
+            width: 100%;
+            height: 50%; /* 佔據 wrapper 的一半 */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+        .ticker-row {
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            padding: 0.5rem 0;
+        }
+        .ticker-row p {
+            display: inline-block;
+            margin: 0;
+            padding-right: 2rem;
+            animation: marquee 20s linear infinite;
+        }
+        .foreground-1 { font-size: clamp(3rem, 10vw, 8rem); color: var(--accent-color); font-weight: 700; }
+        .foreground-2 { font-size: clamp(3rem, 10vw, 8rem); color: var(--accent-color); font-weight: 700; animation-direction: reverse; animation-duration: 30s; }
+        .background-1 { font-size: clamp(1rem, 3vw, 1.5rem); color: #444; }
+        .background-2 { font-size: clamp(1rem, 3vw, 1.5rem); color: #555; animation-duration: 45s; }
+        .background-3 { font-size: clamp(1rem, 3vw, 1.5rem); color: #444; animation-direction: reverse; animation-duration: 50s; }
+
+        .speed-slow { animation-duration: 60s; }
+        .speed-medium { animation-duration: 40s; }
+        .speed-fast { animation-duration: 25s; }
+        
+        .animate-scale {
+            display: inline-block;
+            animation: scaleAndSqueeze 8s infinite alternate ease-in-out;
+            animation-delay: var(--animation-delay, 0s);
+        }
+
+        /* --- Keyframes --- */
+        @keyframes marquee {
+            from { transform: translateX(0%); }
+            to { transform: translateX(-50%); }
+        }
+        @keyframes scrollUp {
+            from { transform: translateY(0%); }
+            to { transform: translateY(-50%); }
+        }
+        @keyframes scaleAndSqueeze {
+            0%, 100% { transform: scale(1, 1); }
+            50% { transform: scale(0.8, 1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div class="scrolling-wrapper">
+        <div class="content-block">
+            <!-- 內容 Block 1 -->
+            <div class="ticker-row foreground-1 speed-fast">
+                <p>
+                    <span class="animate-scale" style="--animation-delay: 0s;">NR</span> Nọ WHERE, <span class="animate-scale" style="--animation-delay: 1.5s;">R©P</span> (New Archive) 
+                    <span class="animate-scale" style="--animation-delay: 0s;">NR</span> Nọ WHERE, <span class="animate-scale" style="--animation-delay: 1.5s;">R©P</span> (New Archive) 
+                </p>
+            </div>
+            <div class="ticker-row background-1 speed-medium">
+                <p>Fraser Muggeridge Studio / Design Concept Thames & Hudson / Publisher Hardcover. 232 pages. Fraser Muggeridge Studio / Design Concept Thames & Hudson / Publisher Hardcover. 232 pages. </p>
+            </div>
+            <div class="ticker-row background-2 speed-slow">
+                <p>Extraterrestrial Summercamp #1996 18° North - 115° West ES. 015 // 124026 SS'24 "Extraterrestrial" Extraterrestrial Summercamp #1996 18° North - 115° West ES. 015 // 124026 SS'24 "Extraterrestrial" </p>
+            </div>
+            <div class="ticker-row foreground-2 speed-fast">
+                <p>
+                    <span class="animate-scale" style="--animation-delay: 0.5s;">(New Archive)</span> R©P Nọ WHERE, <span class="animate-scale" style="--animation-delay: 2s;">NR</span>
+                    <span class="animate-scale" style="--animation-delay: 0.5s;">(New Archive)</span> R©P Nọ WHERE, <span class="animate-scale" style="--animation-delay: 2s;">NR</span>
+                </p>
+            </div>
+            <div class="ticker-row background-3 speed-medium">
+                <p>DD-B ©2024. Visual Culture Resource! ISBN. 978-0-50-002388-4. DD-B ©2024. Visual Culture Resource! ISBN. 978-0-50-002388-4. </p>
+            </div>
+        </div>
+        <div class="content-block">
+            <!-- 重複內容 Block 2 (用於無縫滾動) -->
+            <div class="ticker-row foreground-1 speed-fast">
+                <p>
+                    <span class="animate-scale" style="--animation-delay: 0s;">NR</span> Nọ WHERE, <span class="animate-scale" style="--animation-delay: 1.5s;">R©P</span> (New Archive) 
+                    <span class="animate-scale" style="--animation-delay: 0s;">NR</span> Nọ WHERE, <span class="animate-scale" style="--animation-delay: 1.5s;">R©P</span> (New Archive) 
+                </p>
+            </div>
+            <div class="ticker-row background-1 speed-medium">
+                <p>Fraser Muggeridge Studio / Design Concept Thames & Hudson / Publisher Hardcover. 232 pages. Fraser Muggeridge Studio / Design Concept Thames & Hudson / Publisher Hardcover. 232 pages. </p>
+            </div>
+            <div class="ticker-row background-2 speed-slow">
+                <p>Extraterrestrial Summercamp #1996 18° North - 115° West ES. 015 // 124026 SS'24 "Extraterrestrial" Extraterrestrial Summercamp #1996 18° North - 115° West ES. 015 // 124026 SS'24 "Extraterrestrial" </p>
+            </div>
+            <div class="ticker-row foreground-2 speed-fast">
+                <p>
+                    <span class="animate-scale" style="--animation-delay: 0.5s;">(New Archive)</span> R©P Nọ WHERE, <span class="animate-scale" style="--animation-delay: 2s;">NR</span>
+                    <span class="animate-scale" style="--animation-delay: 0.5s;">(New Archive)</span> R©P Nọ WHERE, <span class="animate-scale" style="--animation-delay: 2s;">NR</span>
+                </p>
+            </div>
+            <div class="ticker-row background-3 speed-medium">
+                <p>DD-B ©2024. Visual Culture Resource! ISBN. 978-0-50-002388-4. DD-B ©2024. Visual Culture Resource! ISBN. 978-0-50-002388-4. </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
