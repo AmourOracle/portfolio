@@ -14,24 +14,29 @@
 
     <main class="portfolio-container">
         <!-- 
-          MOD: index.html (v1.2)
-          - 將 .contact-links 區塊從 .profile-block 移至 nav.right-column
+          MOD: index.html (v2.1)
+          - 為左側欄位的 label 和 block 新增 ID，以便 JS 控制
         -->
         <aside class="left-column">
             <div class="left-column-top">
                 <div class="name-block">
-                    <span class="label">NO.</span>
+                    <!-- ID ADDED -->
+                    <span class="label" id="previewLabelNumber">NO.</span>
                     <h1 id="previewTitle">Sywan</h1>
                 </div>
             </div>
             
             <div class="left-column-middle">
-                <div class="info-divider-block">
-                    <span class="label">BIO</span>
+                <!-- ID ADDED -->
+                <div class="info-divider-block" id="previewBlockBio">
+                    <!-- ID ADDED -->
+                    <span class="label" id="previewLabelBio">BIO</span>
                     <p id="previewBio">A visual designer based in Taiwan, focusing on creating compelling brand identities and digital experiences.</p>
                 </div>
-                <div class="info-divider-block">
-                    <span class="label">INFO</span>
+                <!-- ID ADDED -->
+                <div class="info-divider-block" id="previewBlockInfo">
+                    <!-- ID ADDED -->
+                    <span class="label" id="previewLabelInfo">INFO</span>
                     <p>This space is reserved for future content or additional information about a project.</p>
                 </div>
             </div>

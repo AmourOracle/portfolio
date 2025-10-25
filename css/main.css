@@ -91,6 +91,7 @@ header {
     position: absolute; 
     top: 0.5rem; /* MOD: 配合 2rem padding (2rem - 1.5rem) */ 
     left: 0.2rem; 
+    transition: opacity 0.3s ease-in-out; /* ADD: 為 hover 效果增加過渡 */
 }
 .name-block h1 {
     /* MOD: 縮小字級以適應 30vw 欄寬 */
@@ -103,8 +104,21 @@ header {
     /* ADD: 強制長單字換行，防止溢出 */
     word-break: break-word;
 }
-.info-divider-block { border-top: 1px solid var(--divider-color); padding-top: 1rem; margin-top: 1.5rem; display: flex; gap: 1.5rem; }
-.info-divider-block .label { font-family: var(--font-mono); font-size: 0.8rem; color: var(--secondary-color); min-width: 100px; }
+.info-divider-block { 
+    border-top: 1px solid var(--divider-color); 
+    padding-top: 1rem; 
+    margin-top: 1.5rem; 
+    display: flex; 
+    gap: 1.5rem; 
+    transition: opacity 0.3s ease-in-out; /* ADD: 為 hover 效果增加過渡 */
+}
+.info-divider-block .label { 
+    font-family: var(--font-mono); 
+    font-size: 0.8rem; 
+    color: var(--secondary-color); 
+    min-width: 100px; 
+    transition: opacity 0.3s ease-in-out; /* ADD: 為 hover 效果增加過渡 */
+}
 .info-divider-block p { font-size: 0.9rem; line-height: 1.6; color: var(--text-color); margin: 0; transition: opacity 0.3s ease-in-out; }
 
 /* --- INDEX 頁面專用 --- */
@@ -204,14 +218,13 @@ header {
     padding-bottom: 2rem; /* MOD: 配合頂部 padding 調整 */
 }
 
-/* MOD: FEAT_projectsFilter_v2.0 (Request 1)
-  - .project-item 改為 flex 佈局以容納分類標籤
-  - 新增 .hide 狀態用於過濾動畫
+/* MOD: FEAT_projectsFilter_v2.1
+  - (Request 1) gap 縮小為 0.75rem
 */
 .project-item {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.75rem; /* MOD: (Request 1) 間距縮小 50% */
     /* 動畫相關屬性 */
     transition: opacity 0.4s ease-out, max-height 0.4s ease-out, transform 0.3s ease-out, padding 0.4s ease-out;
     max-height: 15rem; /* 設定一個足夠大的預設高度 */
@@ -227,16 +240,22 @@ header {
     padding-bottom: 0;
     margin-top: -1px; /* 輔助折疊 */
 }
-/* (Request 1) 新增分類標籤樣式 */
+/* MOD: FEAT_projectsFilter_v2.1
+  - (Request 2) 新增 opacity 過渡效果
+*/
 .project-category {
     font-family: var(--font-mono);
     font-size: 0.8rem;
     color: var(--secondary-color);
     min-width: 100px;
-    transition: color 0.4s ease;
+    transition: color 0.4s ease, opacity 0.4s ease; /* MOD: 新增 opacity 過渡 */
 }
+/* MOD: FEAT_projectsFilter_v2.1
+  - (Request 2) hover 時隱藏 category
+*/
 .project-item:hover .project-category {
     color: var(--primary-color);
+    opacity: 0; /* MOD: (Request 2) hover 時隱藏 */
 }
 
 .project-item a {
@@ -360,5 +379,6 @@ header {
     }
     .project-category {
         min-width: auto; /* 移除最小寬度 */
+        opacity: 1 !important; /* 手機版 hover 不隱藏 category */
     }
 }
