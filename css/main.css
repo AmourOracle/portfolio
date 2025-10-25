@@ -233,6 +233,7 @@ header {
     padding: 0.5rem 0; /* 移到 project-item 層級 */
     transform-origin: left center;
     transform: translateX(0);
+    cursor: pointer; /* ADD: 增加點擊指標 */
 }
 .project-item.hide {
     opacity: 0;
@@ -252,10 +253,11 @@ header {
     transition: color 0.4s ease, opacity 0.4s ease; /* MOD: 新增 opacity 過渡 */
     text-align: right; /* MOD: (Request 1) 文字置右 */
 }
-/* MOD: FEAT_projectsFilter_v2.1
-  - (Request 2) hover 時隱藏 category
+
+/* MOD: REFACTOR_scrollInteraction_v3.0
+  - (Request 2) 移除 :hover，改用 .is-active
 */
-.project-item:hover .project-category {
+.project-item.is-active .project-category {
     color: var(--primary-color);
     opacity: 0; /* MOD: (Request 2) hover 時隱藏 */
 }
@@ -264,17 +266,20 @@ header {
     display: block;
     font-size: clamp(2rem, 6vw, 4.5rem);
     font-weight: 700;
-    color: #666; /* MOD: (Request 2) 預設顏色調亮 */
+    color: #999; /* MOD: (Request 2) 預設顏色調亮 */
     text-decoration: none;
     padding: 0; /* padding 移至 .project-item */
     transition: color 0.4s ease; /* transform 已移至 .project-item */
     line-height: 1.1;
 }
-.project-item:hover {
-    /* MOD: hover 效果改到 .project-item 上 */
+
+/* MOD: REFACTOR_scrollInteraction_v3.0
+  - (Request 2) 移除 :hover，改用 .is-active
+*/
+.project-item.is-active {
     transform: translateX(-1.5rem);
 }
-.project-item:hover a {
+.project-item.is-active a {
     color: var(--primary-color);
 }
 
@@ -376,7 +381,7 @@ header {
         align-items: flex-start;
         gap: 0.5rem;
     }
-    .project-item:hover {
+    .project-item.is-active {
         transform: none;
     }
     .project-category {
