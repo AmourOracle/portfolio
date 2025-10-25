@@ -23,6 +23,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allProjectItems = []; // 用於儲存所有專案 DOM 元素
 
+    // --- (Request 3) MOD: 重構為可重複使用的函式 ---
+    /**
+     * 更新左側預覽區塊的內容
+     * @param {Element | null} item - 要預覽的 .project-item 元素，或 null 以恢復預設
+     */
+    function updatePreview(item) {
+        if (item) {
+            // --- 情況 1: 預覽指定項目 ---
+            // 獲取 data-* 屬性
+            const newTitle = item.getAttribute('data-title');
+            const newBio = item.getAttribute('data-bio');
+            const newImageSrc = item.getAttribute('data-cover-image');
+            const newCategory = item.getAttribute('data-category');
+            
+            // 更新內容
+            previewTitleElement.textContent = newTitle;
+            previewBioElement.textContent = newBio; // 雖然區塊隱藏，但仍更新
+            if (newImageSrc) {
+                previewImageElement.src = newImageSrc;
+            }
+
+            // (Request 3.2) 更新標籤
+            previewLabelNumber.textContent = newCategory.toUpperCase(); // NO. -> CATEGORY
+            previewLabelInfo.textContent = 'DOCS'; // INFO -> DOCS
+            previewBlockBio.style.display = 'none'; // 隱藏 BIO 區塊
+        } else {
+            // --- 情況 2: 恢復預設 (Sywan) ---
+            // (Request 3.1) 恢復預設內容
+            previewTitleElement.textContent = defaultTitle;
+            previewBioElement.textContent = defaultBio;
+            previewImageElement.src = defaultImageSrc;
+
+            // (Request 3.1) 恢復預設標籤
+            previewLabelNumber.textContent = defaultLabelNumber;
+            previewLabelInfo.textContent = defaultLabelInfo;
+            previewBlockBio.style.display = 'flex'; // 恢復 BIO 區塊 (它是 flex 佈局)
+        }
+    }
+
+
     // 從 JSON 檔案獲取專案資料並生成列表
     fetch('./data/projects.json')
         .then(response => {
@@ -52,6 +92,11 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             allProjectItems = document.querySelectorAll('#projectList .project-item');
+
+            // --- (Request 3) ADD: 預設觸發第一個項目的 hover ---
+            if (allProjectItems.length > 0) {
+                updatePreview(allProjectItems[0]);
+            }
         })
         .catch(error => {
             console.error('Error fetching projects:', error);
@@ -62,38 +107,14 @@ document.addEventListener('DOMContentLoaded', () => {
     projectListElement.addEventListener('mouseover', (event) => {
         const projectItem = event.target.closest('.project-item');
         if (projectItem) {
-            // 獲取 data-* 屬性
-            const newTitle = projectItem.getAttribute('data-title');
-            const newBio = projectItem.getAttribute('data-bio');
-            const newImageSrc = projectItem.getAttribute('data-cover-image');
-            const newCategory = projectItem.getAttribute('data-category'); // (Request 3)
-            
-            // 更新內容
-            previewTitleElement.textContent = newTitle;
-            previewBioElement.textContent = newBio; // 雖然區塊隱藏，但仍更新
-            if (newImageSrc) {
-                previewImageElement.src = newImageSrc;
-            }
-
-            // (Request 3.2) 更新標籤
-            previewLabelNumber.textContent = newCategory.toUpperCase(); // NO. -> CATEGORY
-            previewLabelInfo.textContent = 'DOCS'; // INFO -> DOCS
-            previewBlockBio.style.display = 'none'; // 隱藏 BIO 區塊
+            updatePreview(projectItem); // 使用重構後的函式
         }
     });
 
     // --- (Request 3) MOD: 更新滑鼠 OUT 事件 ---
     projectListElement.addEventListener('mouseout', (event) => {
         if (!projectListElement.contains(event.relatedTarget)) {
-            // (Request 3.1) 恢復預設內容
-            previewTitleElement.textContent = defaultTitle;
-            previewBioElement.textContent = defaultBio;
-            previewImageElement.src = defaultImageSrc;
-
-            // (Request 3.1) 恢復預設標籤
-            previewLabelNumber.textContent = defaultLabelNumber;
-            previewLabelInfo.textContent = defaultLabelInfo;
-            previewBlockBio.style.display = 'flex'; // 恢復 BIO 區塊 (它是 flex 佈局)
+            updatePreview(null); // 使用重構後的函式
         }
     });
 
@@ -123,3 +144,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+

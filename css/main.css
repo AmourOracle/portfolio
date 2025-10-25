@@ -110,7 +110,7 @@ header {
     margin-top: 1.5rem; 
     display: flex; 
     gap: 1.5rem; 
-    transition: opacity 0.3s ease-in-out; /* ADD: 為 hover 效果增加過渡 */
+    transition: opacity 0.3s ease-in-out, display 0s linear 0.3s; /* ADD: 為 hover 效果增加過渡 */
 }
 .info-divider-block .label { 
     font-family: var(--font-mono); 
@@ -192,12 +192,13 @@ header {
     padding: 2rem 1rem 0 2rem;
     overflow-y: auto;
     box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
-    /* ADD: 增加上下漸變遮罩，模擬陰影 */
+    
+    /* MOD: (Request 2) 加強遮罩效果，使其更像插槽 */
     mask-image: linear-gradient(
         to bottom,
         transparent 0%,
-        black 15%,
-        black 85%,
+        black 25%,
+        black 75%,
         transparent 100%
     );
     
@@ -240,8 +241,8 @@ header {
     padding-bottom: 0;
     margin-top: -1px; /* 輔助折疊 */
 }
-/* MOD: FEAT_projectsFilter_v2.1
-  - (Request 2) 新增 opacity 過渡效果
+/* MOD: MOD_listStyle_v2.2
+  - (Request 1) 新增 text-align: right
 */
 .project-category {
     font-family: var(--font-mono);
@@ -249,6 +250,7 @@ header {
     color: var(--secondary-color);
     min-width: 100px;
     transition: color 0.4s ease, opacity 0.4s ease; /* MOD: 新增 opacity 過渡 */
+    text-align: right; /* MOD: (Request 1) 文字置右 */
 }
 /* MOD: FEAT_projectsFilter_v2.1
   - (Request 2) hover 時隱藏 category
@@ -262,7 +264,7 @@ header {
     display: block;
     font-size: clamp(2rem, 6vw, 4.5rem);
     font-weight: 700;
-    color: #444;
+    color: #666; /* MOD: (Request 2) 預設顏色調亮 */
     text-decoration: none;
     padding: 0; /* padding 移至 .project-item */
     transition: color 0.4s ease; /* transform 已移至 .project-item */
@@ -380,5 +382,7 @@ header {
     .project-category {
         min-width: auto; /* 移除最小寬度 */
         opacity: 1 !important; /* 手機版 hover 不隱藏 category */
+        text-align: left; /* MOD: (Request 1) 手機版恢復置左 */
     }
 }
+
