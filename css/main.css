@@ -240,7 +240,8 @@ header {
     max-height: 15rem; /* 設定一個足夠大的預設高度 */
     overflow: hidden;
     padding: 0.5rem 0; 
-    transform-origin: left center;
+    /* MOD: FIX_v3.3 - 變更 transform-origin 為 center center 修正梯形變形 */
+    transform-origin: center center;
     cursor: pointer; 
 
     /* MOD: (Req 1 & 4) 預設樣式 (非啟用) - 更小、更淡、帶有弧度 */
@@ -293,6 +294,7 @@ header {
 */
 .project-item.is-active {
     opacity: 1;
+    /* MOD: FIX_v3.3 - 雖然 origin 變了，但 translateX 效果依然保留 */
     transform: scale(1) translateX(-1.5rem) rotateX(0deg) translateZ(0px); /* 恢復正常大小和位置，移除 3D 變換 */
 }
 .project-item.is-active a {
