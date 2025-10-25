@@ -188,8 +188,8 @@ header {
 .contact-links a:hover { color: var(--primary-color); }
 
 .center-column {
-    /* MOD: 增加 padding-left: 2rem 來解決裁切問題 */
-    padding: 2rem 1rem 0 2rem;
+    /* MOD: (Req 1) 移除 padding-top, 僅保留左右 padding */
+    padding: 0 1rem 0 2rem;
     overflow-y: auto;
     box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
     
@@ -215,25 +215,30 @@ header {
     list-style: none;
     margin: 0;
     padding: 0;
-    /* MOD: 移除 padding-top，改由 .center-column 控制 */
-    padding-bottom: 2rem; /* MOD: 配合頂部 padding 調整 */
+    /* MOD: (Req 1) 增加巨大的上下 padding，確保列表頭尾能滾動到螢幕中央 */
+    /* 50vh = 視窗高度一半, 10rem = 約 3 個 item 高度的一半，用於校正 */
+    padding-top: calc(50vh - 10rem);
+    padding-bottom: calc(50vh - 10rem);
 }
 
-/* MOD: FEAT_projectsFilter_v2.1
-  - (Request 1) gap 縮小為 0.75rem
+/* MOD: REFACTOR_pickerWheel_v3.1
+  - (Req 4) 預設狀態為縮小且淡出
 */
 .project-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem; /* MOD: (Request 1) 間距縮小 50% */
-    /* 動畫相關屬性 */
-    transition: opacity 0.4s ease-out, max-height 0.4s ease-out, transform 0.3s ease-out, padding 0.4s ease-out;
+    gap: 0.75rem; 
+    /* MOD: (Req 4) 增加 scale 和 opacity 的過渡效果 */
+    transition: opacity 0.4s ease-out, max-height 0.4s ease-out, transform 0.4s ease-out, padding 0.4s ease-out;
     max-height: 15rem; /* 設定一個足夠大的預設高度 */
     overflow: hidden;
     padding: 0.5rem 0; /* 移到 project-item 層級 */
     transform-origin: left center;
-    transform: translateX(0);
     cursor: pointer; /* ADD: 增加點擊指標 */
+
+    /* MOD: (Req 4) 預設樣式 (非啟用) */
+    opacity: 0.4;
+    transform: scale(0.85);
 }
 .project-item.hide {
     opacity: 0;
@@ -242,9 +247,7 @@ header {
     padding-bottom: 0;
     margin-top: -1px; /* 輔助折疊 */
 }
-/* MOD: MOD_listStyle_v2.2
-  - (Request 1) 新增 text-align: right
-*/
+
 .project-category {
     font-family: var(--font-mono);
     font-size: 0.8rem;
@@ -273,11 +276,12 @@ header {
     line-height: 1.1;
 }
 
-/* MOD: REFACTOR_scrollInteraction_v3.0
-  - (Request 2) 移除 :hover，改用 .is-active
+/* MOD: REFACTOR_pickerWheel_v3.1
+  - (Req 2 & 4) 啟用狀態 (放大、不透明、左移)
 */
 .project-item.is-active {
-    transform: translateX(-1.5rem);
+    opacity: 1;
+    transform: scale(1) translateX(-1.5rem);
 }
 .project-item.is-active a {
     color: var(--primary-color);
@@ -380,6 +384,9 @@ header {
         flex-direction: column; /* 手機上改為垂直堆疊 */
         align-items: flex-start;
         gap: 0.5rem;
+        /* MOD: (Req 4) 手機版恢復預設樣式 */
+        opacity: 1;
+        transform: scale(1);
     }
     .project-item.is-active {
         transform: none;
