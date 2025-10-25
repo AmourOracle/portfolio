@@ -140,10 +140,12 @@ header {
     object-fit: cover;
 }
 
-/* MOD: contact-links 樣式改為 .right-column 中的版本 */
+/* MOD: FEAT_projectsFilter_v2.0 (Request 2)
+  - 移除 margin-top: auto; 解決與 .category-nav 的置中衝突
+  - 改為 1rem，讓它與 .category-nav 保有間距
+*/
 .contact-links {
-    /* MOD: 推至底部 */
-    margin-top: auto;
+    margin-top: 1rem; 
     padding-bottom: 0.5rem; /* 增加底部間距 */
 }
 .contact-links ul {
@@ -201,36 +203,72 @@ header {
     /* MOD: 移除 padding-top，改由 .center-column 控制 */
     padding-bottom: 2rem; /* MOD: 配合頂部 padding 調整 */
 }
+
+/* MOD: FEAT_projectsFilter_v2.0 (Request 1)
+  - .project-item 改為 flex 佈局以容納分類標籤
+  - 新增 .hide 狀態用於過濾動畫
+*/
+.project-item {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    /* 動畫相關屬性 */
+    transition: opacity 0.4s ease-out, max-height 0.4s ease-out, transform 0.3s ease-out, padding 0.4s ease-out;
+    max-height: 15rem; /* 設定一個足夠大的預設高度 */
+    overflow: hidden;
+    padding: 0.5rem 0; /* 移到 project-item 層級 */
+    transform-origin: left center;
+    transform: translateX(0);
+}
+.project-item.hide {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: -1px; /* 輔助折疊 */
+}
+/* (Request 1) 新增分類標籤樣式 */
+.project-category {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    min-width: 100px;
+    transition: color 0.4s ease;
+}
+.project-item:hover .project-category {
+    color: var(--primary-color);
+}
+
 .project-item a {
     display: block;
     font-size: clamp(2rem, 6vw, 4.5rem);
     font-weight: 700;
     color: #444;
     text-decoration: none;
-    padding: 0.5rem 0;
-    /* MOD: 優化 transform transition 為 ease-out */
-    transition: color 0.4s ease, transform 0.3s ease-out;
+    padding: 0; /* padding 移至 .project-item */
+    transition: color 0.4s ease; /* transform 已移至 .project-item */
     line-height: 1.1;
-    /* MOD: 增加 transform-origin 確保從左側放大 */
-    transform-origin: left center;
-    /* MOD: 移除基礎 scale(1) */
-    transform: translateX(0);
 }
-.project-item a:hover {
-    color: var(--primary-color);
-    /* MOD: 移除 scale(1.05)，只保留 translateX */
+.project-item:hover {
+    /* MOD: hover 效果改到 .project-item 上 */
     transform: translateX(-1.5rem);
 }
+.project-item:hover a {
+    color: var(--primary-color);
+}
+
+
 .right-column {
     text-align: right;
     display: flex;
     flex-direction: column;
-    /* MOD: 移除 justify-content: center */
     /* MOD: 確保 .right-column 佔滿高度 */
     height: 100%;
 }
 .category-nav {
-    /* MOD: 垂直置中 */
+    /* MOD: FEAT_projectsFilter_v2.0 (Request 2)
+      - 確保垂直置中
+    */
     margin-top: auto;
     margin-bottom: auto;
 }
@@ -246,8 +284,18 @@ header {
     /* MOD: 使用 clamp 實現響應式字體 */
     font-size: clamp(0.7rem, 1.2vw, 1rem);
     transition: color 0.3s ease;
+    cursor: pointer; /* ADD: 增加指標 */
 }
 .category-nav a:hover { color: var(--primary-color); }
+
+/* ADD: FEAT_projectsFilter_v2.0 (Request 3)
+  - 篩選器啟用狀態的樣式
+*/
+.category-nav a.active {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
 
 /* --- PROJECT 頁面專用 --- */
 .project-container { grid-template-columns: 1.2fr 3fr; }
@@ -294,7 +342,6 @@ header {
         /* MOD: 重置 padding-left */
         padding: 0;
         mask-image: none; /* ADD: 移除遮罩效果 */
-        perspective: none; /* ADD: 移除 3D 效果 */
     }
     /* ADD: 重置 project-list 的 padding */
     .project-list {
@@ -302,12 +349,16 @@ header {
         padding-bottom: 0;
     }
     /* ADD: 重置 project-item a 的 transform */
-    .project-item a {
+    .project-item {
         transform: none;
-        transform-origin: left center; /* 保持一致 */
+        flex-direction: column; /* 手機上改為垂直堆疊 */
+        align-items: flex-start;
+        gap: 0.5rem;
     }
-    .project-item a:hover {
+    .project-item:hover {
         transform: none;
+    }
+    .project-category {
+        min-width: auto; /* 移除最小寬度 */
     }
 }
-

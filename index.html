@@ -54,13 +54,18 @@
 
         <!-- 右欄：作品分類 & 外部連結 -->
         <nav class="right-column">
-            <div class="category-nav">
-                <!-- <h3>Expertise</h3> 隱藏 -->
+            <!-- 
+              MOD: FEAT_projectsFilter_v2.0
+              - .category-nav 現在是篩選器
+              - 新增 "All Projects" 選項
+              - 為每個 <a> 標籤新增 data-filter 屬性
+            -->
+            <div class="category-nav" id="categoryNav">
                 <ul>
-                    <li><a href="#">Visual Identity</a></li>
-                    <li><a href="#">Graphic Design</a></li>
-                    <li><a href="#">UI/UX Design</a></li>
-                    <li><a href="#">Photography</a></li>
+                    <li><a href="#" data-filter="all" class="active">All Projects</a></li>
+                    <li><a href="#" data-filter="Visual">Visual Design</a></li>
+                    <li><a href="#" data-filter="Photography">Commercial Photography</a></li>
+                    <li><a href="#" data-filter="Identity">Brand Identity</a></li>
                 </ul>
             </div>
             
@@ -79,4 +84,3 @@
     <script src="js/index.js"></script>
 </body>
 </html>
-
