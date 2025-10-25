@@ -204,6 +204,10 @@ header {
     
     /* ADD: 隱藏滾動條 */
     scrollbar-width: none; /* For Firefox */
+
+    /* ADD: (Req 1 & 4) 設定 3D 透視點 */
+    perspective: 500px; 
+    perspective-origin: center center;
 }
 
 /* ADD: 隱藏滾動條 for Chrome, Safari, Opera */
@@ -219,26 +223,29 @@ header {
     /* 50vh = 視窗高度一半, 10rem = 約 3 個 item 高度的一半，用於校正 */
     padding-top: calc(50vh - 10rem);
     padding-bottom: calc(50vh - 10rem);
+
+    /* ADD: (Req 4) 允許子元素 3D 變換 */
+    transform-style: preserve-3d; 
 }
 
-/* MOD: REFACTOR_pickerWheel_v3.1
-  - (Req 4) 預設狀態為縮小且淡出
+/* MOD: FEAT_pickerWheel3D_v3.2
+  - (Req 1 & 4) 預設狀態為縮小、更淡且帶弧度
 */
 .project-item {
     display: flex;
     align-items: center;
     gap: 0.75rem; 
-    /* MOD: (Req 4) 增加 scale 和 opacity 的過渡效果 */
-    transition: opacity 0.4s ease-out, max-height 0.4s ease-out, transform 0.4s ease-out, padding 0.4s ease-out;
+    /* MOD: (Req 4) 增加 scale, opacity, transform (rotateX, translateZ) 的過渡效果 */
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out, padding 0.4s ease-out, max-height 0.4s ease-out;
     max-height: 15rem; /* 設定一個足夠大的預設高度 */
     overflow: hidden;
-    padding: 0.5rem 0; /* 移到 project-item 層級 */
+    padding: 0.5rem 0; 
     transform-origin: left center;
-    cursor: pointer; /* ADD: 增加點擊指標 */
+    cursor: pointer; 
 
-    /* MOD: (Req 4) 預設樣式 (非啟用) */
-    opacity: 0.4;
-    transform: scale(0.85);
+    /* MOD: (Req 1 & 4) 預設樣式 (非啟用) - 更小、更淡、帶有弧度 */
+    opacity: 0.2; /* 從 0.4 降到 0.2 */
+    transform: scale(0.75) rotateX(15deg) translateZ(-50px); /* 縮小到 0.75，增加 X 軸旋轉和 Z 軸位移 */
 }
 .project-item.hide {
     opacity: 0;
@@ -246,6 +253,8 @@ header {
     padding-top: 0;
     padding-bottom: 0;
     margin-top: -1px; /* 輔助折疊 */
+    /* 隱藏時也移除 3D 變換，避免影響佈局 */
+    transform: scale(0) rotateX(0deg) translateZ(0px); 
 }
 
 .project-category {
@@ -253,35 +262,38 @@ header {
     font-size: 0.8rem;
     color: var(--secondary-color);
     min-width: 100px;
-    transition: color 0.4s ease, opacity 0.4s ease; /* MOD: 新增 opacity 過渡 */
-    text-align: right; /* MOD: (Request 1) 文字置右 */
+    transition: color 0.4s ease, opacity 0.4s ease; 
+    text-align: right; 
+    /* ADD: 修正 3D 變換後 category 的位置 */
+    /* position: relative;
+    top: -0.1em; /* 輕微上移 */
 }
 
-/* MOD: REFACTOR_scrollInteraction_v3.0
-  - (Request 2) 移除 :hover，改用 .is-active
+/* MOD: FEAT_pickerWheel3D_v3.2
+  - (Req 1 & 4) 啟用狀態 (放大、不透明、左移，移除 3D 變換)
 */
 .project-item.is-active .project-category {
     color: var(--primary-color);
-    opacity: 0; /* MOD: (Request 2) hover 時隱藏 */
+    opacity: 0; 
 }
 
 .project-item a {
     display: block;
     font-size: clamp(2rem, 6vw, 4.5rem);
     font-weight: 700;
-    color: #999; /* MOD: (Request 2) 預設顏色調亮 */
+    color: #999; 
     text-decoration: none;
-    padding: 0; /* padding 移至 .project-item */
-    transition: color 0.4s ease; /* transform 已移至 .project-item */
+    padding: 0; 
+    transition: color 0.4s ease; 
     line-height: 1.1;
 }
 
-/* MOD: REFACTOR_pickerWheel_v3.1
-  - (Req 2 & 4) 啟用狀態 (放大、不透明、左移)
+/* MOD: FEAT_pickerWheel3D_v3.2
+  - (Req 1 & 4) 啟用狀態 (放大、不透明、左移，移除 3D 變換)
 */
 .project-item.is-active {
     opacity: 1;
-    transform: scale(1) translateX(-1.5rem);
+    transform: scale(1) translateX(-1.5rem) rotateX(0deg) translateZ(0px); /* 恢復正常大小和位置，移除 3D 變換 */
 }
 .project-item.is-active a {
     color: var(--primary-color);
@@ -372,6 +384,7 @@ header {
         /* MOD: 重置 padding-left */
         padding: 0;
         mask-image: none; /* ADD: 移除遮罩效果 */
+        perspective: none; /* MOD: 手機版移除透視 */
     }
     /* ADD: 重置 project-list 的 padding */
     .project-list {
@@ -386,7 +399,7 @@ header {
         gap: 0.5rem;
         /* MOD: (Req 4) 手機版恢復預設樣式 */
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) rotateX(0deg) translateZ(0px); /* 恢復正常 */
     }
     .project-item.is-active {
         transform: none;
