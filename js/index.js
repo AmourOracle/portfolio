@@ -30,6 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // ADD: (Request v3.8) 判斷是否為行動裝置
     const isMobile = window.innerWidth <= 768;
 
+    // --- ADD: (Request v3.10) 觸控滑動變數 ---
+    let touchStartY = 0;
+    let touchEndY = 0;
+    const swipeThreshold = 50; // 觸發滑動所需的最小 Y 軸像素
+    // --- End ADD ---
+
     // 1. 獲取專案資料並生成列表
     fetch('./data/projects.json')
         .then(response => {
@@ -80,11 +86,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // (Request 4) 監聽滾輪事件 (監聽 .center-column)
             const centerColumn = document.querySelector('.center-column');
             
-            // MOD: (Request v3.8) 僅在非行動裝置上綁定 wheel 事件
-            // 因為 wheel event + preventDefault() 會鎖死手機的觸控捲動
-            // 手機版將改為只用 click 事件 (handleItemClick) 來互動
-            if (centerColumn && !isMobile) {
-                centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
+            // MOD: (Request v3.10) 根據裝置類型綁定不同事件
+            if (centerColumn) {
+                if (!isMobile) {
+                    // --- 桌面版：綁定 Wheel 事件 ---
+                    centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
+                } else {
+                    // --- 手機版：綁定 Touch 事件 ---
+                    centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
+                    centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
+                    centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
+                }
             }
 
             // (Request 4) 監聽點擊事件 (在手機和桌機上都會啟用)
@@ -132,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 更新左側預覽
+        // 更新左側預覽 (在手機版上，這些元素是隱藏的，但邏輯保留)
         const newTitle = targetItem.getAttribute('data-title');
         const newBio = targetItem.getAttribute('data-bio');
         const newImageSrc = targetItem.getAttribute('data-cover-image');
@@ -142,12 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewTitleElement) previewTitleElement.textContent = newTitle;
         if (previewBioElement) previewBioElement.textContent = newBio;
         if (previewImageElement && newImageSrc) previewImageElement.src = newImageSrc;
-        // (Request 3.2) 更新 INFO 欄位 (確保 previewInfoElement 存在)
         if (previewInfoElement) previewInfoElement.innerHTML = newInfo; 
 
-        // (Request 3.2) 更新左側欄位標籤
-        if (previewLabelNo) { // (Request 3.2) 增加 null 檢查
-            // 更新標籤
+        if (previewLabelNo) { 
             previewLabelNo.style.display = 'none';
             previewLabelCategory.style.display = 'inline-block';
             previewLabelCategory.textContent = newCategory;
@@ -155,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
             previewLabelInfo.style.display = 'none';
             previewLabelDocs.style.display = 'inline-block';
 
-            // 隱藏 BIO
             previewBlockBio.classList.add('hide-section');
         }
     }
@@ -165,20 +173,59 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewTitleElement) previewTitleElement.textContent = defaultTitle;
         if (previewBioElement) previewBioElement.textContent = defaultBio;
         if (previewImageElement) previewImageElement.src = defaultImageSrc;
-        if (previewInfoElement) previewInfoElement.textContent = defaultInfo; // (Request 3.2)
+        if (previewInfoElement) previewInfoElement.textContent = defaultInfo;
 
-        // (Request 3.2) 恢復預設標籤
-        if (previewLabelNo) { // (Request 3.2) 增加 null 檢查
+        if (previewLabelNo) { 
             previewLabelNo.style.display = 'inline-block';
             previewLabelCategory.style.display = 'none';
 
             previewLabelInfo.style.display = 'inline-block';
             previewLabelDocs.style.display = 'none';
 
-            // 顯示 BIO
             if (previewBlockBio) previewBlockBio.classList.remove('hide-section');
         }
     }
+
+    // --- ADD: (Request v3.10) 手機版觸控事件處理 ---
+    function handleTouchStart(event) {
+        touchStartY = event.touches[0].clientY;
+        touchEndY = event.touches[0].clientY; // 重置
+    }
+
+    function handleTouchMove(event) {
+        // 關鍵：阻止瀏覽器原生的觸控平移/滾動
+        event.preventDefault();
+        touchEndY = event.touches[0].clientY;
+    }
+
+    function handleTouchEnd(event) {
+        if (isScrolling) return; // 正在滾動中，忽略新的手勢
+
+        const deltaY = touchStartY - touchEndY; // 正數 = 向上滑
+
+        if (Math.abs(deltaY) > swipeThreshold) {
+            // --- 這是一次滑動 (Swipe) ---
+            isScrolling = true;
+            // 設定節流閥，防止連續滑動
+            setTimeout(() => { isScrolling = false; }, 400); // 滑動的冷卻時間
+
+            const direction = deltaY > 0 ? 1 : -1; // 1 = 向上滑, -1 = 向下滑
+            let newIndex = currentActiveIndex + direction;
+
+            // 確保新索引在 visibleItems 範圍內
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+
+            if (newIndex !== currentActiveIndex) {
+                setActiveItem(newIndex, true);
+            }
+        }
+        
+        // 重置座標，為下一次 "click" 或 "swipe" 準備
+        touchStartY = 0;
+        touchEndY = 0;
+    }
+    // --- End ADD ---
 
     // (Request 4) 滾輪事件處理 (僅桌機)
     function handleWheelScroll(event) {
@@ -187,7 +234,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isScrolling) return; // 節流
         isScrolling = true;
 
-        setTimeout(() => { isScrolling = false; }, 150); // 節流時間
+        setTimeout(() => { isScrolling = false; }, 150); // 滾輪的冷卻時間
 
         const direction = event.deltaY > 0 ? 1 : -1; // 1 = 向下, -1 = 向上
         let newIndex = currentActiveIndex + direction;
@@ -203,6 +250,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (Request 4) 點擊事件處理 (桌機與手機)
     function handleItemClick(event) {
+        // MOD: (Request v3.10) 如果正在滾動/滑動中，不要觸發點擊
+        if (isScrolling) {
+            event.preventDefault(); // 防止點擊跳轉
+            return;
+        }
+
+        // 如果是觸控結束後立即觸發的 click，
+        // 且 touchEnd 已經處理了滑動，這裡就不再處理
+        // (isScrolling 節流閥會處理)
+        
         const clickedItem = event.target.closest('.project-item');
         if (clickedItem) {
             const newIndex = visibleItems.indexOf(clickedItem);
@@ -251,3 +308,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
