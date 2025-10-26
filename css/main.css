@@ -394,8 +394,8 @@ header {
 .next-project-block {
     display: flex; /* 改為 flex-row */
     flex-direction: row;
-    /* MOD: (Request 8) 配合 baseline 對齊，將 flex-end 改為 baseline */
-    align-items: baseline;
+    /* MOD: (Request 9) 修正對齊問題：從 baseline 改為 flex-end */
+    align-items: flex-end;
     gap: 0.5rem; /* 文字區塊與箭頭的間距 */
     text-decoration: none;
     color: var(--secondary-color);
@@ -437,8 +437,8 @@ header {
     font-size: 1.2rem; /* 箭頭大小 */
     line-height: 1; /* 確保對齊 */
     transition: transform 0.3s ease;
-     /* 微調箭頭位置，使其與標題底部對齊 */
-    padding-bottom: 0.05rem;
+     /* MOD: (Request 9) 修正對齊，移除 padding-bottom */
+    /* padding-bottom: 0.05rem; */
 }
 .next-project-block:hover .arrow {
     transform: translateX(5px); /* Hover 時箭頭右移 */
@@ -461,6 +461,11 @@ header {
 .project-content-column img { width: 100%; height: auto; margin-bottom: 2rem; }
 
 /* --- ADD: (Request 5) About Page 靜態內容樣式 --- */
+.about-content {
+    /* MOD: (Request 6) 移除此處的 padding-top，改由 .about-page-layout 控制 */
+    /* padding-top: 1.5rem; */ 
+}
+
 .about-intro-text {
     margin-bottom: 4rem;
 }
@@ -516,6 +521,12 @@ header {
     padding-top: 2rem; 
 }
 */
+/* --- End of Alignment Fix --- */
+
+/* --- ADD: (Request 9) About Page Alignment Fix --- */
+.about-page-layout .project-content-column {
+    padding-top: 2rem; /* 將右欄設為 2rem，與左欄 .left-column-top 的 padding-top (2rem) 對齊 */
+}
 /* --- End of Alignment Fix --- */
 
 
