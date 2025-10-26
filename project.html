@@ -74,7 +74,12 @@
                 <!-- ADD: (Request 4) 新增 "Next Project" 按鈕 (底部右側) -->
                 <a href="#" id="nextProjectLink" class="next-project-block">
                     <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
-                    <span id="nextProjectTitle">Loading...</span>
+                    <!-- MOD: (Request 1) 將標題和箭頭包裹在 wrapper 中以便對齊 -->
+                    <span class="next-project-title-wrapper">
+                        <span id="nextProjectTitle">Loading...</span>
+                        <!-- ADD: (Request 1) 新增右箭頭 -->
+                        <span class="arrow">&rarr;</span>
+                    </span>
                 </a>
             </div>
         </aside>

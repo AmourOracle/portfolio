@@ -395,18 +395,46 @@ header {
 }
 .next-project-block .label {
     font-family: var(--font-mono); 
-    font-size: 0.8rem; 
+    /* MOD: (Request 1) 縮小字級 */
+    font-size: 0.7rem; 
     color: var(--secondary-color); 
     text-align: right;
 }
-.next-project-block span:last-child {
+
+/* MOD: (Request 1) 將標題和箭頭包裹在 wrapper 中 */
+.next-project-title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* 標題與箭頭的間距 */
     font-family: var(--font-mono); 
     font-size: 0.9rem; /* 與 Back 按鈕一致 */
     color: currentColor; /* 繼承 <a> 的顏色 */
     margin-top: 0.25rem; /* 增加一點間距 */
 }
+/* ADD: (Request 1) 箭頭樣式 */
+.next-project-block .arrow {
+    font-size: 1.2rem; /* 箭頭大小 */
+    line-height: 1; /* 確保對齊 */
+    transition: transform 0.3s ease;
+}
+.next-project-block:hover .arrow {
+    transform: translateX(5px); /* Hover 時箭頭右移 */
+}
 
-.project-content-column { padding-top: 1.5rem; overflow-y: auto; padding-right: 1rem; }
+
+.project-content-column { 
+    padding-top: 1.5rem; 
+    overflow-y: auto; 
+    padding-right: 1rem; 
+    
+    /* ADD: (Request 2) 隱藏滾動條 */
+    scrollbar-width: none; /* For Firefox */
+}
+/* ADD: (Request 2) 隱藏滾動條 for Chrome, Safari, Opera */
+.project-content-column::-webkit-scrollbar {
+    display: none;
+}
+
 .project-content-column img { width: 100%; height: auto; margin-bottom: 2rem; }
 
 /* --- 響應式設計 --- */
@@ -482,6 +510,10 @@ header {
     }
     .next-project-block .label {
         text-align: left;
+    }
+    /* ADD: (Request 1) 手機版標題/箭頭樣式 */
+    .next-project-title-wrapper {
+        font-size: 0.9rem;
     }
 }
 
