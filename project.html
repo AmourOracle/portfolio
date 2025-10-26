@@ -64,22 +64,21 @@
 
             <!-- MOD: (Request 4) 新增 .project-nav-bottom 容器 -->
             <div class="project-nav-bottom">
-                <!-- 返回按鈕 (底部左側) -->
-                <div class="back-button-block">
-                    <a href="index.html">
-                        <span class="arrow">&larr;</span> Back
-                    </a>
-                </div>
+                
+                <!-- MOD: (Request 1) 將 <div> 改為 <a> 標籤 -->
+                <a href="index.html" class="back-button-block">
+                    <span class="arrow">&larr;</span> Back
+                </a>
 
-                <!-- ADD: (Request 4) 新增 "Next Project" 按鈕 (底部右側) -->
+                <!-- MOD: (Request 2) 重構 "Next Project" 按鈕結構 -->
                 <a href="#" id="nextProjectLink" class="next-project-block">
-                    <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
-                    <!-- MOD: (Request 1) 將標題和箭頭包裹在 wrapper 中以便對齊 -->
-                    <span class="next-project-title-wrapper">
+                    <!-- (Request 2) 靠右對齊的文字區塊 -->
+                    <div class="next-project-text-wrapper">
+                        <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
                         <span id="nextProjectTitle">Loading...</span>
-                        <!-- ADD: (Request 1) 新增右箭頭 -->
-                        <span class="arrow">&rarr;</span>
-                    </span>
+                    </div>
+                    <!-- (Request 2) 獨立的箭頭 -->
+                    <span class="arrow">&rarr;</span>
                 </a>
             </div>
         </aside>

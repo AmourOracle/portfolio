@@ -165,8 +165,8 @@ header {
     flex-shrink: 0; /* MOD: 確保底部區塊不被壓縮 */
 }
 .image-placeholder {
-    /* MOD: (Request 1) 放大 0.5 倍 (240px * 1.5 = 360px) */
-    width: 360px;
+    /* MOD: (Request 3) 縮小 0.5 倍 (360px * 0.5 = 180px) */
+    width: 180px;
     aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
@@ -363,10 +363,7 @@ header {
 .project-container { grid-template-columns: 1.2fr 3fr; }
 
 /* MOD: (Request 4) 移除 .back-button-block 的 margin-top */
-.back-button-block {
-    margin-top: 0;
-    padding-top: 0; 
-}
+/* .back-button-block { ... } */
 
 /* ADD: (Request 4) "Next Project" 按鈕的容器 */
 .project-nav-bottom {
@@ -377,15 +374,26 @@ header {
     align-items: flex-end; /* 底部對齊 */
 }
 
-.back-button-block a { display: inline-flex; align-items: center; gap: 0.8rem; color: var(--secondary-color); text-decoration: none; font-family: var(--font-mono); font-size: 0.9rem; transition: color 0.3s ease; }
-.back-button-block a:hover { color: var(--primary-color); }
+/* MOD: (Request 1) 將 .back-button-block 改為 <a> 標籤 */
+.back-button-block { 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 0.8rem; 
+    color: var(--secondary-color); 
+    text-decoration: none; 
+    font-family: var(--font-mono); 
+    font-size: 0.9rem; 
+    transition: color 0.3s ease; 
+}
+.back-button-block:hover { color: var(--primary-color); }
 .back-button-block .arrow { font-size: 1.5rem; }
 
-/* ADD: (Request 4) "Next Project" 按鈕樣式 */
+/* MOD: (Request 2) "Next Project" 按鈕重構 */
 .next-project-block {
-    display: flex;
-    flex-direction: column; /* 垂直堆疊 */
-    align-items: flex-end; /* 靠右對齊 */
+    display: flex; /* 改為 flex-row */
+    flex-direction: row;
+    align-items: flex-end; /* 底部對齊 */
+    gap: 0.5rem; /* 文字區塊與箭頭的間距 */
     text-decoration: none;
     color: var(--secondary-color);
     transition: color 0.3s ease;
@@ -393,6 +401,15 @@ header {
 .next-project-block:hover {
     color: var(--primary-color);
 }
+
+/* ADD: (Request 2) 新增文字區塊 */
+.next-project-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* 文字靠右對齊 */
+    text-align: right;
+}
+
 .next-project-block .label {
     font-family: var(--font-mono); 
     /* MOD: (Request 1) 縮小字級 */
@@ -401,21 +418,24 @@ header {
     text-align: right;
 }
 
-/* MOD: (Request 1) 將標題和箭頭包裹在 wrapper 中 */
-.next-project-title-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem; /* 標題與箭頭的間距 */
+/* MOD: (Request 2) 移除 wrapper 樣式 */
+/* .next-project-title-wrapper { ... } */
+
+/* ADD: (Request 2) 直接設定標題樣式 */
+#nextProjectTitle {
     font-family: var(--font-mono); 
     font-size: 0.9rem; /* 與 Back 按鈕一致 */
     color: currentColor; /* 繼承 <a> 的顏色 */
     margin-top: 0.25rem; /* 增加一點間距 */
 }
-/* ADD: (Request 1) 箭頭樣式 */
+
+/* MOD: (Request 2) 箭頭樣式調整 */
 .next-project-block .arrow {
     font-size: 1.2rem; /* 箭頭大小 */
     line-height: 1; /* 確保對齊 */
     transition: transform 0.3s ease;
+     /* 微調箭頭位置，使其與標題底部對齊 */
+    padding-bottom: 0.05rem;
 }
 .next-project-block:hover .arrow {
     transform: translateX(5px); /* Hover 時箭頭右移 */
@@ -507,12 +527,18 @@ header {
     }
     .next-project-block {
         align-items: flex-start; /* 靠左對齊 */
+        flex-direction: row; /* 維持水平 */
+    }
+    .next-project-text-wrapper {
+        align-items: flex-start; /* 靠左對齊 */
+        text-align: left;
     }
     .next-project-block .label {
         text-align: left;
     }
     /* ADD: (Request 1) 手機版標題/箭頭樣式 */
-    .next-project-title-wrapper {
+    /* .next-project-title-wrapper { ... } */
+    #nextProjectTitle {
         font-size: 0.9rem;
     }
 }
