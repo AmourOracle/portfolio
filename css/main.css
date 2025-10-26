@@ -471,10 +471,6 @@ header {
 .project-content-column img { width: 100%; height: auto; margin-bottom: 2rem; }
 
 /* --- ADD: (Request 5) About Page 靜態內容樣式 --- */
-.about-content {
-    /* MOD: (Request 6) 移除此處的 padding-top，改由 .about-page-layout 控制 */
-    /* padding-top: 1.5rem; */ 
-}
 
 .about-intro-text {
     margin-bottom: 4rem;
@@ -550,59 +546,143 @@ header {
     .project-container { grid-template-columns: 1fr 2fr; }
     .right-column { display: none; }
 }
+
+/* * ===============================================
+ * MOD: (Request v3.8) 重構手機版布局
+ * ===============================================
+*/
 @media (max-width: 768px) {
-    body { padding-top: 60px; overflow: auto; /* 在手機上恢復 body 滾動 */ }
+    body { 
+        padding-top: 60px; 
+        overflow: auto; /* 在手機上恢復 body 滾動 */ 
+    }
     header { height: 60px; }
-    .portfolio-container, .project-container { grid-template-columns: 1fr; padding: 2rem; height: auto; /* 恢復自動高度 */ }
+    
+    /* MOD: 改用 Flexbox 垂直堆疊，並透過 order 排序 */
+    .portfolio-container, .project-container { 
+        display: flex; /* MOD: grid -> flex */
+        flex-direction: column; /* MOD: 垂直堆疊 */
+        grid-template-columns: 1fr; /* (保留) project-container 仍然會用到 */
+        padding: 2rem; 
+        height: auto; /* 恢復自動高度 */ 
+    }
+    /* MOD: .project-container 專用的響應式 (維持 grid) */
+    .project-container {
+        display: grid;
+    }
+
     .left-column { 
         position: static; 
         height: auto; 
         margin-bottom: 3rem; 
         gap: 2rem; 
+        order: 2; /* MOD: 順序 2 (在 List 下方) */
     }
-    /* ADD: 重置手機版的左欄結構 */
     .left-column-top, .left-column-middle {
         height: auto;
         overflow: visible;
-        padding-top: 0; /* MOD: 重置 padding */
+        padding-top: 0; 
     }
     .name-block .label {
         position: absolute;
-        top: -1.5rem; /* MOD: 恢復手機版 label 位置 */
+        top: -1.5rem; 
         left: 0.2rem;
     }
-    .center-column, .project-content-column {
-        overflow-y: visible;
-        padding-right: 0; /* 恢復預設滾動 */
-        /* MOD: 重置 padding-left */
-        padding: 0;
-        mask-image: none; /* ADD: 移除遮罩效果 */
-    }
-    /* ADD: 重置 project-list 的 padding */
-    .project-list {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-    /* ADD: 重置 project-item a 的 transform */
-    .project-item {
-        transform: none;
-        flex-direction: column; /* 手機上改為垂直堆疊 */
-        align-items: flex-start;
-        gap: 0.5rem;
-        /* MOD: (Req 4) 手機版恢復預設樣式 */
-        opacity: 1;
-        transform: scale(1);
-    }
-    .project-item.is-active {
-        transform: none;
-    }
-    .project-category {
-        min-width: auto; /* 移除最小寬度 */
-        opacity: 1 !important; /* 手機版 hover 不隱藏 category */
-        text-align: left; /* MOD: (Request 1) 手機版恢復置左 */
+    /* MOD: (Request v3.8) 調整手機版預覽圖大小 */
+    .image-placeholder {
+        width: 100%; /* 寬度改為 100% */
+        max-width: 300px; /* 最大寬度 300px */
+        aspect-ratio: 1 / 1; /* 改為 1:1 方形 */
     }
 
-    /* ADD: (Request 4) 手機版底部按鈕樣式 */
+
+    /* MOD: (Request v3.8) 恢復插槽滾動效果 (Slot Machine) */
+    .center-column {
+        order: 1; /* MOD: 順序 1 (在最上方, Header 之後) */
+        overflow-y: auto; /* MOD: 恢復內部滾動 */
+        padding: 0;
+        height: 40vh; /* MOD: 給定一個固定高度 (例如 40% 視窗高) */
+        /* MOD: 恢復遮罩效果 */
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            black 25%,
+            black 75%,
+            transparent 100%
+        );
+        margin-bottom: 3rem; /* 和 left-column 保持間距 */
+    }
+
+    /* MOD: project-content-column 維持原樣 (用於 project.html) */
+    .project-content-column {
+        overflow-y: visible;
+        padding: 0;
+        mask-image: none;
+    }
+    
+    .project-list {
+        /* MOD: 恢復 padding 以便滾動到中央 */
+        padding-top: calc(20vh - 5rem); /* 40vh 的一半 - item 的一半 */
+        padding-bottom: calc(20vh - 5rem);
+    }
+    
+    /* MOD: (Request v3.8) 移除手機版的 .project-item 樣式覆蓋 */
+    /* 我們希望手機版 *使用* 桌面版的 (opacity: 0.4, transform: scale(0.85)) 
+      和 .is-active 樣式 (opacity: 1, transform: scale(1))
+      來保持插槽外觀
+    */
+    .project-item {
+        /* transform: none; */ /* 移除 */
+        flex-direction: row; /* MOD: 恢復水平 */
+        align-items: center; /* MOD: 恢復置中 */
+        /* gap: 0.5rem; */ /* 恢復預設 gap */
+        /* opacity: 1; */ /* 移除 */
+        /* transform: scale(1); */ /* 移除 */
+    }
+    
+    .project-category {
+        min-width: 100px; /* MOD: 恢復寬度 */
+        /* opacity: 1 !important; */ /* 移除 !important */
+        text-align: right; /* MOD: 恢復置右 */
+    }
+    /* MOD: (Request v3.8) 但 .is-active 時隱藏 category 的規則要保留 */
+    .project-item.is-active .project-category {
+        opacity: 0;
+    }
+
+    /* MOD: (Request v3.8) 顯示並重排 .right-column (Filter / Links) */
+    .right-column {
+        display: flex; /* MOD: 恢復顯示 */
+        flex-direction: column; /* 垂直堆疊 .category-nav 和 .contact-links */
+        align-items: center; /* 置中 */
+        text-align: center; /* 文字置中 */
+        height: auto; /* 恢復自動高度 */
+        order: 3; /* MOD: 順序 3 (在 Preview 下方) */
+    }
+    .category-nav {
+        margin-top: 0; /* 移除 auto margin */
+        margin-bottom: 2rem; /* 和下方連結的間距 */
+        width: 100%;
+    }
+    .category-nav ul {
+        display: flex;
+        flex-wrap: wrap; /* 允許換行 */
+        justify-content: center; /* 置中 */
+        gap: 1rem 1.5rem; /* 垂直/水平間距 */
+    }
+    .category-nav li {
+        margin-bottom: 0; /* 移除預設 margin */
+    }
+    .contact-links {
+        margin-top: 0; /* 移除預設 margin */
+    }
+    .contact-links ul {
+        justify-content: center; /* 置中 */
+        gap: 1.5rem;
+    }
+
+
+    /* --- 手機版 Project 頁面專用樣式 (維持不變) --- */
     .project-nav-bottom {
         flex-direction: column; /* 垂直堆疊 */
         align-items: flex-start; /* 全部靠左 */
@@ -619,13 +699,11 @@ header {
     .next-project-block .label {
         text-align: left;
     }
-    /* ADD: (Request 1) 手機版標題/箭頭樣式 */
-    /* .next-project-title-wrapper { ... } */
     #nextProjectTitle {
         font-size: 0.9rem;
     }
 
-    /* ADD: (Request 5) About Page 響應式 */
+    /* --- 手機版 About 頁面專用樣式 (維持不變) --- */
     .about-intro-text p {
         font-size: 1.5rem; /* 手機上縮小字體 */
     }
@@ -634,4 +712,3 @@ header {
         gap: 2rem; /* 縮小間距 */
     }
 }
-

@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let isScrolling = false; // 滾動節流閥
     let visibleItems = []; // 用於儲存篩選後可見的項目
 
+    // ADD: (Request v3.8) 判斷是否為行動裝置
+    const isMobile = window.innerWidth <= 768;
+
     // 1. 獲取專案資料並生成列表
     fetch('./data/projects.json')
         .then(response => {
@@ -76,11 +79,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // (Request 4) 監聽滾輪事件 (監聽 .center-column)
             const centerColumn = document.querySelector('.center-column');
-            if (centerColumn) {
+            
+            // MOD: (Request v3.8) 僅在非行動裝置上綁定 wheel 事件
+            // 因為 wheel event + preventDefault() 會鎖死手機的觸控捲動
+            // 手機版將改為只用 click 事件 (handleItemClick) 來互動
+            if (centerColumn && !isMobile) {
                 centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
             }
 
-            // (Request 4) 監聽點擊事件
+            // (Request 4) 監聽點擊事件 (在手機和桌機上都會啟用)
             projectListElement.addEventListener('click', handleItemClick);
 
             // (Request 3) 監聽篩選器點擊
@@ -173,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // (Request 4) 滾輪事件處理
+    // (Request 4) 滾輪事件處理 (僅桌機)
     function handleWheelScroll(event) {
         event.preventDefault(); // 阻止頁面滾動
 
@@ -194,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // (Request 4) 點擊事件處理
+    // (Request 4) 點擊事件處理 (桌機與手機)
     function handleItemClick(event) {
         const clickedItem = event.target.closest('.project-item');
         if (clickedItem) {
@@ -244,4 +251,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-

@@ -1,4 +1,4 @@
-Sywan Portfolio 專案開發指南 v3.12
+Sywan Portfolio 專案開發指南 v3.7
 
 這份文件是 Sywan 個人作品集網站的官方開發指南，旨在統一定義專案架構、開發流程與內容管理規範。
 
@@ -16,28 +16,28 @@ Sywan Portfolio 專案開發指南 v3.12
 
 結構清晰: 程式碼保持乾淨，只專注於功能實現。
 
-專案檔案結構
+專案檔案結構 (v3.7)
 
 所有檔案應依照以下結構進行組織：
 
 /sywan-portfolio/
-├── loader.html             // 載入動畫頁 (網站進入點)
-├── index.html              // 網站首頁 (作品索引)
-├── project.html            // 專案內頁 (作品範本)
-├── about.html              // [v3.12 新增] 關於我頁面
+├── index.html       // 載入動畫頁 (網站進入點, 原 loader.html)
+├── portfolio.html   // 網站首頁 (作品索引, 原 index.html)
+├── project.html     // 專案內頁 (作品範本)
+├── about.html       // 關於我頁面 (靜態內容)
 │
 ├── /data/
-│   └── projects.json       // 唯一的作品資料庫 (Single Source of Truth)
+│   └── projects.json  // 唯一的作品資料庫 (Single Source of Truth)
 │
 ├── /css/
-│   └── main.css            // 網站所有共用樣式表
+│   └── main.css       // 網站所有共用樣式表
 │
 ├── /js/
-│   ├── index.js            // 僅用於 index.html 的腳本
-│   └── project.js          // 僅用於 project.html 的腳本
+│   ├── index.js       // 僅用於 portfolio.html 的腳本
+│   └── project.js     // 僅用於 project.html 的腳本
 │
 └── /assets/
-    └── /images/            // 存放所有專案圖片
+    └── /images/       // 存放所有專案圖片
         └── ...
 
 
@@ -116,29 +116,25 @@ main: 用於專案內頁的主要展示圖。
 
 儲存 projects.json 檔案。網站將會自動讀取新的 JSON 資料，首頁列表和篩選器會自動更新。
 
-頁面邏輯 (v3.12)
+頁面邏輯 (v3.7)
 
-loader.html:
+index.html (原 loader.html):
 
-作為網站的進入點 (Entry Point)。
+作為網站的進入點 (Entry Point)，以處理 GitHub Pages 預設讀取 index.html 的行為。
 
-使用 <meta http-equiv="refresh"> 標籤，在 5 秒後自動跳轉到 index.html。
+使用 <meta http-equiv="refresh"> 標籤，在 1.5 秒後自動跳轉到 portfolio.html。
 
-index.html (由 js/index.js 驅動):
+portfolio.html (原 index.html) (由 js/index.js 驅動):
 
-互動核心 (滾輪鎖定): 完全移除了滑鼠 mouseover 邏輯。
+互動核心 (滾輪鎖定): js/index.js 會監聽中欄 .center-column 的滾輪 (wheel) 事件。
 
-js/index.js 現在會監聽中欄 .center-column 的滾輪 (wheel) 事件。
+狀態切換: 滾動時，被鎖定在中央的項目會獲得 .is-active class，CSS 會使其放大並完全不透明。其他項目則會縮小並淡出。
 
-滾動時，js/index.js 會計算下一個應置中的項目，並將其平滑滾動到視窗中央。
-
-狀態切換: 被鎖定在中央的項目會獲得 .is-active class，CSS 會使其放大 (scale(1)) 並完全不透明 (opacity: 1)。其他項目則會縮小並淡出，產生「滾輪/插槽」效果。
-
-預覽更新: 只有 .is-active 的項目會觸發左側欄位更新 (讀取 data-category 和 data-info)，將標籤從 NO./BIO/INFO 切換為 [Category]/DOCS (並隱藏 BIO 區塊)。
+預覽更新: 只有 .is-active 的項目會觸發左側欄位更新 (讀取 data- 屬性)，將標籤從 NO./BIO/INFO 切換為 [Category]/DOCS (並隱藏 BIO 區塊)。
 
 預設狀態: 頁面載入時，會自動啟用 projects.json 中的第三個項目 (索引 2) 作為預設顯示。
 
-篩選功能: js/index.js 會監聽右側 .category-nav 的點擊事件。點擊後，會過濾 projects.json 中 category 相符的項目，隱藏不符的項目，並自動滾動到篩選後的第一個項目。
+篩選功能: js/index.js 會監聽右側 .category-nav 的點擊事件，並過濾 data/projects.json 中 category 相符的項目。
 
 連結: 右下角包含 "Me" 連結，指向 about.html。
 
@@ -148,22 +144,22 @@ js/project.js 會讀取瀏覽器 URL 中的 ?id= 參數。
 
 fetch (抓取) data/projects.json 的內容，並尋找 ID 相符的專案物件。
 
-版面同步: 左側欄位版面已與 index.html 的「啟用狀態」同步 (顯示 Category 和 DOCS，隱藏 BIO)。
+版面同步: 左側欄位版面已與 portfolio.html 的「啟用狀態」同步 (顯示 Category 和 DOCS，隱藏 BIO)。
 
-[v3.10 新增] Next Project: js/project.js 會再次抓取 data/projects.json，過濾掉當前頁面的專案，從剩下的專案中隨機挑選一個，並將其資訊和連結顯示在左下角的「Next Project」按鈕上。
+Next Project: js/project.js 會再次抓取 data/projects.json，過濾掉當前頁面的專案，從剩下的專案中隨機挑選一個，並將其資訊和連結顯示在左下角的「Next Project」按鈕上。
 
 about.html:
 
-[v3.12 新增] 作為「關於我」頁面。
+[v3.7 更新] 一個完全靜態的「關於我」頁面，不載入任何 js/index.js 或 js/project.js 腳本。
 
-目前使用 index.html 的版面作為範本，您可以後續自行修改此頁面的內容。
+其版面配置 (layout) 與 project.html 保持一致（兩欄式佈局），內容直接撰寫在 HTML 中。
 
 字體系統
 
 本專案使用中英文字體堆疊 (Font Stack)。
 
-英文字體: DM Mono (由 index.html 和 project.html 中的 <link> 標籤從 Google Fonts 載入)。
+英文字體: DM Mono (由 <link> 標籤從 Google Fonts 載入)。
 
-中文字體: momochidori (由 index.html 和 project.html 中的 <script> 標籤從 Typekit (hcg4voj) 載入)。
+中文字體: momochidori (由 <script> 標籤從 Typekit (hcg4voj) 載入)。
 
 CSS: main.css 中的 --font-main 變數負責定義這個堆疊，確保瀏覽器能正確渲染中英文。
