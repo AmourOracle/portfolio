@@ -31,23 +31,38 @@
     </header>
 
     <main class="project-container">
-        <!-- 左欄：專案資訊 (將由 JS 動態生成) -->
+        <!-- 
+          MOD: (Request 1 & 2) 
+          - 重構 <aside> 結構，使其與 index.html 一致
+          - 使用 left-column-top 和 left-column-middle
+          - 將 .back-button-block 移至 <aside> 的最底層
+        -->
         <aside class="left-column">
-            <div>
+            
+            <!-- 專案標題 (頂部) -->
+            <div class="left-column-top">
                 <div class="name-block">
-                    <!-- MOD: (Request 1) 更新預設標籤文字 -->
                     <span id="projectNumber" class="label">CATEGORY</span>
                     <h1 id="projectTitle">Loading...</h1>
                 </div>
-                <div class="info-divider-block">
+            </div>
+            
+            <!-- 專案資訊 (中部) -->
+            <div class="left-column-middle">
+                <!-- MOD: (Request 1) 新增 hide-section class 來隱藏 BIO -->
+                <div class="info-divider-block hide-section">
                     <span class="label">BIO</span>
                     <p id="projectBio">Loading project description...</p>
                 </div>
+                
                 <div class="info-divider-block">
-                    <span class="label">INFO</span>
+                    <!-- MOD: (Request 1) 標籤從 INFO 改為 DOCS -->
+                    <span class="label">DOCS</span>
                     <p id="projectInfo">Loading project details...</p>
                 </div>
             </div>
+
+            <!-- 返回按鈕 (底部) -->
             <div class="back-button-block">
                 <a href="index.html">
                     <span class="arrow">&larr;</span> Back
@@ -65,5 +80,4 @@
     <script src="js/project.js"></script>
 </body>
 </html>
-
 
