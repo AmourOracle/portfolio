@@ -8,7 +8,7 @@
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400,1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -27,14 +27,16 @@
 </head>
 <body>
     <header>
-        <a href="index.html" class="logo">SYWAN</a>
+        <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
+        <a href="portfolio.html" class="logo">SYWAN</a>
     </header>
 
-    <!-- MOD: (Request 5) 
+    <!-- MOD: (Request 6) 
       - class 從 portfolio-container 改為 project-container (兩欄)
       - 內容改為靜態
+      - ADD: 新增 about-page-layout class 來修正對齊
     -->
-    <main class="project-container">
+    <main class="project-container about-page-layout">
         
         <!-- 左欄：靜態資訊 -->
         <aside class="left-column">
@@ -72,7 +74,8 @@
 
             <!-- 底部返回按鈕 -->
             <div class="project-nav-bottom">
-                <a href="index.html" class="back-button-block">
+                <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
+                <a href="portfolio.html" class="back-button-block">
                     <span class="arrow">&larr;</span> Back
                 </a>
             </div>
@@ -149,3 +152,4 @@
     <!-- <script src="js/index.js"></script> -->
 </body>
 </html>
+
