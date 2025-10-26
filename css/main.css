@@ -22,7 +22,7 @@ body {
     font-family: var(--font-main);
     background-color: var(--background-color);
     color: var(--text-color);
-    overflow: hidden; /* 防止 body 本身滾動 */
+    overflow: hidden; /* 防止 body 本身滾動 (桌面版) */
     font-size: 16px;
     padding-top: 60px; /* MOD: 縮小 header 高度 */
     
@@ -547,153 +547,189 @@ header {
     .right-column { display: none; }
 }
 
+
 /* * ===============================================
- * MOD: (Request v3.8) 重構手機版布局
+ * MOD: (Request v3.9) 重構手機版布局
  * ===============================================
 */
+
+/* ADD: (Request v3.9) Mobile Footer (Desktop Hidden) */
+.mobile-footer {
+    display: none;
+    background-color: var(--background-color);
+    padding: 1.5rem 2rem;
+    box-sizing: border-box;
+}
+.mobile-footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: space-around; /* 均勻分布 */
+    align-items: center;
+    gap: 1rem;
+}
+.mobile-footer a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem; /* 14.4px */
+    white-space: nowrap;
+}
+.mobile-footer a:hover {
+    color: var(--primary-color);
+}
+
+
 @media (max-width: 768px) {
     body { 
         padding-top: 60px; 
-        overflow: auto; /* 在手機上恢復 body 滾動 */ 
+        /* MOD: (Request v3.9) 鎖定 body 滾動 (僅 portfolio) */
+        /* overflow: auto;  <-- This is now conditional */
     }
     header { height: 60px; }
     
-    /* MOD: 改用 Flexbox 垂直堆疊，並透過 order 排序 */
-    .portfolio-container, .project-container { 
-        display: flex; /* MOD: grid -> flex */
-        flex-direction: column; /* MOD: 垂直堆疊 */
-        grid-template-columns: 1fr; /* (保留) project-container 仍然會用到 */
-        padding: 2rem; 
-        height: auto; /* 恢復自動高度 */ 
-    }
-    /* MOD: .project-container 專用的響應式 (維持 grid) */
-    .project-container {
-        display: grid;
+    /* --- (Request v3.9) Portfolio 頁面 (首頁) 手機版 --- */
+    
+    /* 鎖定 body 滾動 */
+    body:has(.portfolio-container) {
+        overflow: hidden;
     }
 
-    .left-column { 
+    .portfolio-container { 
+        display: grid; /* MOD: grid */
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr auto; /* Row 1: List, Row 2: Footer */
+        padding: 0; /* MOD: full width */
+        height: calc(100vh - 60px); /* MOD: fill screen */ 
+    }
+    
+    /* 1. 顯示 Footer */
+    .mobile-footer {
+        display: block;
+        grid-row: 2 / 3;
+        grid-column: 1 / 2;
+        border-top: 1px solid var(--divider-color);
+    }
+    
+    /* 2. 隱藏左右欄 (為 modal 準備) */
+    .portfolio-container .left-column {
+        display: none;
+    }
+    .portfolio-container .right-column {
+        display: none;
+    }
+
+    /* 3. 放大 List (center-column) */
+    .portfolio-container .center-column {
+        grid-row: 1 / 2;
+        grid-column: 1 / 2;
+        overflow-y: auto;
+        padding: 0 1rem 0 2rem; /* 維持插槽對齊 */
+        height: 100%;
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            black 20%, /* 強化遮罩 */
+            black 80%,
+            transparent 100%
+        );
+    }
+    
+    /* 4. 維持插槽滾動 padding */
+    .portfolio-container .project-list {
+        padding-top: calc(50vh - 10rem);
+        padding-bottom: calc(50vh - 10rem);
+    }
+
+    /* 5. 維持插槽視覺效果 */
+    .project-item {
+        /* 保持桌面版的 flex-direction: row, align-items: center */
+        flex-direction: row;
+        align-items: center;
+        gap: 0.75rem;
+        /* 保持桌面版的 opacity: 0.4, transform: scale(0.85) */
+        opacity: 0.4;
+        transform: scale(0.85);
+    }
+    .project-item.is-active {
+        /* 保持桌面版的 opacity: 1, transform: scale(1) */
+        opacity: 1;
+        transform: scale(1);
+    }
+    .project-category {
+        min-width: 100px;
+        text-align: right;
+        opacity: 1; /* 覆蓋 !important (如果有的話) */
+    }
+    .project-item.is-active .project-category {
+        opacity: 0; /* 僅在 active 時隱藏 */
+    }
+    .project-item a {
+         font-size: clamp(2rem, 8vw, 4.5rem); /* 手機版可稍大 */
+    }
+
+
+    /* --- (Request v3.9 / Request 3) Project / About 頁面手機版 --- */
+    
+    /* 讓 project/about 頁面的 body 可以滾動 */
+    body:has(.project-container) {
+        overflow: auto;
+    }
+
+    .project-container { 
+        display: grid; /* MOD: grid */
+        grid-template-columns: 1fr;
+        padding: 2rem; 
+        height: auto; /* MOD: 恢復 auto */ 
+    }
+
+    /* 1. 顯示 Info 欄 (left-column) */
+    .project-container .left-column {
+        display: flex; /* 恢復顯示 */
+        flex-direction: column;
         position: static; 
         height: auto; 
         margin-bottom: 3rem; 
         gap: 2rem; 
-        order: 2; /* MOD: 順序 2 (在 List 下方) */
+        /* 預設 DOM 順序 1 */
     }
-    .left-column-top, .left-column-middle {
+    .project-container .left-column-top,
+    .project-container .left-column-middle {
         height: auto;
         overflow: visible;
-        padding-top: 0; 
+        padding-top: 0;
     }
-    .name-block .label {
+    .project-container .name-block .label {
         position: absolute;
-        top: -1.5rem; 
+        top: -1.5rem;
         left: 0.2rem;
     }
-    /* MOD: (Request v3.8) 調整手機版預覽圖大小 */
-    .image-placeholder {
-        width: 100%; /* 寬度改為 100% */
-        max-width: 300px; /* 最大寬度 300px */
-        aspect-ratio: 1 / 1; /* 改為 1:1 方形 */
+    /* 修正手機版預覽圖 (移除) */
+    .project-container .profile-block {
+        display: none;
     }
-
-
-    /* MOD: (Request v3.8) 恢復插槽滾動效果 (Slot Machine) */
-    .center-column {
-        order: 1; /* MOD: 順序 1 (在最上方, Header 之後) */
-        overflow-y: auto; /* MOD: 恢復內部滾動 */
-        padding: 0;
-        height: 40vh; /* MOD: 給定一個固定高度 (例如 40% 視窗高) */
-        /* MOD: 恢復遮罩效果 */
-        mask-image: linear-gradient(
-            to bottom,
-            transparent 0%,
-            black 25%,
-            black 75%,
-            transparent 100%
-        );
-        margin-bottom: 3rem; /* 和 left-column 保持間距 */
-    }
-
-    /* MOD: project-content-column 維持原樣 (用於 project.html) */
-    .project-content-column {
+    
+    /* 2. 顯示 Content 欄 (project-content-column) */
+    .project-container .project-content-column {
         overflow-y: visible;
         padding: 0;
         mask-image: none;
+        /* 預設 DOM 順序 2 */
     }
     
-    .project-list {
-        /* MOD: 恢復 padding 以便滾動到中央 */
-        padding-top: calc(20vh - 5rem); /* 40vh 的一半 - item 的一半 */
-        padding-bottom: calc(20vh - 5rem);
-    }
-    
-    /* MOD: (Request v3.8) 移除手機版的 .project-item 樣式覆蓋 */
-    /* 我們希望手機版 *使用* 桌面版的 (opacity: 0.4, transform: scale(0.85)) 
-      和 .is-active 樣式 (opacity: 1, transform: scale(1))
-      來保持插槽外觀
-    */
-    .project-item {
-        /* transform: none; */ /* 移除 */
-        flex-direction: row; /* MOD: 恢復水平 */
-        align-items: center; /* MOD: 恢復置中 */
-        /* gap: 0.5rem; */ /* 恢復預設 gap */
-        /* opacity: 1; */ /* 移除 */
-        /* transform: scale(1); */ /* 移除 */
-    }
-    
-    .project-category {
-        min-width: 100px; /* MOD: 恢復寬度 */
-        /* opacity: 1 !important; */ /* 移除 !important */
-        text-align: right; /* MOD: 恢復置右 */
-    }
-    /* MOD: (Request v3.8) 但 .is-active 時隱藏 category 的規則要保留 */
-    .project-item.is-active .project-category {
-        opacity: 0;
-    }
-
-    /* MOD: (Request v3.8) 顯示並重排 .right-column (Filter / Links) */
-    .right-column {
-        display: flex; /* MOD: 恢復顯示 */
-        flex-direction: column; /* 垂直堆疊 .category-nav 和 .contact-links */
-        align-items: center; /* 置中 */
-        text-align: center; /* 文字置中 */
-        height: auto; /* 恢復自動高度 */
-        order: 3; /* MOD: 順序 3 (在 Preview 下方) */
-    }
-    .category-nav {
-        margin-top: 0; /* 移除 auto margin */
-        margin-bottom: 2rem; /* 和下方連結的間距 */
-        width: 100%;
-    }
-    .category-nav ul {
-        display: flex;
-        flex-wrap: wrap; /* 允許換行 */
-        justify-content: center; /* 置中 */
-        gap: 1rem 1.5rem; /* 垂直/水平間距 */
-    }
-    .category-nav li {
-        margin-bottom: 0; /* 移除預設 margin */
-    }
-    .contact-links {
-        margin-top: 0; /* 移除預設 margin */
-    }
-    .contact-links ul {
-        justify-content: center; /* 置中 */
-        gap: 1.5rem;
-    }
-
-
-    /* --- 手機版 Project 頁面專用樣式 (維持不變) --- */
+    /* 3. project/about 頁面底部按鈕 (維持不變) */
     .project-nav-bottom {
-        flex-direction: column; /* 垂直堆疊 */
-        align-items: flex-start; /* 全部靠左 */
+        flex-direction: column;
+        align-items: flex-start;
         gap: 1.5rem;
     }
     .next-project-block {
-        align-items: flex-start; /* 靠左對齊 */
-        flex-direction: row; /* 維持水平 */
+        align-items: flex-start;
+        flex-direction: row;
     }
     .next-project-text-wrapper {
-        align-items: flex-start; /* 靠左對齊 */
+        align-items: flex-start;
         text-align: left;
     }
     .next-project-block .label {
@@ -703,12 +739,13 @@ header {
         font-size: 0.9rem;
     }
 
-    /* --- 手機版 About 頁面專用樣式 (維持不變) --- */
+    /* 4. about 頁面 grid (維持不變) */
     .about-intro-text p {
-        font-size: 1.5rem; /* 手機上縮小字體 */
+        font-size: 1.5rem;
     }
     .about-details-grid {
-        grid-template-columns: 1fr; /* 手機上改為單欄 */
-        gap: 2rem; /* 縮小間距 */
+        grid-template-columns: 1fr;
+        gap: 2rem;
     }
 }
+
