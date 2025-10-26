@@ -371,13 +371,15 @@ header {
     padding-top: 2rem;
     display: flex;
     justify-content: space-between; /* Back (左) Next (右) */
-    align-items: flex-end; /* 底部對齊 */
+    /* MOD: (Request 8) 修正對齊問題：從 flex-end 改為 baseline */
+    align-items: baseline;
 }
 
 /* MOD: (Request 1) 將 .back-button-block 改為 <a> 標籤 */
 .back-button-block { 
     display: inline-flex; 
-    align-items: center; 
+    /* MOD: (Request 8) 配合 baseline 對齊，將 center 改為 baseline */
+    align-items: baseline; 
     gap: 0.8rem; 
     color: var(--secondary-color); 
     text-decoration: none; 
@@ -392,7 +394,8 @@ header {
 .next-project-block {
     display: flex; /* 改為 flex-row */
     flex-direction: row;
-    align-items: flex-end; /* 底部對齊 */
+    /* MOD: (Request 8) 配合 baseline 對齊，將 flex-end 改為 baseline */
+    align-items: baseline;
     gap: 0.5rem; /* 文字區塊與箭頭的間距 */
     text-decoration: none;
     color: var(--secondary-color);
@@ -458,11 +461,6 @@ header {
 .project-content-column img { width: 100%; height: auto; margin-bottom: 2rem; }
 
 /* --- ADD: (Request 5) About Page 靜態內容樣式 --- */
-.about-content {
-    /* MOD: (Request 6) 移除此處的 padding-top，改由 .about-page-layout 控制 */
-    /* padding-top: 1.5rem; */ 
-}
-
 .about-intro-text {
     margin-bottom: 4rem;
 }
