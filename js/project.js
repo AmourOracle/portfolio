@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const projectInfoElement = document.getElementById('projectInfo');
     const imageContainer = document.getElementById('projectImages');
 
+    // ADD: (Request 4) 獲取 "Next Project" 按鈕的元素
+    const nextProjectLink = document.getElementById('nextProjectLink');
+    const nextProjectCategory = document.getElementById('nextProjectCategory');
+    const nextProjectTitle = document.getElementById('nextProjectTitle');
+
+
     // 1. 從 URL 取得作品 id
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('id');
@@ -42,20 +48,42 @@ document.addEventListener('DOMContentLoaded', () => {
                         img.alt = `${project.title} image`;
                         imageContainer.appendChild(img);
                     });
+
+                    // 6. ADD: (Request 4) 載入隨機的「Next Project」
+                    // 6.1 過濾掉當前的專案
+                    const otherProjects = projects.filter(p => p.id !== projectId);
+                    
+                    if (otherProjects.length > 0 && nextProjectLink) {
+                        // 6.2 從剩下的專案中隨機挑選一個
+                        const randomProject = otherProjects[Math.floor(Math.random() * otherProjects.length)];
+                        
+                        // 6.3 填入按鈕的資料
+                        nextProjectLink.href = `project.html?id=${randomProject.id}`;
+                        nextProjectCategory.textContent = randomProject.category;
+                        nextProjectTitle.textContent = randomProject.title;
+                    } else if (nextProjectLink) {
+                        // 如果沒有其他專案，隱藏按鈕
+                        nextProjectLink.style.display = 'none';
+                    }
+
                 } else {
                     // 如果找不到對應的 project id
                     projectTitleElement.textContent = 'Project Not Found';
                     projectBioElement.textContent = 'Please check the project ID and try again.';
+                    if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
                 }
             })
             .catch(error => {
                 console.error('Error fetching project data:', error);
                 projectTitleElement.textContent = 'Error';
                 projectBioElement.textContent = 'Could not load project data.';
+                if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
             });
     } else {
         // 如果 URL 中沒有 id
         projectTitleElement.textContent = 'No Project Selected';
         projectBioElement.textContent = 'Please select a project from the main page.';
+        if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
     }
 });
+

@@ -153,8 +153,8 @@ header {
 
 /* --- INDEX 頁面專用 --- */
 .portfolio-container {
-    /* MOD: 調整欄位比例，左欄改為 30vw */
-    grid-template-columns: 30vw 1fr 10vw;
+    /* MOD: (Request 2) 調整欄位比例，右欄縮減 0.5 寬度 */
+    grid-template-columns: 30vw 1fr 5vw;
 }
 .profile-block { 
     display: flex; 
@@ -165,8 +165,8 @@ header {
     flex-shrink: 0; /* MOD: 確保底部區塊不被壓縮 */
 }
 .image-placeholder {
-    /* MOD: 調整為 16:9 橫式並放大 */
-    width: 240px; /* MOD: 放大一倍 */
+    /* MOD: (Request 1) 放大 0.5 倍 (240px * 1.5 = 360px) */
+    width: 360px;
     aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
@@ -362,15 +362,50 @@ header {
 /* --- PROJECT 頁面專用 --- */
 .project-container { grid-template-columns: 1.2fr 3fr; }
 
-/* MOD: (Request 2) 將返回按鈕推至底部 (v3.8) */
+/* MOD: (Request 4) 移除 .back-button-block 的 margin-top */
 .back-button-block {
-    margin-top: auto;
-    padding-top: 2rem; /* 增加與上方內容的間距 */
+    margin-top: 0;
+    padding-top: 0; 
+}
+
+/* ADD: (Request 4) "Next Project" 按鈕的容器 */
+.project-nav-bottom {
+    margin-top: auto; /* 將此區塊推至底部 */
+    padding-top: 2rem;
+    display: flex;
+    justify-content: space-between; /* Back (左) Next (右) */
+    align-items: flex-end; /* 底部對齊 */
 }
 
 .back-button-block a { display: inline-flex; align-items: center; gap: 0.8rem; color: var(--secondary-color); text-decoration: none; font-family: var(--font-mono); font-size: 0.9rem; transition: color 0.3s ease; }
 .back-button-block a:hover { color: var(--primary-color); }
 .back-button-block .arrow { font-size: 1.5rem; }
+
+/* ADD: (Request 4) "Next Project" 按鈕樣式 */
+.next-project-block {
+    display: flex;
+    flex-direction: column; /* 垂直堆疊 */
+    align-items: flex-end; /* 靠右對齊 */
+    text-decoration: none;
+    color: var(--secondary-color);
+    transition: color 0.3s ease;
+}
+.next-project-block:hover {
+    color: var(--primary-color);
+}
+.next-project-block .label {
+    font-family: var(--font-mono); 
+    font-size: 0.8rem; 
+    color: var(--secondary-color); 
+    text-align: right;
+}
+.next-project-block span:last-child {
+    font-family: var(--font-mono); 
+    font-size: 0.9rem; /* 與 Back 按鈕一致 */
+    color: currentColor; /* 繼承 <a> 的顏色 */
+    margin-top: 0.25rem; /* 增加一點間距 */
+}
+
 .project-content-column { padding-top: 1.5rem; overflow-y: auto; padding-right: 1rem; }
 .project-content-column img { width: 100%; height: auto; margin-bottom: 2rem; }
 
@@ -434,6 +469,19 @@ header {
         min-width: auto; /* 移除最小寬度 */
         opacity: 1 !important; /* 手機版 hover 不隱藏 category */
         text-align: left; /* MOD: (Request 1) 手機版恢復置左 */
+    }
+
+    /* ADD: (Request 4) 手機版底部按鈕樣式 */
+    .project-nav-bottom {
+        flex-direction: column; /* 垂直堆疊 */
+        align-items: flex-start; /* 全部靠左 */
+        gap: 1.5rem;
+    }
+    .next-project-block {
+        align-items: flex-start; /* 靠左對齊 */
+    }
+    .next-project-block .label {
+        text-align: left;
     }
 }
 

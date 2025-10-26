@@ -62,10 +62,19 @@
                 </div>
             </div>
 
-            <!-- 返回按鈕 (底部) -->
-            <div class="back-button-block">
-                <a href="index.html">
-                    <span class="arrow">&larr;</span> Back
+            <!-- MOD: (Request 4) 新增 .project-nav-bottom 容器 -->
+            <div class="project-nav-bottom">
+                <!-- 返回按鈕 (底部左側) -->
+                <div class="back-button-block">
+                    <a href="index.html">
+                        <span class="arrow">&larr;</span> Back
+                    </a>
+                </div>
+
+                <!-- ADD: (Request 4) 新增 "Next Project" 按鈕 (底部右側) -->
+                <a href="#" id="nextProjectLink" class="next-project-block">
+                    <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
+                    <span id="nextProjectTitle">Loading...</span>
                 </a>
             </div>
         </aside>
