@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- MOD: (Request 4) 更新標題 -->
     <title>Sywan - About</title>
     
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400,1,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -31,79 +30,122 @@
         <a href="index.html" class="logo">SYWAN</a>
     </header>
 
-    <main class="portfolio-container">
-        <!-- 
-          (Request 4) 
-          - 這是 index.html 的佈局範本
-          - 您可以在此基礎上修改 About 頁面的內容
-        -->
+    <!-- MOD: (Request 5) 
+      - class 從 portfolio-container 改為 project-container (兩欄)
+      - 內容改為靜態
+    -->
+    <main class="project-container">
+        
+        <!-- 左欄：靜態資訊 -->
         <aside class="left-column">
+            
+            <!-- 標題 (頂部) -->
             <div class="left-column-top">
                 <div class="name-block">
-                    <!-- MOD: (Request 3.2) 新增 ID 用於動態標籤 -->
-                    <span id="previewLabelNo" class="label">NO.</span>
-                    <span id="previewLabelCategory" class="label" style="display: none;">CATEGORY</span>
-                    <h1 id="previewTitle">Sywan</h1>
+                    <!-- MOD: 移除動態 ID，改為靜態文字 -->
+                    <span class="label">ABOUT</span>
+                    <h1>Sywan</h1>
                 </div>
             </div>
             
+            <!-- 資訊 (中部) -->
             <div class="left-column-middle">
-                <div id="previewBlockBio" class="info-divider-block">
-                    <!-- MOD: (Request 3.2) 新增 ID 用於動態標籤 -->
-                    <span id="previewLabelInfo" class="label">BIO</span>
-                    <span id="previewLabelDocs" class="label" style="display: none;">DOCS</span>
-                    <p id="previewBio">A visual designer based in Taiwan, focusing on creating compelling brand identities and digital experiences.</p>
-                </div>
+                <!-- MOD: 移除動態 ID，改為靜態 BIO -->
                 <div class="info-divider-block">
-                    <!-- MOD: (Request 3.2) 新增 ID 用於動態標籤 (label) -->
-                    <span id="previewLabelInfo" class="label">INFO</span>
-                    <span id="previewLabelDocs" class="label" style="display: none;">DOCS</span>
-                    <p id="previewInfo">This space is reserved for future content or additional information about a project.</p>
+                    <span class="label">BIO</span>
+                    <p>A visual designer based in Taiwan, focusing on creating compelling brand identities and digital experiences.</p>
+                </div>
+                
+                <!-- MOD: 移除動態 ID，改為靜態聯絡資訊 -->
+                <div class="info-divider-block">
+                    <span class="label">CONTACT</span>
+                    <p style="word-break: break-all;">
+                        <!-- 範例連結 -->
+                        <a href="mailto:email@example.com" style="color: var(--text-color); text-decoration: none;">email@example.com</a>
+                        <br><br>
+                        <a href="#" target="_blank" style="color: var(--text-color); text-decoration: none;">Instagram</a>
+                        <br>
+                        <a href="#" target="_blank" style="color: var(--text-color); text-decoration: none;">Behance</a>
+                    </p>
                 </div>
             </div>
 
-            <div class="profile-block">
-                <!-- 修改：將 div 換成 img 標籤，並加上 id -->
-                <div class="image-placeholder">
-                    <img id="previewImage" src="https://placehold.co/180x320/121212/121212?text=+" alt="Project preview">
-                </div>
-                <!-- .contact-links 已移至 right-column -->
+            <!-- 底部返回按鈕 -->
+            <div class="project-nav-bottom">
+                <a href="index.html" class="back-button-block">
+                    <span class="arrow">&larr;</span> Back
+                </a>
             </div>
         </aside>
 
-        <!-- 中欄：作品列表 (將由 JS 動態生成) -->
-        <section class="center-column">
-            <ul class="project-list" id="projectList">
-                <!-- 內容將由 js/index.js 填入 -->
-            </ul>
-        </section>
-
-        <!-- 右欄：作品分類 & 外部連結 -->
-        <nav class="right-column">
-            <div class="category-nav" id="categoryNav">
-                <!-- (Request 3) 篩選器 -->
-                <ul>
-                    <li><a href="#" data-filter="all" class="active">All Projects</a></li>
-                    <li><a href="#" data-filter="Visual">Visual Design</a></li>
-                    <li><a href="#" data-filter="Photography">Comm. Photography</a></li>
-                    <li><a href="#" data-filter="Identity">Brand Identity</a></li>
-                </ul>
+        <!-- 右欄：靜態 About 內容 -->
+        <!-- MOD: 移除 center-column 和 projectList，改為靜態內容容器 -->
+        <section class="project-content-column about-content">
+            
+            <!-- 頂部大面積文字 (參考截圖) -->
+            <div class="about-intro-text">
+                <p>GUIDED BY A DEEP UNDERSTANDING OF PEOPLE, DEVELOPING EFFECTIVE COMMUNICATION STRATEGIES THAT TURN IDEAS INTO SUCCESS STORIES</p>
             </div>
             
-            <!-- MOD: .contact-links 從左欄移至此處 -->
-            <div class="contact-links">
-                <ul>
-                    <li><a href="mailto:email@example.com">Email</a></li>
-                    <li><a href="#" target="_blank">Instagram</a></li>
-                    <li><a href="#" target="_blank">Behance</a></li>
-                    <!-- ADD: (Request 4) 新增 "Me" 連結 -->
-                    <li><a href="about.html">Me</a></li>
-                </ul>
-            </div>
-        </nav>
+            <!-- 下方 Grid 框架 (參考截圖) -->
+            <div class="about-details-grid">
+                
+                <!-- 區塊 1: EXPERIENCE -->
+                <div class="grid-item">
+                    <span class="grid-label">EXPERIENCE</span>
+                    <p>
+                        2020 - 2024<br>
+                        Senior Designer, Studio A
+                    </p>
+                    <p>
+                        2018 - 2020<br>
+                        Junior Designer, Studio B
+                    </p>
+                </div>
+
+                <!-- 區塊 2: EDUCATION -->
+                <div class="grid-item">
+                    <span class="grid-label">EDUCATION</span>
+                    <p>
+                        2018<br>
+                        MFA Visual Communication, University of Arts
+                    </p>
+                    <p>
+                        2016<br>
+                        BFA Graphic Design, Design College
+                    </p>
+                </div>
+
+                <!-- 區塊 3: EXPERTISE -->
+                <div class="grid-item">
+                    <span class="grid-label">EXPERTISE</span>
+                    <p>
+                        Brand Identity<br>
+                        Editorial Design<br>
+                        UI/UX Design<br>
+                        Motion Graphics
+                    </p>
+                </div>
+
+                <!-- 區塊 4: AWARDS -->
+                <div class="grid-item">
+                    <span class="grid-label">AWARDS</span>
+                    <p>
+                        2023<br>
+                        Red Dot Award
+                    </p>
+                    <p>
+                        2021<br>
+                        TDC Prize
+                    </p>
+                </div>
+
+            </div> <!-- end .about-details-grid -->
+
+        </section>
     </main>
 
-    <!-- 連結外部 JavaScript 檔案 -->
-    <script src="js/index.js"></script>
+    <!-- MOD: 移除 index.js 的載入 -->
+    <!-- <script src="js/index.js"></script> -->
 </body>
 </html>

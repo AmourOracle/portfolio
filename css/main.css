@@ -457,6 +457,57 @@ header {
 
 .project-content-column img { width: 100%; height: auto; margin-bottom: 2rem; }
 
+/* --- ADD: (Request 5) About Page 靜態內容樣式 --- */
+.about-content {
+    padding-top: 1.5rem; /* 確保與左欄頂部標題的 padding-top 對齊 (2rem - 0.5rem = 1.5rem) */
+}
+
+.about-intro-text {
+    margin-bottom: 4rem;
+}
+.about-intro-text p {
+    font-size: clamp(1.8rem, 4vw, 3rem); /* 截圖中的大字體 */
+    font-family: var(--font-mono); /* 使用 mono 字體以匹配截圖風格 */
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--primary-color);
+    text-transform: uppercase; /* 截圖中為大寫 */
+    margin: 0;
+}
+
+.about-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 兩欄網格 */
+    gap: 3rem 2rem; /* 垂直 3rem, 水平 2rem 間距 */
+}
+
+.about-details-grid .grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.about-details-grid .grid-label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+    text-transform: uppercase; /* 截圖中為大寫 */
+}
+
+.about-details-grid .grid-item p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin: 0;
+    margin-bottom: 1rem; /* 每個 P 段落之間的間距 */
+}
+.about-details-grid .grid-item p:last-child {
+    margin-bottom: 0;
+}
+/* --- End of About Page Styles --- */
+
+
 /* --- 響應式設計 --- */
 @media (max-width: 1024px) {
     .portfolio-container {
@@ -541,5 +592,13 @@ header {
     #nextProjectTitle {
         font-size: 0.9rem;
     }
-}
 
+    /* ADD: (Request 5) About Page 響應式 */
+    .about-intro-text p {
+        font-size: 1.5rem; /* 手機上縮小字體 */
+    }
+    .about-details-grid {
+        grid-template-columns: 1fr; /* 手機上改為單欄 */
+        gap: 2rem; /* 縮小間距 */
+    }
+}
