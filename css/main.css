@@ -388,7 +388,17 @@ header {
     transition: color 0.3s ease; 
 }
 .back-button-block:hover { color: var(--primary-color); }
-.back-button-block .arrow { font-size: 1.5rem; }
+
+/* --- MOD: (Request 10) 補上 Back 按鈕的 hover 動畫 --- */
+.back-button-block .arrow { 
+    font-size: 1.5rem; 
+    transition: transform 0.3s ease; /* ADD: 增加 transform 過渡 */
+}
+.back-button-block:hover .arrow {
+    transform: translateX(-5px); /* ADD: hover 時向左移動 */
+}
+/* --- End of Fix --- */
+
 
 /* MOD: (Request 2) "Next Project" 按鈕重構 */
 .next-project-block {
