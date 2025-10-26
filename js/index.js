@@ -212,9 +212,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const direction = deltaY > 0 ? 1 : -1; // 1 = 向上滑, -1 = 向下滑
             let newIndex = currentActiveIndex + direction;
 
-            // 確保新索引在 visibleItems 範圍內
-            if (newIndex < 0) newIndex = 0;
-            if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+            // MOD: (Request v3.11) 實現無限循環
+            if (newIndex < 0) {
+                newIndex = visibleItems.length - 1; // 從頂部循環到底部
+            }
+            if (newIndex >= visibleItems.length) {
+                newIndex = 0; // 從底部循環到頂部
+            }
 
             if (newIndex !== currentActiveIndex) {
                 setActiveItem(newIndex, true);
@@ -239,9 +243,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const direction = event.deltaY > 0 ? 1 : -1; // 1 = 向下, -1 = 向上
         let newIndex = currentActiveIndex + direction;
 
-        // 確保新索引在 visibleItems 範圍內
-        if (newIndex < 0) newIndex = 0;
-        if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+        // MOD: (Request v3.11) 實現無限循環
+        if (newIndex < 0) {
+            newIndex = visibleItems.length - 1; // 從頂部循環到底部
+        }
+        if (newIndex >= visibleItems.length) {
+            newIndex = 0; // 從底部循環到頂部
+        }
 
         if (newIndex !== currentActiveIndex) {
             setActiveItem(newIndex, true);
