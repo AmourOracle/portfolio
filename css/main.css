@@ -153,8 +153,8 @@ header {
 
 /* --- INDEX 頁面專用 --- */
 .portfolio-container {
-    /* MOD: (Request 2) 調整欄位比例，右欄縮減 0.5 寬度 */
-    grid-template-columns: 30vw 1fr 5vw;
+    /* MOD: (Request 7) 將 30vw 改為 1.2fr，統一左欄寬度比例 */
+    grid-template-columns: 1.2fr 3fr 5vw;
 }
 .profile-block { 
     display: flex; 
@@ -509,13 +509,15 @@ header {
 /* --- End of About Page Styles --- */
 
 
-/* --- ADD: (Request 6) About Page Alignment Fix --- */
+/* --- MOD: (Request 7) 移除 About Page Alignment Fix --- */
+/*
 .about-page-layout .left-column-top {
-    height: auto; /* 移除 50vh 高度限制 */
+    height: auto;
 }
 .about-page-layout .project-content-column {
-    padding-top: 2rem; /* 將右欄設為 2rem，與左欄 .left-column-top 的 padding-top (2rem) 對齊 */
+    padding-top: 2rem; 
 }
+*/
 /* --- End of Alignment Fix --- */
 
 
