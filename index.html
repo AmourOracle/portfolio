@@ -4,7 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sywan - Visual Designer Portfolio</title>
-    <!-- 連結外部 CSS 檔案 -->
+    
+    <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
+    <script>
+      (function(d) {
+        var config = {
+          kitId: 'hcg4voj',
+          scriptTimeout: 3000,
+          async: true
+        },
+        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+      })(document);
+    </script>
+    
+    <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -14,30 +32,30 @@
 
     <main class="portfolio-container">
         <!-- 
-          MOD: index.html (v2.1)
-          - 為左側欄位的 label 和 block 新增 ID，以便 JS 控制
+          MOD: index.html (v1.2)
+          - 將 .contact-links 區塊從 .profile-block 移至 nav.right-column
         -->
         <aside class="left-column">
             <div class="left-column-top">
                 <div class="name-block">
-                    <!-- ID ADDED -->
-                    <span class="label" id="previewLabelNumber">NO.</span>
+                    <!-- MOD: (Request 3.2) 加入 ID -->
+                    <span id="previewLabelNo" class="label">NO.</span>
+                    <span id="previewLabelCategory" class="label" style="display: none;">CATEGORY</span> 
                     <h1 id="previewTitle">Sywan</h1>
                 </div>
             </div>
             
             <div class="left-column-middle">
-                <!-- ID ADDED -->
-                <div class="info-divider-block" id="previewBlockBio">
-                    <!-- ID ADDED -->
-                    <span class="label" id="previewLabelBio">BIO</span>
+                <!-- MOD: (Request 3.2) 加入 ID -->
+                <div id="previewBlockBio" class="info-divider-block">
+                    <span id="previewLabelBio" class="label">BIO</span>
                     <p id="previewBio">A visual designer based in Taiwan, focusing on creating compelling brand identities and digital experiences.</p>
                 </div>
-                <!-- ID ADDED -->
-                <div class="info-divider-block" id="previewBlockInfo">
-                    <!-- ID ADDED -->
-                    <span class="label" id="previewLabelInfo">INFO</span>
-                    <p>This space is reserved for future content or additional information about a project.</p>
+                <!-- MOD: (Request 3.2) 加入 ID -->
+                <div id="previewBlockInfo" class="info-divider-block">
+                    <span id="previewLabelInfo" class="label">INFO</span>
+                    <span id="previewLabelDocs" class="label" style="display: none;">DOCS</span>
+                    <p id="previewInfo">This space is reserved for future content or additional information about a project.</p>
                 </div>
             </div>
 
@@ -59,17 +77,14 @@
 
         <!-- 右欄：作品分類 & 外部連結 -->
         <nav class="right-column">
-            <!-- 
-              MOD: FEAT_projectsFilter_v2.0
-              - .category-nav 現在是篩選器
-              - 新增 "All Projects" 選項
-              - 為每個 <a> 標籤新增 data-filter 屬性
-            -->
-            <div class="category-nav" id="categoryNav">
+            <!-- MOD: (Request 3) 更新 category-nav ID -->
+            <div id="categoryNav" class="category-nav">
+                <!-- <h3>Expertise</h3> 隱藏 -->
                 <ul>
+                    <!-- MOD: (Request 3) 新增 data-filter -->
                     <li><a href="#" data-filter="all" class="active">All Projects</a></li>
                     <li><a href="#" data-filter="Visual">Visual Design</a></li>
-                    <li><a href="#" data-filter="Photography">Commercial Photography</a></li>
+                    <li><a href="#" data-filter="Photography">Comm. Photography</a></li>
                     <li><a href="#" data-filter="Identity">Brand Identity</a></li>
                 </ul>
             </div>
@@ -89,3 +104,4 @@
     <script src="js/index.js"></script>
 </body>
 </html>
+
