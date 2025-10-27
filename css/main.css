@@ -544,6 +544,37 @@ header {
     display: none; /* 預設在桌面版隱藏 */
 }
 
+/* --- (Task 3) ADD: Mobile Preview Popup --- */
+.mobile-preview-popup {
+    display: none; /* 預設隱藏 */
+    position: fixed; /* 固定於視窗 */
+    top: 45%; /* 輕微偏上 */
+    left: 50%;
+    width: 200px; /* 懸浮視窗寬度 */
+    aspect-ratio: 9 / 16; /* 匹配封面圖比例 */
+    background-color: #222;
+    border: 1px solid var(--divider-color);
+    z-index: 2000; /* 顯示在最上層 */
+    
+    /* 動畫效果 */
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.95); /* 初始狀態 */
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none; /* 避免攔截觸控 */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* 增加陰影 */
+}
+.mobile-preview-popup.is-visible {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1); /* 最終狀態 */
+}
+.mobile-preview-popup img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+/* --- End of Mobile Preview Popup --- */
+
 
 /* --- 響應式設計 --- */
 @media (max-width: 1024px) {
@@ -590,7 +621,7 @@ header {
         flex-direction: column; /* 垂直堆疊 Filter 和 Links */
         align-items: center; /* 水平置中 */
         gap: 1.5rem; /* 兩個列表之間的間距 */
-        padding: 1.5rem 2rem;
+        padding: 1.5rem 0; /* (Task 1 Fix) 移除左右 padding，交給子元素控制 */
         border-top: 1px solid var(--divider-color);
     }
     
@@ -601,11 +632,33 @@ header {
         margin: 0;
         display: flex;
         justify-content: center; /* 置中 */
-        flex-wrap: wrap; /* 換行 */
+        flex-wrap: wrap; /* 換行 (僅 .mobile-contact-links) */
         gap: 1.5rem; /* 增加間距 */
     }
     
     /* (v3.16) 手機版篩選器連結樣式 */
+    /* (Task 1 Fix) 修正 Filter Bar 換行問題 */
+    .mobile-filter-nav {
+        width: 100%; /* 佔滿寬度 */
+        overflow-x: auto; /* 允許水平滾動 */
+        -webkit-overflow-scrolling: touch; /* iOS 滾動優化 */
+        scrollbar-width: none; /* 隱藏滾動條 (Firefox) */
+        
+        /* (Task 1 Fix) 覆蓋 .mobile-footer ul 的設定 */
+        flex-wrap: nowrap; /* ! 關鍵：禁止換行 */
+        white-space: nowrap; /* 確保內容不換行 */
+        justify-content: flex-start; /* 從左側開始 */
+        padding: 0 2rem; /* 左右保留間距 */
+        box-sizing: border-box;
+    }
+    .mobile-filter-nav::-webkit-scrollbar {
+        display: none; /* 隱藏滾動條 (Chrome, Safari) */
+    }
+    .mobile-filter-nav li {
+        flex-shrink: 0; /* 防止項目被壓縮 */
+    }
+    /* (End Task 1 Fix) */
+
     .mobile-filter-nav a {
         color: var(--secondary-color);
         text-decoration: none;
@@ -622,6 +675,10 @@ header {
     }
 
     /* (v3.16) 手機版聯絡連結樣式 */
+    .mobile-contact-links {
+        padding: 0 2rem; /* (Task 1 Fix) 保持聯絡連結的 padding 和換行 */
+        box-sizing: border-box;
+    }
     .mobile-contact-links a {
         color: var(--secondary-color);
         text-decoration: none;
@@ -642,6 +699,17 @@ header {
         */
         padding-top: 0;
         padding-bottom: 0;
+    }
+
+    /* (Task 3) 隱藏桌面版的預覽圖 (以防萬一) */
+    .mobile-preview-popup {
+        display: none !important; /* 確保在 > 768px 時不顯示 */
+    }
+    @media (max-width: 768px) {
+        /* (Task 3) 僅在 768px 以下啟用 mobile-preview-popup 的 display: block */
+        .mobile-preview-popup.is-visible {
+            display: block;
+        }
     }
 }
 
@@ -748,4 +816,3 @@ header {
         gap: 2rem; 
     }
 }
-

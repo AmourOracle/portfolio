@@ -8,6 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // (Request v3.16) 獲取手機版 Footer
     const mobileFooterElement = document.querySelector('.mobile-footer');
+    
+    // (Task 3) 獲取手機版懸浮視窗元素
+    const mobilePreviewPopup = document.getElementById('mobilePreviewPopup');
+    const mobilePreviewImage = document.getElementById('mobilePreviewImage');
+
 
     // (Request 3) 獲取 v2.1 中新增的 ID
     const previewLabelNo = document.getElementById('previewLabelNo');
@@ -207,6 +212,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // (Request 3.2) 更新 INFO 欄位 (確保 previewInfoElement 存在)
         if (previewInfoElement) previewInfoElement.innerHTML = newInfo; 
 
+        // (Task 3) 更新手機版懸浮視窗
+        if (isMobile && mobilePreviewPopup && mobilePreviewImage) {
+            if (newImageSrc) {
+                mobilePreviewImage.src = newImageSrc;
+                mobilePreviewPopup.classList.add('is-visible');
+            } else {
+                mobilePreviewPopup.classList.remove('is-visible');
+            }
+        }
+
         // (Request 3.2) 更新左側欄位標籤
         // (Request v3.11) 修正 ID 抓取
         if (previewLabelNo && previewLabelCategory && previewLabelInfo_Default && previewLabelDocs_Project && previewBlockBio) {
@@ -229,6 +244,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewBioElement) previewBioElement.textContent = defaultBio;
         if (previewImageElement) previewImageElement.src = defaultImageSrc;
         if (previewInfoElement) previewInfoElement.textContent = defaultInfo; // (Request 3.2)
+
+        // (Task 3) 隱藏手機版懸浮視窗
+        if (isMobile && mobilePreviewPopup) {
+            mobilePreviewPopup.classList.remove('is-visible');
+        }
 
         // (Request 3.2) 恢復預設標籤
         // (Request v3.11) 修正 ID 抓取
@@ -271,6 +291,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (Request v3.10) 觸控事件處理 (僅手機)
     function handleTouchStart(event) {
+        // (Task 3) 隱藏懸浮視窗
+        if (isMobile && mobilePreviewPopup) {
+            mobilePreviewPopup.classList.remove('is-visible');
+        }
+        
         // (Request v3.10) 阻止原生滾動 (例如下拉刷新或頁面平移)
         // event.preventDefault(); // (v3.15) 暫時移除，檢查是否為滾動的根本原因
         touchStartY = event.touches[0].clientY;
@@ -284,14 +309,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleTouchEnd(event) {
-        // (Request v3.10) 阻止原生滾動
-        event.preventDefault();
+        // (Task 2 Fix) 移除此處的 event.preventDefault()
+        // event.preventDefault(); 
         
         if (isScrolling) return; // (v3.10) 如果還在滾動中，則不處理
 
         const deltaY = touchEndY - touchStartY;
 
         if (Math.abs(deltaY) > touchThreshold) {
+            // (Task 2 Fix) 判定為「滑動」手勢，此時才阻止預設行為
+            event.preventDefault();
+
             // (Request v3.10) 視為滑動
             isScrolling = true;
             setTimeout(() => { isScrolling = false; }, 300); // 滾動動畫節流
@@ -311,7 +339,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 setActiveItem(newIndex, true);
             }
         }
-        // (Request v3.10) 如果滑動距離不足，則不動作 (點擊事件會另外由 handleItemClick 處理)
+        // (Task 2 Fix) 如果滑動距離不足 (視為點擊)，
+        // 則不執行 preventDefault()，讓 'click' 事件可以觸發。
     }
 
 
@@ -325,6 +354,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const clickedItem = event.target.closest('.project-item');
         if (clickedItem) {
+            // (Task 3) 點擊時，隱藏懸浮視窗 (因為即將滾動)
+            if (isMobile && mobilePreviewPopup) {
+                mobilePreviewPopup.classList.remove('is-visible');
+            }
+
             const newIndex = visibleItems.indexOf(clickedItem);
             if (newIndex > -1 && newIndex !== currentActiveIndex) {
                 setActiveItem(newIndex, true);
@@ -384,4 +418,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
-
