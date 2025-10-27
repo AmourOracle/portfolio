@@ -69,6 +69,9 @@ header {
     flex-direction: column;
     min-width: 0; /* 關鍵！防止 h1 內容撐開 fr 欄位 */
     height: 100%; /* 填滿 grid 區域高度 */
+    
+    /* (Task 2 Fix) 確保在 .project-container 中位於第一行 */
+    grid-row: 1;
 }
 
 /* ADD: 左欄頂部 (標題區) */
@@ -155,6 +158,7 @@ header {
 .portfolio-container {
     /* MOD: (Request v3.12) 統一左欄寬度，改用 28.57% (1.2 / 4.2) */
     grid-template-columns: 28.57% 1fr 5vw;
+    grid-template-rows: 1fr; /* (Task 2 Fix) 確保 portfolio-container 只有一行 */
 }
 .profile-block { 
     display: flex; 
@@ -258,7 +262,7 @@ header {
     display: flex;
     align-items: center;
     gap: 0.75rem; 
-    /* MOD: (Req 4) 增加 scale 和 opacity 的過渡效果 */
+    /* MOD: (Req 4) 增加 scale 和 opacity 的 過渡效果 */
     transition: opacity 0.4s ease-out, max-height 0.4s ease-out, transform 0.4s ease-out, padding 0.4s ease-out;
     max-height: 15rem; /* 設定一個足夠大的預設高度 */
     overflow: hidden;
@@ -363,6 +367,8 @@ header {
 .project-container { 
     /* MOD: (Request v3.12) 統一左欄寬度，改用 28.57% (1.2 / 4.2) */
     grid-template-columns: 28.57% 1fr; 
+    /* MOD: (Task 2 Fix) 桌面版 grid 包含內容 (1fr) 和導航 (auto) */
+    grid-template-rows: 1fr auto;
 }
 
 /* MOD: (Request 4) 移除 .back-button-block 的 margin-top */
@@ -370,18 +376,21 @@ header {
 
 /* ADD: (Request 4) "Next Project" 按鈕的容器 */
 .project-nav-bottom {
+    /* MOD: (Task 2 Fix) .project-nav-bottom 現在是 .project-container 的直接子元素 */
+    /* 桌面版的樣式 */
+    grid-row: 2; /* 位於第二行 */
+    grid-column: 1 / -1; /* 跨越所有欄位 */
     margin-top: auto; /* 將此區塊推至底部 */
+    
     padding-top: 2rem;
     display: flex;
     justify-content: space-between; /* Back (左) Next (右) */
-    /* MOD: (Request 8) 修正對齊問題：從 flex-end 改為 baseline */
-    align-items: baseline;
+    align-items: baseline; /* MOD: (Request 8) 修正對齊 */
 }
 
 /* MOD: (Request 1) 將 .back-button-block 改為 <a> 標籤 */
 .back-button-block { 
     display: inline-flex; 
-    /* MOD: (Request 8) 配合 baseline 對齊，將 center 改為 baseline */
     align-items: baseline; 
     gap: 0.8rem; 
     color: var(--secondary-color); 
@@ -407,8 +416,7 @@ header {
 .next-project-block {
     display: flex; /* 改為 flex-row */
     flex-direction: row;
-    /* MOD: (Request 9) 修正對齊問題：從 baseline 改為 flex-end */
-    align-items: flex-end;
+    align-items: flex-end; /* MOD: (Request 9) 修正對齊 */
     gap: 0.5rem; /* 文字區塊與箭頭的間距 */
     text-decoration: none;
     color: var(--secondary-color);
@@ -428,8 +436,7 @@ header {
 
 .next-project-block .label {
     font-family: var(--font-mono); 
-    /* MOD: (Request 1) 縮小字級 */
-    font-size: 0.7rem; 
+    font-size: 0.7rem; /* MOD: (Request 1) 縮小字級 */
     color: var(--secondary-color); 
     text-align: right;
 }
@@ -462,6 +469,9 @@ header {
     padding-top: 1.5rem; 
     overflow-y: auto; 
     padding-right: 1rem; 
+    
+    /* (Task 2 Fix) 確保在 .project-container 中位於第一行 */
+    grid-row: 1;
     
     /* ADD: (Request 2) 隱藏滾動條 */
     scrollbar-width: none; /* For Firefox */
@@ -548,7 +558,7 @@ header {
 .mobile-preview-popup {
     display: none; /* 預設隱藏 */
     position: fixed; /* 固定於視窗 */
-    top: 45%; /* 輕微偏上 */
+    top: 50%; /* 垂直置中 */
     left: 50%;
     width: 200px; /* 懸浮視窗寬度 */
     aspect-ratio: 9 / 16; /* 匹配封面圖比例 */
@@ -558,22 +568,19 @@ header {
     
     /* 動畫效果 */
     opacity: 0;
-    transform: translate(-50%, -45%) scale(0.95); /* 初始狀態 */
+    transform: translate(-50%, -50%) scale(0.95); /* 初始狀態 */
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none; /* 避免攔截觸控 */
     box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* 增加陰影 */
 }
-.mobile-preview-popup.is-visible {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1); /* 最終狀態 */
+/* .is-visible 狀態會在 max-width: 768px 中定義 */
+
+/* --- (Task 1 Fix) 僅在桌面版 ( > 768px ) 強制隱藏 popup --- */
+@media (min-width: 769px) {
+    .mobile-preview-popup {
+        display: none !important;
+    }
 }
-.mobile-preview-popup img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-/* --- End of Mobile Preview Popup --- */
 
 
 /* --- 響應式設計 --- */
@@ -583,7 +590,11 @@ header {
         grid-template-columns: 1.5fr 1fr;
         padding: 0 2rem 2rem 2rem;
     }
-    .project-container { grid-template-columns: 1fr 2fr; }
+    .project-container { 
+        grid-template-columns: 1fr 2fr; 
+        /* (Task 2 Fix) 確保 1024px 時 grid row 設置正確 */
+        grid-template-rows: 1fr auto;
+    }
     .right-column { display: none; }
 }
 
@@ -701,15 +712,11 @@ header {
         padding-bottom: 0;
     }
 
-    /* (Task 3) 隱藏桌面版的預覽圖 (以防萬一) */
-    .mobile-preview-popup {
-        display: none !important; /* 確保在 > 768px 時不顯示 */
-    }
-    @media (max-width: 768px) {
-        /* (Task 3) 僅在 768px 以下啟用 mobile-preview-popup 的 display: block */
-        .mobile-preview-popup.is-visible {
-            display: block;
-        }
+    /* (Task 1 Fix) 僅在 768px 以下啟用 mobile-preview-popup 的 display: block */
+    .mobile-preview-popup.is-visible {
+        display: block;
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1); /* 最終狀態 */
     }
 }
 
@@ -723,6 +730,8 @@ header {
         grid-template-columns: 1fr; /* MOD: (v3.9) 單欄佈局 */
         padding: 2rem; 
         height: auto; 
+        /* MOD: (Task 2 Fix) 手機版 grid 順序：Info(auto), Images(1fr), Nav(auto) */
+        grid-template-rows: auto 1fr auto;
     }
 
     /* (v3.9) 恢復顯示 left-column，並設定 DOM 順序 */
@@ -732,6 +741,7 @@ header {
         height: auto; 
         margin-bottom: 3rem; 
         gap: 2rem; 
+        grid-row: 1; /* (Task 2 Fix) Info 位於第一行 */
     }
     
     /* (v3.9) 恢復顯示 project-content-column，並設定 DOM 順序 */
@@ -740,6 +750,17 @@ header {
         padding-right: 0;
         padding-top: 0; /* (v3.9) 移除桌面版的 padding-top */
         mask-image: none;
+        grid-row: 2; /* (Task 2 Fix) Images 位於第二行 (1fr) */
+    }
+
+    /* MOD: (Task 2 Fix) project-nav-bottom 的手機版樣式 */
+    .project-container .project-nav-bottom {
+        grid-row: 3; /* (Task 2 Fix) Nav 位於第三行 */
+        padding-top: 2rem; /* 與圖片底部保持距離 */
+        flex-direction: row; /* 水平排列 Back 和 Next */
+        justify-content: space-between; /* 兩端對齊 */
+        align-items: baseline; /* 保持文字基線對齊 */
+        margin-top: 0; /* 移除 auto margin */
     }
 
     /* MOD: (v3.9) 重置手機版的左欄結構 */
@@ -787,6 +808,8 @@ header {
     }
 
     /* (v3.9) 手機版底部按鈕 (project.html) */
+    /* (Task 2 Fix) 移除舊的 flex-direction: column 樣式 */
+    /*
     .project-nav-bottom {
         flex-direction: column;
         align-items: flex-start;
@@ -796,6 +819,7 @@ header {
         align-items: flex-start;
         flex-direction: row; 
     }
+    */
     .next-project-text-wrapper {
         align-items: flex-start; 
         text-align: left;
@@ -816,3 +840,4 @@ header {
         gap: 2rem; 
     }
 }
+
