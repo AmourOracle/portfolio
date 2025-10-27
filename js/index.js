@@ -27,14 +27,37 @@ document.addEventListener('DOMContentLoaded', () => {
     let isScrolling = false; // 滾動節流閥
     let visibleItems = []; // 用於儲存篩選後可見的項目
 
-    // ADD: (Request v3.8) 判斷是否為行動裝置
+    // (Request v3.10) 偵測是否為手機
     const isMobile = window.innerWidth <= 768;
 
-    // --- ADD: (Request v3.10) 觸控滑動變數 ---
+    // (Request v3.10) 觸控相關變數
     let touchStartY = 0;
     let touchEndY = 0;
-    const swipeThreshold = 50; // 觸發滑動所需的最小 Y 軸像素
-    // --- End ADD ---
+    const touchThreshold = 50; // 觸控滑動的最小距離 (px)
+    
+    // (Request v3.15) 動態設定手機版的 Padding
+    function setDynamicPadding() {
+        // 僅在手機版執行
+        if (!isMobile) return;
+
+        const centerColumn = document.querySelector('.portfolio-container .center-column');
+        const firstItem = allProjectItems[0];
+
+        if (centerColumn && firstItem) {
+            const containerHeight = centerColumn.clientHeight;
+            const itemHeight = firstItem.clientHeight;
+            
+            // 計算使項目能置中於容器的 padding
+            const padding = (containerHeight / 2) - (itemHeight / 2);
+            
+            // 確保 padding 不為負數
+            const finalPadding = Math.max(0, padding); 
+            
+            projectListElement.style.paddingTop = `${finalPadding}px`;
+            projectListElement.style.paddingBottom = `${finalPadding}px`;
+        }
+    }
+
 
     // 1. 獲取專案資料並生成列表
     fetch('./data/projects.json')
@@ -75,6 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
             allProjectItems = Array.from(document.querySelectorAll('#projectList .project-item'));
             visibleItems = [...allProjectItems]; // 預設全部可見
             
+            // (Request v3.15) 列表生成後，動態設定 Padding
+            setDynamicPadding();
+            
             // (Request 3) 預設啟用第三個 (索引 2)
             // 檢查確保列表不是空的
             if (visibleItems.length > 0) {
@@ -84,28 +110,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // (Request 4) 監聽滾輪事件 (監聽 .center-column)
-            const centerColumn = document.querySelector('.center-column');
+            const centerColumn = document.querySelector('.portfolio-container .center-column');
             
-            // MOD: (Request v3.10) 根據裝置類型綁定不同事件
-            if (centerColumn) {
-                if (!isMobile) {
-                    // --- 桌面版：綁定 Wheel 事件 ---
-                    centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
-                } else {
-                    // --- 手機版：綁定 Touch 事件 ---
-                    centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
-                    centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
-                    centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
-                }
+            // (Request v3.10) 只有在非手機裝置上才綁定 wheel 事件
+            if (centerColumn && !isMobile) {
+                centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
             }
 
-            // (Request 4) 監聽點擊事件 (在手機和桌機上都會啟用)
+            // (Request v3.10) 只有在手機裝置上才綁定 touch 事件
+            if (centerColumn && isMobile) {
+                centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
+                centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
+                centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
+            }
+
+            // (Request 4) 監聽點擊事件
             projectListElement.addEventListener('click', handleItemClick);
 
             // (Request 3) 監聽篩選器點擊
             if (categoryNavElement) {
                 categoryNavElement.addEventListener('click', handleFilterClick);
             }
+            
+            // (Request v3.15) 監聽視窗大小改變，重新計算 Padding
+            window.addEventListener('resize', setDynamicPadding);
         })
         .catch(error => {
             console.error('Error fetching projects:', error);
@@ -114,8 +142,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (Request 3) 設置啟用項目
     function setActiveItem(index, smoothScroll = true) {
-        // 邊界檢查
-        if (index < 0 || index >= visibleItems.length) return;
+        // (Request v3.11) 邊界檢查 (無限循環)
+        if (visibleItems.length === 0) return; // (v3.11) 增加保護
+        
+        if (index < 0) {
+            index = visibleItems.length - 1; // 從頂部循環到底部
+        }
+        if (index >= visibleItems.length) {
+            index = 0; // 從底部循環到頂部
+        }
 
         currentActiveIndex = index;
 
@@ -144,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // 更新左側預覽 (在手機版上，這些元素是隱藏的，但邏輯保留)
+        // 更新左側預覽 (如果左側欄存在的話)
         const newTitle = targetItem.getAttribute('data-title');
         const newBio = targetItem.getAttribute('data-bio');
         const newImageSrc = targetItem.getAttribute('data-cover-image');
@@ -154,9 +189,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewTitleElement) previewTitleElement.textContent = newTitle;
         if (previewBioElement) previewBioElement.textContent = newBio;
         if (previewImageElement && newImageSrc) previewImageElement.src = newImageSrc;
+        // (Request 3.2) 更新 INFO 欄位 (確保 previewInfoElement 存在)
         if (previewInfoElement) previewInfoElement.innerHTML = newInfo; 
 
-        if (previewLabelNo) { 
+        // (Request 3.2) 更新左側欄位標籤
+        if (previewLabelNo) { // (Request 3.2) 增加 null 檢查
+            // 更新標籤
             previewLabelNo.style.display = 'none';
             previewLabelCategory.style.display = 'inline-block';
             previewLabelCategory.textContent = newCategory;
@@ -164,7 +202,8 @@ document.addEventListener('DOMContentLoaded', () => {
             previewLabelInfo.style.display = 'none';
             previewLabelDocs.style.display = 'inline-block';
 
-            previewBlockBio.classList.add('hide-section');
+            // 隱藏 BIO
+            if (previewBlockBio) previewBlockBio.classList.add('hide-section');
         }
     }
     
@@ -173,82 +212,39 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewTitleElement) previewTitleElement.textContent = defaultTitle;
         if (previewBioElement) previewBioElement.textContent = defaultBio;
         if (previewImageElement) previewImageElement.src = defaultImageSrc;
-        if (previewInfoElement) previewInfoElement.textContent = defaultInfo;
+        if (previewInfoElement) previewInfoElement.textContent = defaultInfo; // (Request 3.2)
 
-        if (previewLabelNo) { 
+        // (Request 3.2) 恢復預設標籤
+        if (previewLabelNo) { // (Request 3.2) 增加 null 檢查
             previewLabelNo.style.display = 'inline-block';
             previewLabelCategory.style.display = 'none';
 
             previewLabelInfo.style.display = 'inline-block';
             previewLabelDocs.style.display = 'none';
 
+            // 顯示 BIO
             if (previewBlockBio) previewBlockBio.classList.remove('hide-section');
         }
     }
 
-    // --- ADD: (Request v3.10) 手機版觸控事件處理 ---
-    function handleTouchStart(event) {
-        touchStartY = event.touches[0].clientY;
-        touchEndY = event.touches[0].clientY; // 重置
-    }
-
-    function handleTouchMove(event) {
-        // 關鍵：阻止瀏覽器原生的觸控平移/滾動
-        event.preventDefault();
-        touchEndY = event.touches[0].clientY;
-    }
-
-    function handleTouchEnd(event) {
-        if (isScrolling) return; // 正在滾動中，忽略新的手勢
-
-        const deltaY = touchStartY - touchEndY; // 正數 = 向上滑
-
-        if (Math.abs(deltaY) > swipeThreshold) {
-            // --- 這是一次滑動 (Swipe) ---
-            isScrolling = true;
-            // 設定節流閥，防止連續滑動
-            setTimeout(() => { isScrolling = false; }, 400); // 滑動的冷卻時間
-
-            const direction = deltaY > 0 ? 1 : -1; // 1 = 向上滑, -1 = 向下滑
-            let newIndex = currentActiveIndex + direction;
-
-            // MOD: (Request v3.11) 實現無限循環
-            if (newIndex < 0) {
-                newIndex = visibleItems.length - 1; // 從頂部循環到底部
-            }
-            if (newIndex >= visibleItems.length) {
-                newIndex = 0; // 從底部循環到頂部
-            }
-
-            if (newIndex !== currentActiveIndex) {
-                setActiveItem(newIndex, true);
-            }
-        }
-        
-        // 重置座標，為下一次 "click" 或 "swipe" 準備
-        touchStartY = 0;
-        touchEndY = 0;
-    }
-    // --- End ADD ---
-
-    // (Request 4) 滾輪事件處理 (僅桌機)
+    // (Request 4) 滾輪事件處理 (僅桌面)
     function handleWheelScroll(event) {
         event.preventDefault(); // 阻止頁面滾動
 
         if (isScrolling) return; // 節流
         isScrolling = true;
 
-        setTimeout(() => { isScrolling = false; }, 150); // 滾輪的冷卻時間
+        setTimeout(() => { isScrolling = false; }, 150); // 節流時間
 
         const direction = event.deltaY > 0 ? 1 : -1; // 1 = 向下, -1 = 向上
         let newIndex = currentActiveIndex + direction;
 
-        // MOD: (Request v3.11) 實現無限循環
+        // (Request v3.11) 無限循環邏輯
         if (newIndex < 0) {
-            newIndex = visibleItems.length - 1; // 從頂部循環到底部
+            newIndex = visibleItems.length - 1;
         }
         if (newIndex >= visibleItems.length) {
-            newIndex = 0; // 從底部循環到頂部
+            newIndex = 0;
         }
 
         if (newIndex !== currentActiveIndex) {
@@ -256,18 +252,60 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // (Request 4) 點擊事件處理 (桌機與手機)
+    // (Request v3.10) 觸控事件處理 (僅手機)
+    function handleTouchStart(event) {
+        // (Request v3.10) 阻止原生滾動 (例如下拉刷新或頁面平移)
+        event.preventDefault();
+        touchStartY = event.touches[0].clientY;
+        touchEndY = event.touches[0].clientY; // (v3.10) 重置
+    }
+
+    function handleTouchMove(event) {
+        // (Request v3.10) 阻止原生滾動
+        event.preventDefault();
+        touchEndY = event.touches[0].clientY;
+    }
+
+    function handleTouchEnd(event) {
+        // (Request v3.10) 阻止原生滾動
+        event.preventDefault();
+        
+        if (isScrolling) return; // (v3.10) 如果還在滾動中，則不處理
+
+        const deltaY = touchEndY - touchStartY;
+
+        if (Math.abs(deltaY) > touchThreshold) {
+            // (Request v3.10) 視為滑動
+            isScrolling = true;
+            setTimeout(() => { isScrolling = false; }, 300); // 滾動動畫節流
+
+            const direction = deltaY > 0 ? -1 : 1; // 1 = 向下, -1 = 向上 (觸控方向相反)
+            let newIndex = currentActiveIndex + direction;
+
+            // (Request v3.11) 無限循環邏輯
+            if (newIndex < 0) {
+                newIndex = visibleItems.length - 1;
+            }
+            if (newIndex >= visibleItems.length) {
+                newIndex = 0;
+            }
+
+            if (newIndex !== currentActiveIndex) {
+                setActiveItem(newIndex, true);
+            }
+        }
+        // (Request v3.10) 如果滑動距離不足，則不動作 (點擊事件會另外由 handleItemClick 處理)
+    }
+
+
+    // (Request 4) 點擊事件處理
     function handleItemClick(event) {
-        // MOD: (Request v3.10) 如果正在滾動/滑動中，不要觸發點擊
+        // (Request v3.10) 如果正在滾動，則忽略點擊
         if (isScrolling) {
-            event.preventDefault(); // 防止點擊跳轉
+            event.preventDefault();
             return;
         }
 
-        // 如果是觸控結束後立即觸發的 click，
-        // 且 touchEnd 已經處理了滑動，這裡就不再處理
-        // (isScrolling 節流閥會處理)
-        
         const clickedItem = event.target.closest('.project-item');
         if (clickedItem) {
             const newIndex = visibleItems.indexOf(clickedItem);
@@ -287,8 +325,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const filter = targetLink.getAttribute('data-filter');
 
         // 更新篩選器 .active 狀態
-        categoryNavElement.querySelectorAll('a').forEach(a => a.classList.remove('active'));
-        targetLink.classList.add('active');
+        if (categoryNavElement) { // (v3.10) 增加 null 檢查 (手機版上不存在)
+            categoryNavElement.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+            targetLink.classList.add('active');
+        }
 
         // 過濾 visibleItems
         visibleItems = allProjectItems.filter(item => {
