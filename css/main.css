@@ -1,3 +1,6 @@
+/* --- Google Fonts --- */
+/* MOD: 移除 Montserrat 和 Roboto Mono 的 @import */
+
 /* --- CSS 變數 --- */
 :root {
     --background-color: #121212;
@@ -604,6 +607,20 @@ header {
     }
     .mobile-footer a:hover {
         color: var(--primary-color);
+    }
+
+    /* ADD: (Request v3.14) 修正手機版首頁的 List Padding */
+    .portfolio-container .project-list {
+        /* * 覆蓋桌面版的 calc(50vh - 10rem) 
+         * * 這是為了讓 list 的第一項和最後一項
+         * 也能被 scrollIntoView({ block: 'center' }) 滾動到
+         * 1fr 滾動區域的正中央。
+         *
+         * 35vh 是 1fr 區域高度的大約一半
+         * 3rem 是 project-item 高度的大約一半
+        */
+        padding-top: calc(35vh - 3rem);
+        padding-bottom: calc(35vh - 3rem);
     }
 }
 
