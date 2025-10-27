@@ -1,6 +1,3 @@
-/* --- Google Fonts --- */
-/* MOD: 移除 Montserrat 和 Roboto Mono 的 @import */
-
 /* --- CSS 變數 --- */
 :root {
     --background-color: #121212;
@@ -539,6 +536,12 @@ header {
 /* --- End of Alignment Fix --- */
 
 
+/* --- ADD: (Request v3.13) 預設隱藏手機版 Footer --- */
+.mobile-footer {
+    display: none; /* 預設在桌面版隱藏 */
+}
+
+
 /* --- 響應式設計 --- */
 @media (max-width: 1024px) {
     .portfolio-container {
@@ -579,7 +582,7 @@ header {
     
     /* (v3.9) 顯示手機版 Footer */
     .mobile-footer {
-        display: block;
+        display: block; /* 在手機版上覆蓋 .mobile-footer 的 display: none */
         padding: 1.5rem 2rem;
         border-top: 1px solid var(--divider-color);
     }
@@ -650,7 +653,9 @@ header {
         padding: 0;
         mask-image: none; /* ADD: 移除遮罩效果 */
     }
-    .project-list {
+    
+    /* MOD: (Request v3.13) 僅重設內頁的 project-list padding */
+    .project-container .project-list {
         padding-top: 0;
         padding-bottom: 0;
     }
@@ -662,6 +667,16 @@ header {
         gap: 0.5rem;
         opacity: 1;
         transform: scale(1);
+        */
+    }
+    .project-item.is-active {
+        /* transform: none; */
+    }
+    .project-category {
+        /*
+        min-width: auto; 
+        opacity: 1 !important; 
+        text-align: left; 
         */
     }
 
