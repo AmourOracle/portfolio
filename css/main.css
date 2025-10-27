@@ -480,7 +480,7 @@ header {
 }
 .about-intro-text p {
     font-size: clamp(1.8rem, 4vw, 3rem); /* 截圖中的大字體 */
-    font-family: var(--font-mono); /* 使用 mono 字體以匹配截圖風格 */
+    font-family: var(--font-mono); /* 使用 mono 字體以匹配圖風格 */
     font-weight: 700;
     line-height: 1.3;
     color: var(--primary-color);
@@ -584,11 +584,17 @@ header {
     }
     
     /* (v3.9) 顯示手機版 Footer */
+    /* MOD: (v3.16) 改為 flex 佈局 */
     .mobile-footer {
-        display: block; /* 在手機版上覆蓋 .mobile-footer 的 display: none */
+        display: flex;
+        flex-direction: column; /* 垂直堆疊 Filter 和 Links */
+        align-items: center; /* 水平置中 */
+        gap: 1.5rem; /* 兩個列表之間的間距 */
         padding: 1.5rem 2rem;
         border-top: 1px solid var(--divider-color);
     }
+    
+    /* MOD: (v3.16) 通用列表樣式 */
     .mobile-footer ul {
         list-style: none;
         padding: 0;
@@ -598,14 +604,32 @@ header {
         flex-wrap: wrap; /* 換行 */
         gap: 1.5rem; /* 增加間距 */
     }
-    .mobile-footer a {
+    
+    /* (v3.16) 手機版篩選器連結樣式 */
+    .mobile-filter-nav a {
         color: var(--secondary-color);
         text-decoration: none;
         font-family: var(--font-mono);
         font-size: 0.9rem;
         transition: color 0.3s ease;
     }
-    .mobile-footer a:hover {
+    .mobile-filter-nav a:hover {
+        color: var(--primary-color);
+    }
+    .mobile-filter-nav a.active {
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+
+    /* (v3.16) 手機版聯絡連結樣式 */
+    .mobile-contact-links a {
+        color: var(--secondary-color);
+        text-decoration: none;
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        transition: color 0.3s ease;
+    }
+    .mobile-contact-links a:hover {
         color: var(--primary-color);
     }
 

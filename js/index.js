@@ -5,13 +5,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewBioElement = document.getElementById('previewBio');
     const previewImageElement = document.getElementById('previewImage');
     const categoryNavElement = document.getElementById('categoryNav');
+    
+    // (Request v3.16) 獲取手機版 Footer
+    const mobileFooterElement = document.querySelector('.mobile-footer');
 
     // (Request 3) 獲取 v2.1 中新增的 ID
     const previewLabelNo = document.getElementById('previewLabelNo');
     const previewLabelCategory = document.getElementById('previewLabelCategory');
-    const previewLabelInfo = document.getElementById('previewLabelInfo');
-    const previewLabelDocs = document.getElementById('previewLabelDocs');
+    // const previewLabelInfo = document.getElementById('previewLabelInfo'); // (v3.11) 修正 ID
+    // const previewLabelDocs = document.getElementById('previewLabelDocs'); // (v3.11) 修正 ID
     const previewBlockBio = document.getElementById('previewBlockBio');
+    
+    // (v3.11) 修正 ID 抓取
+    const previewLabelInfo_Default = document.getElementById('previewLabelInfo_Default');
+    const previewLabelDocs_Project = document.getElementById('previewLabelDocs_Project');
+
 
     // 儲存預設的資訊
     const defaultTitle = previewTitleElement.textContent;
@@ -40,10 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // 僅在手機版執行
         if (!isMobile) return;
 
+        // (Request v3.15) 修正選擇器
         const centerColumn = document.querySelector('.portfolio-container .center-column');
-        const firstItem = allProjectItems[0];
-
-        if (centerColumn && firstItem) {
+        
+        // (Request v3.15) 檢查 allProjectItems 是否已填入
+        if (centerColumn && allProjectItems.length > 0) {
+            const firstItem = allProjectItems[0];
             const containerHeight = centerColumn.clientHeight;
             const itemHeight = firstItem.clientHeight;
             
@@ -110,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // (Request 4) 監聽滾輪事件 (監聽 .center-column)
+            // (Request v3.15) 修正選擇器
             const centerColumn = document.querySelector('.portfolio-container .center-column');
             
             // (Request v3.10) 只有在非手機裝置上才綁定 wheel 事件
@@ -127,9 +138,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // (Request 4) 監聽點擊事件
             projectListElement.addEventListener('click', handleItemClick);
 
-            // (Request 3) 監聽篩選器點擊
+            // (Request 3) 監聽篩選器點擊 (桌面版)
             if (categoryNavElement) {
                 categoryNavElement.addEventListener('click', handleFilterClick);
+            }
+            // (Request v3.16) 監聽篩選器點擊 (手機版)
+            if (mobileFooterElement) {
+                mobileFooterElement.addEventListener('click', handleFilterClick);
             }
             
             // (Request v3.15) 監聽視窗大小改變，重新計算 Padding
@@ -193,14 +208,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewInfoElement) previewInfoElement.innerHTML = newInfo; 
 
         // (Request 3.2) 更新左側欄位標籤
-        if (previewLabelNo) { // (Request 3.2) 增加 null 檢查
+        // (Request v3.11) 修正 ID 抓取
+        if (previewLabelNo && previewLabelCategory && previewLabelInfo_Default && previewLabelDocs_Project && previewBlockBio) {
             // 更新標籤
             previewLabelNo.style.display = 'none';
             previewLabelCategory.style.display = 'inline-block';
             previewLabelCategory.textContent = newCategory;
 
-            previewLabelInfo.style.display = 'none';
-            previewLabelDocs.style.display = 'inline-block';
+            previewLabelInfo_Default.style.display = 'none';
+            previewLabelDocs_Project.style.display = 'inline-block';
 
             // 隱藏 BIO
             if (previewBlockBio) previewBlockBio.classList.add('hide-section');
@@ -215,12 +231,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewInfoElement) previewInfoElement.textContent = defaultInfo; // (Request 3.2)
 
         // (Request 3.2) 恢復預設標籤
-        if (previewLabelNo) { // (Request 3.2) 增加 null 檢查
+        // (Request v3.11) 修正 ID 抓取
+        if (previewLabelNo && previewLabelCategory && previewLabelInfo_Default && previewLabelDocs_Project && previewBlockBio) {
             previewLabelNo.style.display = 'inline-block';
             previewLabelCategory.style.display = 'none';
 
-            previewLabelInfo.style.display = 'inline-block';
-            previewLabelDocs.style.display = 'none';
+            previewLabelInfo_Default.style.display = 'inline-block';
+            previewLabelDocs_Project.style.display = 'none';
 
             // 顯示 BIO
             if (previewBlockBio) previewBlockBio.classList.remove('hide-section');
@@ -255,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // (Request v3.10) 觸控事件處理 (僅手機)
     function handleTouchStart(event) {
         // (Request v3.10) 阻止原生滾動 (例如下拉刷新或頁面平移)
-        event.preventDefault();
+        // event.preventDefault(); // (v3.15) 暫時移除，檢查是否為滾動的根本原因
         touchStartY = event.touches[0].clientY;
         touchEndY = event.touches[0].clientY; // (v3.10) 重置
     }
@@ -317,17 +334,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (Request 3) 篩選器點擊事件處理
     function handleFilterClick(event) {
-        event.preventDefault();
         const targetLink = event.target.closest('a[data-filter]');
         
         if (!targetLink) return;
+        event.preventDefault(); // (v3.16) 只有在確定是篩選器點擊時才阻止預設
 
         const filter = targetLink.getAttribute('data-filter');
 
-        // 更新篩選器 .active 狀態
-        if (categoryNavElement) { // (v3.10) 增加 null 檢查 (手機版上不存在)
+        // (Request v3.16) 更新桌面版篩選器 .active 狀態
+        if (categoryNavElement) { 
             categoryNavElement.querySelectorAll('a').forEach(a => a.classList.remove('active'));
-            targetLink.classList.add('active');
+            // (v3.16) 確保 targetLink 在 categoryNavElement 內
+            if (categoryNavElement.contains(targetLink)) {
+                targetLink.classList.add('active');
+            }
+        }
+        // (Request v3.16) 更新手機版篩選器 .active 狀態
+        if (mobileFooterElement) { 
+            mobileFooterElement.querySelectorAll('a[data-filter]').forEach(a => a.classList.remove('active'));
+             // (v3.16) 確保 targetLink 在 mobileFooterElement 內
+            if (mobileFooterElement.contains(targetLink)) {
+                targetLink.classList.add('active');
+            }
         }
 
         // 過濾 visibleItems

@@ -55,9 +55,19 @@
                 </div>
                 <div class="info-divider-block">
                     <!-- MOD: (Request 3.2) 新增 ID 用於動態標籤 (label) -->
+                    <!-- MOD: (v3.9) 修正 ID 重複問題，第二個 INFO/DOCS 應有獨立 ID 或移除 (暫時移除) -->
+                    <!-- 
                     <span id="previewLabelInfo" class="label">INFO</span>
                     <span id="previewLabelDocs" class="label" style="display: none;">DOCS</span>
                     <p id="previewInfo">This space is reserved for future content or additional information about a project.</p>
+                    -->
+                    
+                    <!-- (Request 3.2) 獲取預設 INFO (確保 previewInfo 存在) -->
+                    <!-- 修正：將 INFO 區塊補回，並確保 ID 正確 -->
+                    <span id="previewLabelInfo_Default" class="label">INFO</span>
+                    <span id="previewLabelDocs_Project" class="label" style="display: none;">DOCS</span>
+                    <p id="previewInfo">This space is reserved for future content or additional information about a project.</p>
+
                 </div>
             </div>
 
@@ -77,7 +87,7 @@
             </ul>
         </section>
 
-        <!-- 右欄：作品分類 & 外部連結 -->
+        <!-- 右欄：作品分類 & 外部連結 (僅桌面版) -->
         <nav class="right-column">
             <div class="category-nav" id="categoryNav">
                 <!-- (Request 3) 篩選器 -->
@@ -101,9 +111,19 @@
             </div>
         </nav>
         
-        <!-- ADD: (Request v3.9) 新增僅供手機版顯示的 Footer -->
+        <!-- (Request v3.10) 手機版 Footer -->
         <footer class="mobile-footer">
-            <ul>
+            <!-- (Request v3.16) 新增手機版篩選器 -->
+            <ul class="mobile-filter-nav">
+                <li><a href="#" data-filter="all" class="active">Projects</a></li>
+                <li><a href="#" data-filter="Visual">Visual</a></li>
+                <li><a href="#" data-filter="Photography">Comm. Photo</a></li>
+                <li><a href="#" data-filter="Identity">Branding</a></li>
+            </ul>
+            
+            <!-- (Request v3.10) 手機版外部連結 -->
+            <!-- (Request v3.16) 增加 class 區分 -->
+            <ul class="mobile-contact-links">
                 <li><a href="mailto:email@example.com">Email</a></li>
                 <li><a href="#" target="_blank">Instagram</a></li>
                 <li><a href="#" target="_blank">Behance</a></li>
