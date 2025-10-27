@@ -558,10 +558,12 @@ header {
 .mobile-preview-popup {
     display: none; /* 預設隱藏 */
     position: fixed; /* 固定於視窗 */
-    top: 50%; /* 垂直置中 */
+    /* (Task 1 Fix) 調整 top 和 width */
+    top: 20%; /* 距離頂部 20% */
     left: 50%;
-    width: 200px; /* 懸浮視窗寬度 */
-    aspect-ratio: 9 / 16; /* 匹配封面圖比例 */
+    width: 90vw; /* 佔據視窗寬度 90% */
+    max-width: 400px; /* 最大寬度，避免過大 */
+    aspect-ratio: 16 / 9; /* ! 關鍵：改為橫向比例 */
     background-color: #222;
     border: 1px solid var(--divider-color);
     z-index: 2000; /* 顯示在最上層 */
