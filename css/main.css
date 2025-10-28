@@ -579,8 +579,17 @@ header {
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none; /* 避免攔截觸控 */
     box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* 增加陰影 */
+    overflow: hidden; /* MOD: (Task 1 Fix v4.6) 裁切超出範圍的圖片 */
 }
-/* .is-visible 狀態會在 max-width: 768px 中定義 */
+
+/* MOD: (Task 1 Fix v4.6) 新增圖片樣式 */
+.mobile-preview-popup img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 關鍵：強制圖片填滿 16:9 容器 */
+    display: block; /* 移除圖片底部多餘空間 */
+}
+
 
 /* --- (Task 1 Fix) 僅在桌面版 ( > 768px ) 強制隱藏 popup --- */
 @media (min-width: 769px) {
