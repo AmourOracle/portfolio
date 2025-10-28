@@ -559,8 +559,8 @@ header {
     display: none; /* 預設隱藏 */
     position: fixed; /* 固定於視窗 */
     
-    /* MOD: (Task 1 Fix v4.7) 根據截圖調整位置 */
-    top: 50%; /* 垂直置中 */
+    /* MOD: (Task 1 Fix v4.8) 根據截圖調整位置，略微下移 */
+    top: 55%; /* 垂直置中 (略微下移) */
     right: 5vw; /* 靠右 5% 視窗寬度 */
     width: 180px; /* 固定寬度 180px */
     aspect-ratio: 16 / 9; /* ! 關鍵：橫向比例 */
@@ -576,7 +576,7 @@ header {
     /* 動畫效果 */
     opacity: 0;
     /* MOD: (Task 1 Fix v4.7) 初始狀態調整為置中 + 縮小 */
-    transform: translateY(-50%) scale(0.95); /* 初始狀態 */
+    transform: translateY(-50%) scale(0.95); /* 初始狀態 (Y軸平移自身高度的50%) */
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none; /* 避免攔截觸控 */
     box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* 增加陰影 */
