@@ -560,7 +560,7 @@ header {
     position: fixed; /* 固定於視窗 */
     
     /* MOD: (Task 1 Fix v4.9) 根據要求調整位置，下移至 70% */
-    top: 70%; /* 垂直錨點 (70% 處) */
+    top: 60%; /* 垂直錨點 (60% 處) */
     right: 5vw; /* 靠右 5% 視窗寬度 */
     width: 180px; /* 固定寬度 180px */
     aspect-ratio: 16 / 9; /* ! 關鍵：橫向比例 */
