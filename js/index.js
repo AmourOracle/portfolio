@@ -48,6 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchEndY = 0;
     const touchThreshold = 50; // 觸控滑動的最小距離 (px)
     
+    // MOD: (FIX_v4.2) 定義不同裝置的節流時間
+    const DESKTOP_WHEEL_THROTTLE = 300; // 桌面滾輪節流 (ms) - 較長以處理高頻事件
+    const MOBILE_TOUCH_THROTTLE = 150;  // 手機觸控節流 (ms) - 較短以保持靈敏
+
     // (Request v3.15) 動態設定手機版的 Padding
     function setDynamicPadding() {
         // 僅在手機版執行
@@ -271,7 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isScrolling) return; // 節流
         isScrolling = true;
 
-        setTimeout(() => { isScrolling = false; }, 150); // 節流時間
+        // MOD: (FIX_v4.1) 延長節流時間，以處理高頻率滾輪事件 (例如 15" 筆電觸控板)
+        // MOD: (FIX_v4.2) 使用桌面版節流時間
+        setTimeout(() => { isScrolling = false; }, DESKTOP_WHEEL_THROTTLE); // 節流時間
 
         const direction = event.deltaY > 0 ? 1 : -1; // 1 = 向下, -1 = 向上
         let newIndex = currentActiveIndex + direction;
@@ -308,6 +314,14 @@ document.addEventListener('DOMContentLoaded', () => {
         touchEndY = event.touches[0].clientY;
     }
 
+--------------------------------------------------------------------------------
+// [ 2025-10-24 ]
+// 說明：此處為 v4.2 修改點。
+// 理由：原先 (v4.1) 桌面和手機版共用 300ms 節流，導致手機版觸控延遲感過重。
+// 變更：將手機版 (handleTouchEnd) 的節流時間改為使用 MOBILE_TOUCH_THROTTLE (150ms)，
+//      以大幅提升觸控滑動的靈敏度 (responsiveness)，使其更接近 iOS 原生體驗。
+//      桌面版 (handleWheelScroll) 則維持 300ms (DESKTOP_WHEEL_THROTTLE) 以確保滾動穩定。
+--------------------------------------------------------------------------------
     function handleTouchEnd(event) {
         // (Task 2 Fix) 移除此處的 event.preventDefault()
         // event.preventDefault(); 
@@ -322,7 +336,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // (Request v3.10) 視為滑動
             isScrolling = true;
-            setTimeout(() => { isScrolling = false; }, 300); // 滾動動畫節流
+            // MOD: (FIX_v4.2) 使用手機版節流時間，以增加靈敏度
+            setTimeout(() => { isScrolling = false; }, MOBILE_TOUCH_THROTTLE); // 滾動動畫節流 (原為 300ms)
 
             const direction = deltaY > 0 ? -1 : 1; // 1 = 向下, -1 = 向上 (觸控方向相反)
             let newIndex = currentActiveIndex + direction;
@@ -418,3 +433,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+

@@ -1,4 +1,4 @@
-Sywan Portfolio 專案開發指南 v4.0
+Sywan Portfolio 專案開發指南 v4.17
 
 這份文件是 Sywan 個人作品集網站的官方開發指南，旨在統一定義專案架構、開發流程與內容管理規範。
 
@@ -6,9 +6,9 @@ Sywan Portfolio 專案開發指南 v4.0
 
 本專案的核心架構理念是將「網站內容」與「網站結構」完全分離。
 
-網站結構 (Structure): 由 .html, main.css, .js 等檔案定義。這些檔案負責網站的版面、外觀和互動邏輯。
+網站結構 (Structure): 由 .html, main.css, .js 等檔案定義。這些檔案負責網站的版面、外觀和互動 logique。
 
-網站內容 (Content): 所有的作品文字、圖片路徑和其他資訊，全部集中儲存在 data/projects.json 這個檔案中。
+網站內容 (Content): 所有的作品文字、圖片路徑和其他資訊, 全部集中儲存在 data/projects.json 這個檔案中。
 
 優點:
 
@@ -16,32 +16,32 @@ Sywan Portfolio 專案開發指南 v4.0
 
 結構清晰: 程式碼保持乾淨，只專注於功能實現。
 
-專案檔案結構 (v4.0)
+專案檔案結構 (v4.15)
 
 所有檔案應依照以下結構進行組織：
 
 /sywan-portfolio/
-├── index.html       // 載入動畫頁 (網站進入點)
-├── portfolio.html   // 網站首頁 (作品索引)
-├── project.html     // 專案內頁 (作品範本)
-├── about.html       // 關於我頁面 (靜態內容)
+├─ index.html       // 載入動畫頁 (網站進入點)
+├─ portfolio.html   // 網站首頁 (作品索引)
+├─ project.html     // 專案內頁 (作品範本)
+├─ about.html       // 關於我頁面 (靜態內容)
 │
-├── /data/
-│   └── projects.json  // 唯一的作品資料庫 (Single Source of Truth)
+├─ /data/
+│  └─ projects.json  // 唯一的作品資料庫 (Single Source of Truth)
 │
-├── /css/
-│   └── main.css       // 網站所有共用樣式表
+├─ /css/
+│  └─ main.css       // 網站所有共用樣式表
 │
-├── /js/
-│   ├── index.js       // 僅用於 portfolio.html 的腳本
-│   └── project.js     // 僅用於 project.html 的腳本
+├─ /js/
+│  ├─ index.js       // 僅用於 portfolio.html 的腳本
+│  └─ project.js     // 僅用於 project.html 的腳本
 │
-└── /assets/
-    └── /images/       // 存放所有專案圖片 (註：目前使用 placehold.co)
-        └── ...
+└─ /assets/
+   └─ /images/       // (建議) 存放所有專案圖片
+      └─ ...
 
 
-內容管理 (data/projects.json)
+內容管理 (data/projects.json) (v4.17)
 
 data/projects.json 是整個作品集的心臟。它是一個 JSON 陣列 (Array)，陣列中的每一個物件 (Object) 都代表一個作品。
 
@@ -50,7 +50,7 @@ data/projects.json 是整個作品集的心臟。它是一個 JSON 陣列 (Array
 {
   "id": "kinetic-poster",
   "number": "01",
-  "category": "Visual", 
+  "category": "Visual",
   "title": "Kinetic Poster",
   "bio": "專案的簡短介紹，會顯示在首頁的 hover 預覽中。",
   "info": "專案的詳細資訊 (角色、年份等)，支援 <br> 換行。",
@@ -78,7 +78,7 @@ data/projects.json 是整個作品集的心臟。它是一個 JSON 陣列 (Array
 
 "images": [必要] 一個包含多張圖片路徑的陣列，用於專案內頁的圖片展示區。
 
-頁面邏輯 (v4.0)
+頁面邏輯 (v4.17)
 
 index.html (載入動畫頁)
 
@@ -88,7 +88,7 @@ index.html (載入動畫頁)
 
 portfolio.html (首頁 / 作品索引)
 
-此頁面具有桌面版和行動版兩套完全不同的佈局和互動邏輯，由 main.css 和 index.js 控制。
+此頁面具有桌面版和行動版兩套完全不同的佈局和互動 logique，由 main.css 和 index.js 控制。
 
 桌面版 (Desktop) 邏輯 (v3.17)
 
@@ -110,7 +110,7 @@ body 設為 overflow: hidden;，僅中欄可滾動。
 
 預覽更新: setActiveItem 函式會觸發左側欄位更新 (讀取 data-* 屬性)，將標籤從 NO./BIO 切換為 [Category]/DOCS (並隱藏 BIO 區塊)。
 
-行動版 (Mobile) 邏輯 (v3.17)
+行動版 (Mobile) 邏輯 (v4.10)
 
 佈局 (main.css):
 
@@ -126,7 +126,7 @@ body 設為 overflow: hidden; (鎖定頁面滾動)。
 
 桌面版的 .left-column (預覽區) 和 .right-column (篩選器) 被 display: none; 隱藏。
 
-Footer 篩選器 (.mobile-filter-nav) 採用 overflow-x: auto; (水平滾動) 以避免換行 (v3.17)。
+(v4.2 修正) Footer 篩選器 (.mobile-filter-nav) 採用 overflow-x: auto; 和 flex-wrap: nowrap; (水平滾動) 以避免換行。
 
 互動 (index.js):
 
@@ -134,11 +134,25 @@ Footer 篩選器 (.mobile-filter-nav) 採用 overflow-x: auto; (水平滾動) �
 
 iOS 插槽效果: touchmove 會 preventDefault() 阻止瀏覽器原生平移；touchend 會計算手勢方向，並呼叫 setActiveItem，實現「iOS 鬧鐘選擇器」般的插槽滾動。
 
-動態 Padding (v3.15): * [關鍵] 為了讓 scrollIntoView({ block: 'center' }) 能在 1fr 區域中正確置中，setDynamicPadding() 函式會動態計算 .project-list 所需的 padding-top 和 padding-bottom。
+(v4.2 修正) 點擊修正: touchend 僅在偵測為「滑動」時才 preventDefault()，確保「點擊」手勢能觸發 handleItemClick。
 
-此舉解決了 1fr 區域因 padding 繼承錯誤而導致內容溢出、body 滾動的根本問題。
+動態 Padding (v3.15): [關鍵] 為了讓 scrollIntoView({ block: 'center' }) 能在 1fr 區域中正確置中，setDynamicPadding() 函式會動態計算 .project-list 所需的 padding-top 和 padding-bottom。
 
-篩選器綁定 (v3.16): handleFilterClick 事件同時綁定到桌面版 (#categoryNav) 和行動版 (.mobile-footer) 的篩選器上。
+[新增] 行動版預覽懸浮視窗 (v4.10):
+
+HTML: portfolio.html 中包含一個 <div id="mobilePreviewPopup"> 元素。
+
+CSS: .mobile-preview-popup 樣式被設為 position: fixed，並透過 v4.10 的迭代，定位於 top: 60%, right: 5vw。其 aspect-ratio 固定為 16/9，內部 <img> 則使用 object-fit: cover 來裁切。
+
+JS (index.js):
+
+setActiveItem: 當項目啟用時，會更新 #mobilePreviewImage 的 src 並添加 .is-visible class 來顯示彈窗。
+
+handleTouchStart: 當使用者手指觸碰螢幕時，立即隱藏彈窗。
+
+handleTouchEnd: 如果手勢被判定為「點擊」(非滑動)，則重新顯示彈窗。
+
+handleItemClick: 點擊項目時隱藏彈窗，準備跳轉頁面。
 
 project.html (專案內頁)
 
@@ -154,19 +168,23 @@ js/project.js 會讀取瀏覽器 URL 中的 ?id= 參數。
 
 Next Project: project.js 會再次抓取 data/projects.json，過濾掉當前專案，從剩下的專案中隨機挑選一個，顯示在左下角的「Next Project」按鈕上。
 
+[修改] 佈局 (main.css v4.3):
+
+.project-nav-bottom (包含 "Back" 和 "Next" 按鈕) 已從 <aside> (左側欄) 移至 <main> (主容器) 的末端。
+
+CSS Grid (grid-template-rows: 1fr auto) 被用來確保此導航列在桌面版和手機版中，都固定顯示於所有內容的最下方。
+
 行動版佈局 (main.css):
 
 body 恢復為 overflow: auto; (頁面可滾動)。
 
-project-container 改為 grid-template-columns: 1fr; (單欄佈局)。
-
-.left-column (資訊欄) 會在 DOM 中正常顯示於 .project-content-column (圖片) 之前。
+project-container 改為 grid-template-columns: 1fr; (單欄佈局)，並使用 grid-template-rows: auto 1fr auto; 確保 Info、Images、Nav 的顯示順序。
 
 about.html (關於我頁面)
 
 邏輯: 一個完全靜態的「關於我」頁面，不載入任何 js/index.js 或 js/project.js 腳本。
 
-行動版佈局 (main.css): 與 project.html 的行動版佈局規則完全一致（單欄、可滾動）。
+行動版佈局 (main.css): 与 project.html 的行動版佈局規則完全一致（單欄、可滾動）。
 
 字體系統
 
