@@ -558,19 +558,24 @@ header {
 .mobile-preview-popup {
     display: none; /* 預設隱藏 */
     position: fixed; /* 固定於視窗 */
-    /* (Task 1 Fix) 調整 top 和 width */
-    top: 20%; /* 距離頂部 20% */
-    left: 50%;
-    width: 90vw; /* 佔據視窗寬度 90% */
-    max-width: 400px; /* 最大寬度，避免過大 */
-    aspect-ratio: 16 / 9; /* ! 關鍵：改為橫向比例 */
+    /* (Task 1 Fix) 調整 top, width, aspect-ratio, left, transform */
+    bottom: 80px; /* 距離底部 80px (考慮到手機底部導航) */
+    right: 20px; /* 距離右側 20px */
+    width: 180px; /* 固定寬度 180px */
+    aspect-ratio: 16 / 9; /* ! 關鍵：橫向比例 */
+    
+    /* MOD: 移除 left 和 transform 避免與 right, bottom 衝突 */
+    left: auto; 
+    transform: none; 
+
     background-color: #222;
     border: 1px solid var(--divider-color);
     z-index: 2000; /* 顯示在最上層 */
     
     /* 動畫效果 */
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.95); /* 初始狀態 */
+    /* (Task 1 Fix) 初始狀態調整為右下角滑入 */
+    transform: translateY(20px) scale(0.95); /* 初始狀態 */
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none; /* 避免攔截觸控 */
     box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* 增加陰影 */
@@ -718,7 +723,8 @@ header {
     .mobile-preview-popup.is-visible {
         display: block;
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1); /* 最終狀態 */
+        /* (Task 1 Fix) 調整為滑入動畫，與初始狀態對應 */
+        transform: translateY(0) scale(1); /* 最終狀態 */
     }
 }
 
