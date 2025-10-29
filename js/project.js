@@ -18,6 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (projectId) {
         // 2. 讀取 JSON 檔案 (路徑相對於 project.html)
+        // MOD: (FIX_v1.2) 將路徑還原為 portfolioDevGuide.md 所規範的 './data/projects.json'
+        // 理由：v1.1 的修正是錯誤的，應遵循文件規範，而非遷就錯誤的檔案位置。
         fetch('./data/projects.json')
             .then(response => {
                 if (!response.ok) {

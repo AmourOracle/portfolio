@@ -79,6 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // 1. 獲取專案資料並生成列表
+    // MOD: (FIX_v4.4) 將路徑還原為 portfolioDevGuide.md 所規範的 './data/projects.json'
+    // 理由：v4.3 的修正是錯誤的，應遵循文件規範，而非遷就錯誤的檔案位置。
     fetch('./data/projects.json')
         .then(response => {
             if (!response.ok) {
