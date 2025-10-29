@@ -37,6 +37,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // (FEAT_v4.13) 獲取轉場遮罩
     const pageTransitionOverlay = document.getElementById('pageTransitionOverlay');
 
+    // (FEAT_v4.19) 互動音效
+    let audioSynth = null;
+    let audioStarted = false;
+    // 檢查 Tone 是否成功載入
+    if (typeof Tone !== 'undefined') {
+        try {
+            audioSynth = new Tone.Synth().toDestination();
+        } catch (e) {
+            console.error("Could not initialize Tone.js:", e);
+        }
+    } else {
+        console.warn("Tone.js not loaded.");
+    }
+
+    /**
+     * (FEAT_v4.19) 啟動音訊上下文
+     * 瀏覽器要求音訊必須由使用者互動觸發
+     */
+    function startAudioContext() {
+        if (!audioStarted && Tone && Tone.context && Tone.context.state !== 'running' && Tone.start) {
+            Tone.start();
+            audioStarted = true;
+        }
+    }
+
 
     let allProjectItems = []; // 用於儲存所有專案 DOM 元素
     let currentActiveIndex = 2; // (Request 3) 預設啟用索引 (第三個)
@@ -236,12 +261,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const randTop = Math.floor(Math.random() * 71) + 10; // 10% to 80%
                 
                 // 2. 隨機旋轉和縮放 (增加動態感)
-                const randRotation = Math.floor(Math.random() * 20) - 10; // -10deg to +10deg
-                const randScale = Math.random() * 0.2 + 0.9; // 0.9 to 1.1 scale
+                // MOD: (v4.19) 移除旋轉
+                // const randRotation = Math.floor(Math.random() * 20) - 10; // -10deg to +10deg
+                
+                // MOD: (v4.19) 調整縮放範圍為 0.8 至 1.2 (20% 偏差)
+                const randScale = Math.random() * 0.4 + 0.8; // 0.8 to 1.2 scale
                 
                 // 3. 應用隨機樣式 (transform 會在 .is-visible 添加時觸發 CSS 過渡)
                 mobilePreviewPopup.style.top = `${randTop}vh`;
-                mobilePreviewPopup.style.transform = `scale(${randScale}) rotate(${randRotation}deg)`;
+                
+                // MOD: (v4.19) 移除旋轉
+                mobilePreviewPopup.style.transform = `scale(${randScale})`;
 
                 // 4. 隨機水平位置 (左或右側 "Gutter")
                 // 透過 coin-flip 決定在左側 (true) 還是右側 (false)
@@ -306,6 +336,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (Request 4) 滾輪事件處理 (僅桌面)
     function handleWheelScroll(event) {
+        // (FEAT_v4.19) 嘗試啟動音訊
+        startAudioContext();
+        
         event.preventDefault(); // 阻止頁面滾動
 
         if (isScrolling) return; // 節流
@@ -327,12 +360,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (newIndex !== currentActiveIndex) {
+            // (FEAT_v4.19) 播放音效
+            if (audioSynth) {
+                audioSynth.triggerAttackRelease("G6", "50ms");
+            }
             setActiveItem(newIndex, true);
         }
     }
 
     // (Request v3.10) 觸控事件處理 (僅手機)
     function handleTouchStart(event) {
+        // (FEAT_v4.19) 嘗試啟動音訊
+        startAudioContext();
+        
         // (Task 3) 隱藏懸浮視窗
         if (isMobile && mobilePreviewPopup) {
             mobilePreviewPopup.classList.remove('is-visible');
@@ -387,6 +427,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (newIndex !== currentActiveIndex) {
+                // (FEAT_v4.19) 播放音效
+                if (audioSynth) {
+                    audioSynth.triggerAttackRelease("G6", "50ms");
+                }
                 setActiveItem(newIndex, true);
             }
         }
@@ -397,6 +441,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (Request 4) 點擊事件處理
     function handleItemClick(event) {
+        // (FEAT_v4.19) 嘗試啟動音訊
+        startAudioContext();
+        
         // (Request v3.10) 如果正在滾動，則忽略點擊
         if (isScrolling) {
             event.preventDefault();
@@ -422,6 +469,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // 如果不是導航 (例如點擊在 <li> 的 padding 處)，則執行滾動
             const newIndex = visibleItems.indexOf(clickedItem);
             if (newIndex > -1 && newIndex !== currentActiveIndex) {
+                // (FEAT_v4.19) 播放音效
+                if (audioSynth) {
+                    audioSynth.triggerAttackRelease("G6", "50ms");
+                }
                 setActiveItem(newIndex, true);
             }
         }
@@ -433,6 +484,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!targetLink) return;
         event.preventDefault(); // (v3.16) 只有在確定是篩選器點擊時才阻止預設
+        
+        // (FEAT_v4.19) 嘗試啟動音訊
+        startAudioContext();
 
         const filter = targetLink.getAttribute('data-filter');
 
@@ -471,6 +525,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 重置啟用項目
         if (visibleItems.length > 0) {
+            // (FEAT_v4.19) 播放音效
+            if (audioSynth) {
+                audioSynth.triggerAttackRelease("G6", "50ms");
+            }
             setActiveItem(0, false); // 滾動到篩選後的第一個項目
         } else {
             // 如果篩選後沒有項目
@@ -516,6 +574,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         allLinks.forEach(link => {
             link.addEventListener('click', (event) => {
+                // (FEAT_v4.19) 嘗試啟動音訊
+                startAudioContext();
+                
                 // 僅處理本地跳轉 (而非 mailto: 或 target="_blank")
                 if (link.hostname === window.location.hostname && !link.href.startsWith('mailto:') && !link.target) {
                     event.preventDefault(); // 阻止預設點擊
@@ -525,4 +586,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-

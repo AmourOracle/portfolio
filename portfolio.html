@@ -22,6 +22,9 @@
       })(document);
     </script>
     
+    <!-- (FEAT_v4.19) 載入 Tone.js 用於互動音效 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.min.js"></script>
+    
     <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
     <link rel="stylesheet" href="css/main.css">
 </head>
@@ -100,7 +103,8 @@
             </div>
             
             <!-- MOD: .contact-links 從左欄移至此處 -->
-            <div class="contact-links">
+            <!-- (FEAT_v4.13) 新增 ID "desktopContactLinks" 用於轉場綁定 -->
+            <div class="contact-links" id="desktopContactLinks">
                 <ul>
                     <li><a href="mailto:email@example.com">Email</a></li>
                     <li><a href="#" target="_blank">Instagram</a></li>
@@ -121,7 +125,8 @@
             
             <!-- (Request v3.10) 手機版外部連結 -->
             <!-- (Request v3.16) 增加 class 區分 -->
-            <ul class="mobile-contact-links">
+            <!-- (FEAT_v4.13) 新增 ID "mobileContactLinks" 用於轉場綁定 -->
+            <ul class="mobile-contact-links" id="mobileContactLinks">
                 <li><a href="mailto:email@example.com">Email</a></li>
                 <li><a href="#" target="_blank">Instagram</a></li>
                 <li><a href="about.html">Me</a></li>
@@ -133,6 +138,10 @@
             <img id="mobilePreviewImage" src="" alt="Project preview">
         </div>
     </main>
+    
+    <!-- (FEAT_v4.13) 頁面轉場遮罩 -->
+    <!-- 注意：此元素必須放置在 <main> 之外，以確保 z-index 正常運作 -->
+    <div class_name="page-transition-overlay" id="pageTransitionOverlay"></div>
 
     <!-- 連結外部 JavaScript 檔案 -->
     <script src="js/index.js"></script>

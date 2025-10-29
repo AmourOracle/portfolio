@@ -1,4 +1,4 @@
-Sywan Portfolio 專案開發指南 v4.17
+Sywan Portfolio 專案開發指南 v4.18
 
 這份文件是 Sywan 個人作品集網站的官方開發指南，旨在統一定義專案架構、開發流程與內容管理規範。
 
@@ -6,7 +6,7 @@ Sywan Portfolio 專案開發指南 v4.17
 
 本專案的核心架構理念是將「網站內容」與「網站結構」完全分離。
 
-網站結構 (Structure): 由 .html, main.css, .js 等檔案定義。這些檔案負責網站的版面、外觀和互動 logique。
+網站結構 (Structure): 由 .html, main.css, .js 等檔案定義。這些檔案負責網站的版面、外觀和互動邏輯。
 
 網站內容 (Content): 所有的作品文字、圖片路徑和其他資訊, 全部集中儲存在 data/projects.json 這個檔案中。
 
@@ -78,7 +78,7 @@ data/projects.json 是整個作品集的心臟。它是一個 JSON 陣列 (Array
 
 "images": [必要] 一個包含多張圖片路徑的陣列，用於專案內頁的圖片展示區。
 
-頁面邏輯 (v4.17)
+頁面邏輯 (v4.18)
 
 index.html (載入動畫頁)
 
@@ -88,7 +88,15 @@ index.html (載入動畫頁)
 
 portfolio.html (首頁 / 作品索引)
 
-此頁面具有桌面版和行動版兩套完全不同的佈局和互動 logique，由 main.css 和 index.js 控制。
+此頁面具有桌面版和行動版兩套完全不同的佈局和互動邏輯，由 main.css 和 index.js 控制。
+
+[新增] 頁面轉場 (Page Transition) (v4.13)
+
+為了隱藏 project.html 載入時的 "Loading..." 閃爍，index.js (v4.13) 實作了「送出轉場 (Outgoing Transition)」。
+
+它會攔截所有頁面跳轉點擊（包含作品連結和 "Me" 等導航連結）。
+
+點擊後，會先淡入一個全螢幕黑色遮罩 (.page-transition-overlay)，等待 400ms 動畫結束後，才真正執行 window.location.href 頁面跳轉。
 
 桌面版 (Desktop) 邏輯 (v3.17)
 
@@ -110,7 +118,7 @@ body 設為 overflow: hidden;，僅中欄可滾動。
 
 預覽更新: setActiveItem 函式會觸發左側欄位更新 (讀取 data-* 屬性)，將標籤從 NO./BIO 切換為 [Category]/DOCS (並隱藏 BIO 區塊)。
 
-行動版 (Mobile) 邏輯 (v4.10)
+行動版 (Mobile) 邏輯 (v4.13)
 
 佈局 (main.css):
 
@@ -138,21 +146,17 @@ iOS 插槽效果: touchmove 會 preventDefault() 阻止瀏覽器原生平移；t
 
 動態 Padding (v3.15): [關鍵] 為了讓 scrollIntoView({ block: 'center' }) 能在 1fr 區域中正確置中，setDynamicPadding() 函式會動態計算 .project-list 所需的 padding-top 和 padding-bottom。
 
-[新增] 行動版預覽懸浮視窗 (v4.10):
+[修改] 行動版預覽懸浮視窗 (v4.13)
 
 HTML: portfolio.html 中包含一個 <div id="mobilePreviewPopup"> 元素。
 
-CSS: .mobile-preview-popup 樣式被設為 position: fixed，並透過 v4.10 的迭代，定位於 top: 60%, right: 5vw。其 aspect-ratio 固定為 16/9，內部 <img> 則使用 object-fit: cover 來裁切。
+CSS (main.css): transition 屬性已加入 cubic-bezier 函式，提供「彈簧」般的彈出動畫 (v4.13)。
 
-JS (index.js):
+JS (index.js): setActiveItem 函式已更新 (v4.12)。
 
-setActiveItem: 當項目啟用時，會更新 #mobilePreviewImage 的 src 並添加 .is-visible class 來顯示彈窗。
+隨機定位 (Randomized Position): 彈窗不再固定於 top: 60%。setActiveItem 會在 10vh 至 80vh (垂直) 和螢幕左右兩側 5vw 至 15vw (水平) 的「安全區域 (Gutters)」內計算隨機位置、旋轉角度和縮放，確保彈窗不會遮擋中央的高光標題。
 
-handleTouchStart: 當使用者手指觸碰螢幕時，立即隱藏彈窗。
-
-handleTouchEnd: 如果手勢被判定為「點擊」(非滑動)，則重新顯示彈窗。
-
-handleItemClick: 點擊項目時隱藏彈窗，準備跳轉頁面。
+互動: 彈窗 CSS 設有 pointer-events: none (事件穿透)，且 handleTouchStart (手指觸碰) 會立即隱藏彈窗，確保 100% 不干擾列表滾動。
 
 project.html (專案內頁)
 
@@ -174,11 +178,15 @@ Next Project: project.js 會再次抓取 data/projects.json，過濾掉當前專
 
 CSS Grid (grid-template-rows: 1fr auto) 被用來確保此導航列在桌面版和手機版中，都固定顯示於所有內容的最下方。
 
-行動版佈局 (main.css):
+[新增] 載入轉場 (Incoming Transition) (v4.14):
 
-body 恢復為 overflow: auto; (頁面可滾動)。
+project.html 的 <main> 標籤擁有 id="projectMainContainer"。
 
-project-container 改為 grid-template-columns: 1fr; (單欄佈局)，並使用 grid-template-rows: auto 1fr auto; 確保 Info、Images、Nav 的顯示順序。
+CSS (main.css) 預設將 #projectMainContainer 設為 opacity: 0 (透明) 且 filter: blur(10px) (模糊)。
+
+project.js (v4.14) 會在 fetch 資料並將所有內容（標題、圖片）填入 DOM 之後，才為 #projectMainContainer 添加 .is-loaded class。
+
+此 class 會觸發 CSS 動畫，使頁面內容平滑地淡入並恢復清晰，完全遮蔽 "Loading..." 字樣，與 v4.13 的送出轉場達成無縫銜接。
 
 about.html (關於我頁面)
 
