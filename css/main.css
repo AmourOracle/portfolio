@@ -16,6 +16,27 @@
     --font-mono: var(--font-en), var(--font-zh);
 }
 
+/* --- (FEAT_v4.13) Page Transition Overlay --- */
+.page-transition-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--background-color);
+    z-index: 9999;
+    opacity: 0; /* 預設隱藏 */
+    pointer-events: none; /* 預設穿透 */
+    transition: opacity 0.4s ease-in-out;
+}
+/* 遮罩啟用狀態 (淡入) */
+.page-transition-overlay.is-active {
+    opacity: 1;
+    pointer-events: auto; /* 啟用時攔截點擊 */
+}
+/* --- End of Page Transition --- */
+
+
 /* --- 基本設定 --- */
 body {
     margin: 0;
@@ -577,7 +598,10 @@ header {
     opacity: 0;
     /* MOD: (FEAT_v4.11) 移除 translateY，改為純 scale (JS 將提供 scale/rotate) */
     transform: scale(0.9); /* 初始狀態 (縮小) */
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    
+    /* MOD: (FEAT_v4.13) 優化彈出動畫，使用 cubic-bezier 模擬彈簧效果 */
+    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
     pointer-events: none; /* 避免攔截觸控 */
     box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* 增加陰影 */
     overflow: hidden; /* MOD: (Task 1 Fix v4.6) 裁切超出範圍的圖片 */
@@ -859,3 +883,4 @@ header {
         gap: 2rem; 
     }
 }
+

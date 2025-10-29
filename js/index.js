@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewInfoElement = document.getElementById('previewInfo');
     const defaultInfo = previewInfoElement ? previewInfoElement.textContent : '';
 
+    // (FEAT_v4.13) 獲取轉場遮罩
+    const pageTransitionOverlay = document.getElementById('pageTransitionOverlay');
+
 
     let allProjectItems = []; // 用於儲存所有專案 DOM 元素
     let currentActiveIndex = 2; // (Request 3) 預設啟用索引 (第三個)
@@ -160,6 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // (Request v3.15) 監聽視窗大小改變，重新計算 Padding
             window.addEventListener('resize', setDynamicPadding);
+            
+            // (FEAT_v4.13) 綁定轉場事件到 "Me" 連結
+            bindTransitionLinks();
         })
         .catch(error => {
             console.error('Error fetching projects:', error);
@@ -404,6 +410,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 mobilePreviewPopup.classList.remove('is-visible');
             }
 
+            // (FEAT_v4.13) 檢查這是否為一個導航點擊
+            const link = clickedItem.querySelector('a');
+            if (link) {
+                // 這是導航，觸發轉場
+                event.preventDefault(); // 阻止預設的點擊行為
+                handlePageTransition(link.href);
+                return; // 停止執行後續的 setActiveItem
+            }
+
+            // 如果不是導航 (例如點擊在 <li> 的 padding 處)，則執行滾動
             const newIndex = visibleItems.indexOf(clickedItem);
             if (newIndex > -1 && newIndex !== currentActiveIndex) {
                 setActiveItem(newIndex, true);
@@ -461,6 +477,52 @@ document.addEventListener('DOMContentLoaded', () => {
             resetPreview();
             allProjectItems.forEach(item => item.classList.remove('is-active'));
         }
+    }
+
+    // --- (FEAT_v4.13) 頁面轉場 ---
+    
+    // 轉場動畫的持續時間 (ms)，必須與 CSS 中的 transition-duration 一致
+    const TRANSITION_DURATION = 400;
+
+    /**
+     * 處理頁面跳轉的函式
+     * @param {string} destination - 目標 URL
+     */
+    function handlePageTransition(destination) {
+        if (pageTransitionOverlay) {
+            // 1. 啟用遮罩 (淡入)
+            pageTransitionOverlay.classList.add('is-active');
+            
+            // 2. 等待遮罩動畫完成
+            setTimeout(() => {
+                // 3. 執行跳轉
+                window.location.href = destination;
+            }, TRANSITION_DURATION);
+        } else {
+            // 如果遮罩不存在，立即跳轉 (Fallback)
+            window.location.href = destination;
+        }
+    }
+
+    /**
+     * 綁定所有需要轉場的 <a> 標籤
+     */
+    function bindTransitionLinks() {
+        // (FEAT_v4.13) 根據 v4.13 HTML 檔案中新增的 ID 抓取
+        const desktopLinks = document.querySelectorAll('#desktopContactLinks a');
+        const mobileLinks = document.querySelectorAll('#mobileContactLinks a');
+        
+        const allLinks = [...desktopLinks, ...mobileLinks];
+
+        allLinks.forEach(link => {
+            link.addEventListener('click', (event) => {
+                // 僅處理本地跳轉 (而非 mailto: 或 target="_blank")
+                if (link.hostname === window.location.hostname && !link.href.startsWith('mailto:') && !link.target) {
+                    event.preventDefault(); // 阻止預設點擊
+                    handlePageTransition(link.href);
+                }
+            });
+        });
     }
 });
 
