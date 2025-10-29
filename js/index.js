@@ -585,4 +585,5 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-});
+}); // <-- (FIX_v4.21) 確保所有程式碼都在 DOMContentLoaded 內部
+
