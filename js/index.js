@@ -316,14 +316,14 @@ document.addEventListener('DOMContentLoaded', () => {
         touchEndY = event.touches[0].clientY;
     }
 
---------------------------------------------------------------------------------
+
 // [ 2025-10-24 ]
 // 說明：此處為 v4.2 修改點。
 // 理由：原先 (v4.1) 桌面和手機版共用 300ms 節流，導致手機版觸控延遲感過重。
 // 變更：將手機版 (handleTouchEnd) 的節流時間改為使用 MOBILE_TOUCH_THROTTLE (150ms)，
 //      以大幅提升觸控滑動的靈敏度 (responsiveness)，使其更接近 iOS 原生體驗。
 //      桌面版 (handleWheelScroll) 則維持 300ms (DESKTOP_WHEEL_THROTTLE) 以確保滾動穩定。
---------------------------------------------------------------------------------
+
     function handleTouchEnd(event) {
         // (Task 2 Fix) 移除此處的 event.preventDefault()
         // event.preventDefault(); 
