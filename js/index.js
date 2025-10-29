@@ -222,6 +222,34 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isMobile && mobilePreviewPopup && mobilePreviewImage) {
             if (newImageSrc) {
                 mobilePreviewImage.src = newImageSrc;
+
+                // --- (FEAT_v4.11) 隨機彈出視窗 ---
+                // MOD: (FEAT_v4.12) 擴大垂直隨機範圍，加入上方區域
+                // 1. 隨機垂直位置 (10% 到 80% 之間)
+                // Math.random() * (max - min + 1) + min
+                const randTop = Math.floor(Math.random() * 71) + 10; // 10% to 80%
+                
+                // 2. 隨機旋轉和縮放 (增加動態感)
+                const randRotation = Math.floor(Math.random() * 20) - 10; // -10deg to +10deg
+                const randScale = Math.random() * 0.2 + 0.9; // 0.9 to 1.1 scale
+                
+                // 3. 應用隨機樣式 (transform 會在 .is-visible 添加時觸發 CSS 過渡)
+                mobilePreviewPopup.style.top = `${randTop}vh`;
+                mobilePreviewPopup.style.transform = `scale(${randScale}) rotate(${randRotation}deg)`;
+
+                // 4. 隨機水平位置 (左或右側 "Gutter")
+                // 透過 coin-flip 決定在左側 (true) 還是右側 (false)
+                if (Math.random() > 0.5) {
+                    // 在左側 (5vw 到 15vw 之間)
+                    mobilePreviewPopup.style.left = `${Math.floor(Math.random() * 11) + 5}vw`;
+                    mobilePreviewPopup.style.right = 'auto'; // 清除另一側
+                } else {
+                    // 在右側 (5vw 到 15vw 之間)
+                    mobilePreviewPopup.style.right = `${Math.floor(Math.random() * 11) + 5}vw`;
+                    mobilePreviewPopup.style.left = 'auto'; // 清除另一側
+                }
+                // --- End of (FEAT_v4.11) ---
+
                 mobilePreviewPopup.classList.add('is-visible');
             } else {
                 mobilePreviewPopup.classList.remove('is-visible');

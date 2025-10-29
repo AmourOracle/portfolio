@@ -555,28 +555,28 @@ header {
 }
 
 /* --- (Task 3) ADD: Mobile Preview Popup --- */
+/* --- MOD: (FEAT_v4.11) 移除固定的 top/right 定位，改由 JS 控制 --- */
 .mobile-preview-popup {
     display: none; /* 預設隱藏 */
     position: fixed; /* 固定於視窗 */
     
-    /* MOD: (Task 1 Fix v4.10) 根據要求調整位置，下移至 60% */
-    top: 60%; /* 垂直錨點 (60% 處) */
-    right: 5vw; /* 靠右 5% 視窗寬度 */
+    /* MOD: (FEAT_v4.11) 移除 top, right, left, bottom */
+    /* top: 60%; */
+    /* right: 5vw; */
+    /* left: auto; */
+    /* bottom: auto; */
+
     width: 180px; /* 固定寬度 180px */
     aspect-ratio: 16 / 9; /* ! 關鍵：橫向比例 */
     
-    /* MOD: 移除 left, bottom */
-    left: auto; 
-    bottom: auto;
-
     background-color: #222;
     border: 1px solid var(--divider-color);
     z-index: 2000; /* 顯示在最上層 */
     
     /* 動畫效果 */
     opacity: 0;
-    /* MOD: (Task 1 Fix v4.7) 初始狀態調整為置中 + 縮小 */
-    transform: translateY(-50%) scale(0.95); /* 初始狀態 (Y軸平移自身高度的50%) */
+    /* MOD: (FEAT_v4.11) 移除 translateY，改為純 scale (JS 將提供 scale/rotate) */
+    transform: scale(0.9); /* 初始狀態 (縮小) */
     transition: opacity 0.3s ease, transform 0.3s ease;
     pointer-events: none; /* 避免攔截觸控 */
     box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* 增加陰影 */
@@ -730,11 +730,12 @@ header {
     }
 
     /* (Task 1 Fix) 僅在 768px 以下啟用 mobile-preview-popup 的 display: block */
+    /* --- MOD: (FEAT_v4.11) 移除 .is-visible 的 transform，改由 JS 控制 --- */
     .mobile-preview-popup.is-visible {
         display: block;
         opacity: 1;
-        /* MOD: (Task 1 Fix v4.7) 調整為置中 + 放大 */
-        transform: translateY(-50%) scale(1); /* 最終狀態 */
+        /* MOD: (FEAT_v4.11) 移除 transform，讓 JS 的 inline-style 接管 */
+        /* transform: translateY(-50%) scale(1); */
     }
 }
 
@@ -858,4 +859,3 @@ header {
         gap: 2rem; 
     }
 }
-
