@@ -10,6 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextProjectLink = document.getElementById('nextProjectLink');
     const nextProjectCategory = document.getElementById('nextProjectCategory');
     const nextProjectTitle = document.getElementById('nextProjectTitle');
+    
+    // (FEAT_v4.14) 獲取主容器，用於載入轉場
+    const projectMainContainer = document.getElementById('projectMainContainer');
 
 
     // 1. 從 URL 取得作品 id
@@ -74,18 +77,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     projectBioElement.textContent = 'Please check the project ID and try again.';
                     if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
                 }
+
+                // (FEAT_v4.14) 內容已填入，觸發淡入動畫
+                if (projectMainContainer) {
+                    projectMainContainer.classList.add('is-loaded');
+                }
             })
             .catch(error => {
                 console.error('Error fetching project data:', error);
                 projectTitleElement.textContent = 'Error';
                 projectBioElement.textContent = 'Could not load project data.';
                 if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
+
+                // (FEAT_v4.14) 即使出錯，也要顯示錯誤訊息
+                if (projectMainContainer) {
+                    projectMainContainer.classList.add('is-loaded');
+                }
             });
     } else {
         // 如果 URL 中沒有 id
         projectTitleElement.textContent = 'No Project Selected';
         projectBioElement.textContent = 'Please select a project from the main page.';
         if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
+
+        // (FEAT_v4.14) 顯示 "No Project Selected" 訊息
+        if (projectMainContainer) {
+            projectMainContainer.classList.add('is-loaded');
+        }
     }
 });
-

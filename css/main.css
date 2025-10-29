@@ -84,6 +84,26 @@ header {
     box-sizing: border-box;
 }
 
+/* --- (FEAT_v4.14) Incoming Page Transition --- */
+/* Hide project content by default to prevent "Loading..." flash */
+/* 預設隱藏 project.html 內容，防止 "Loading..." 閃爍 */
+#projectMainContainer {
+    opacity: 0;
+    filter: blur(10px); /* 採用您建議的模糊效果 */
+    transform: scale(0.98); /* 輕微縮小 */
+    /* MOD: 增加 filter 和 transform 動畫 */
+    transition: opacity 0.4s ease-out, filter 0.5s ease-out, transform 0.5s ease-out;
+}
+/* This class will be added by JS after content is fetched */
+/* JS 載入內容後添加此 class，觸發淡入/清晰動畫 */
+#projectMainContainer.is-loaded {
+    opacity: 1;
+    filter: blur(0px); /* 移除模糊 */
+    transform: scale(1); /* 恢復正常 */
+}
+/* --- End of Incoming Transition --- */
+
+
 /* --- 左側欄位 (通用) --- */
 .left-column {
     display: flex;
