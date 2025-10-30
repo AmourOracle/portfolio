@@ -490,22 +490,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const filter = targetLink.getAttribute('data-filter');
 
-        // (Request v3.16) 更新桌面版篩選器 .active 狀態
+        // --- (FIX_v4.22) 修正篩選器 .active 狀態的同步邏輯 ---
+        
+        // 1. 移除所有 .active
         if (categoryNavElement) { 
-            categoryNavElement.querySelectorAll('a').forEach(a => a.classList.remove('active'));
-            // (v3.16) 確保 targetLink 在 categoryNavElement 內
-            if (categoryNavElement.contains(targetLink)) {
-                targetLink.classList.add('active');
-            }
+            categoryNavElement.querySelectorAll('a[data-filter]').forEach(a => a.classList.remove('active'));
         }
-        // (Request v3.16) 更新手機版篩選器 .active 狀態
         if (mobileFooterElement) { 
             mobileFooterElement.querySelectorAll('a[data-filter]').forEach(a => a.classList.remove('active'));
-             // (v3.16) 確保 targetLink 在 mobileFooterElement 內
-            if (mobileFooterElement.contains(targetLink)) {
-                targetLink.classList.add('active');
-            }
         }
+        
+        // 2. 根據 'filter' 變數，將 .active 添加到所有匹配的連結 (桌面版 + 手機版)
+        const activeLinks = document.querySelectorAll(`a[data-filter="${filter}"]`);
+        activeLinks.forEach(a => a.classList.add('active'));
+
+        // --- End of Fix ---
 
         // 過濾 visibleItems
         visibleItems = allProjectItems.filter(item => {
