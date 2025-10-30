@@ -220,14 +220,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentActiveIndex = index;
 
-        allProjectItems.forEach(item => {
-            item.classList.remove('is-active');
+        // --- (FEAT_v4.27) 鄰近狀態邏輯 (開始) ---
+        // 1. 移除所有項目上的 .is-active 和 .is-active-adjacent
+        // 說明：我們僅需遍歷 visibleItems，因為 allProjectItems 中隱藏的 (filtered out) 項目不需要更新 class
+        visibleItems.forEach(item => {
+            item.classList.remove('is-active', 'is-active-adjacent');
         });
+        // --- (FEAT_v4.27) 鄰近狀態邏輯 (結束) ---
 
         const targetItem = visibleItems[index];
         if (!targetItem) return; 
 
         targetItem.classList.add('is-active');
+
+        // --- (FEAT_v4.27) 鄰近狀態邏輯 (開始) ---
+        // 2. 為鄰近項目添加 .is-active-adjacent
+        const prevItem = visibleItems[currentActiveIndex - 1];
+        const nextItem = visibleItems[currentActiveIndex + 1];
+        
+        if (prevItem) {
+            prevItem.classList.add('is-active-adjacent');
+        }
+        if (nextItem) {
+            nextItem.classList.add('is-active-adjacent');
+        }
+        // --- (FEAT_v4.27) 鄰近狀態邏輯 (結束) ---
+
 
         if (smoothScroll) {
             targetItem.scrollIntoView({
@@ -296,6 +314,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.innerWidth <= 768 && mobilePreviewPopup) {
             mobilePreviewPopup.classList.remove('is-visible');
         }
+
+        // --- (FEAT_v4.27) 鄰近狀態邏輯 (開始) ---
+        // 3. 確保在重置預覽時，清除所有項目的鄰近狀態
+        allProjectItems.forEach(item => {
+            item.classList.remove('is-active', 'is-active-adjacent');
+        });
+        // --- (FEAT_v4.27) 鄰近狀態邏輯 (結束) ---
+
 
         // (Request 3.2) 恢復預設標籤
         if (previewLabelNo && previewLabelCategory && previewLabelInfo_Default && previewLabelDocs_Project && previewBlockBio) {
@@ -483,7 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // 如果篩選後沒有項目
             resetPreview();
-            allProjectItems.forEach(item => item.classList.remove('is-active'));
+            // (FEAT_v4.27) resetPreview() 已經包含了 class 的清除，這裡不需要額外操作
         }
     }
 
@@ -520,4 +546,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-

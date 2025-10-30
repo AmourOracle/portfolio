@@ -268,12 +268,12 @@ header {
     overflow-y: auto;
     box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
     
-    /* MOD: (Request 2) 加強遮罩效果，使其更像插槽 */
+    /* --- MOD: (FEAT_v4.27) 收緊 Mask 範圍 --- */
     mask-image: linear-gradient(
         to bottom,
         transparent 0%,
-        black 25%,
-        black 75%,
+        black 20%,
+        black 80%,
         transparent 100%
     );
     
@@ -362,6 +362,12 @@ header {
 }
 .project-item.is-active a {
     color: var(--primary-color);
+}
+
+/* --- (FEAT_v4.27) 新增鄰近項目樣式 --- */
+.project-item.is-active-adjacent {
+    opacity: 0.7;
+    transform: scale(0.95);
 }
 
 
@@ -677,7 +683,8 @@ header {
     .portfolio-container .center-column {
         overflow-y: auto; /* 保持 list 滾動 */
         padding: 0; /* MOD: 移除左右 padding */
-        mask-image: linear-gradient( to bottom, transparent 0%, black 25%, black 75%, transparent 100% ); /* 恢復遮罩 */
+        /* --- MOD: (FEAT_v4.27) 收緊 Mask 範圍 --- */
+        mask-image: linear-gradient( to bottom, transparent 0%, black 20%, black 80%, transparent 100% );
     }
 
     /* (v3.9) 隱藏桌面版的左右欄 */
@@ -899,3 +906,4 @@ header {
         gap: 2rem; 
     }
 }
+
