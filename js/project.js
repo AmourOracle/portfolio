@@ -21,12 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (projectId) {
         // 2. 讀取 JSON 檔案 (路徑相對於 project.html)
-        // MOD: (FIX_v4.6) 根據使用者的路徑確認，將 fetch 路徑還原為 './data/projects.json'
-        // 理由：v4.5 的根路徑 'projects.json' 是錯誤的猜測。此路徑符合文件規範和使用者實際結構。
+        // --- (FIX_v4.16) 恢復 portfolioDevGuide.md 中指定的正確路徑 ---
         fetch('./data/projects.json')
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error(`Network response was not ok (HTTP ${response.status})`);
                 }
                 return response.json();
             })
@@ -86,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
                 console.error('Error fetching project data:', error);
                 projectTitleElement.textContent = 'Error';
-                projectBioElement.textContent = 'Could not load project data.';
+                projectBioElement.textContent = `Could not load project data. (${error.message})`;
                 if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
 
                 // (FEAT_v4.14) 即使出錯，也要顯示錯誤訊息
@@ -106,3 +105,4 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+

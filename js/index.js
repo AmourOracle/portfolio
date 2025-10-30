@@ -32,7 +32,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // (FEAT_v4.13) 獲取轉場遮罩
     const pageTransitionOverlay = document.getElementById('pageTransitionOverlay');
 
-    // (FEAT_v4.19) 互動音效
+    // --- (FIX_v4.25) 暫時停用 Tone.js 特效 ---
+    /*
     let audioSynth = null;
     let audioStarted = false;
     if (typeof Tone !== 'undefined') {
@@ -51,6 +52,9 @@ document.addEventListener('DOMContentLoaded', () => {
             audioStarted = true;
         }
     }
+    */
+    // --- 結束 暫停特效 ---
+
 
     // --- (FIX_v4.23) 滾動與觸控變數 ---
     let allProjectItems = []; 
@@ -130,10 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // 1. 獲取專案資料並生成列表
+    // --- (FIX_v4.25) 恢復 portfolioDevGuide.md 中指定的正確路徑 ---
     fetch('./data/projects.json')
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                // (FIX_v4.24) 拋出更明確的錯誤
+                throw new Error(`Network response was not ok (HTTP ${response.status})`);
             }
             return response.json();
         })
@@ -193,8 +199,11 @@ document.addEventListener('DOMContentLoaded', () => {
             bindTransitionLinks();
         })
         .catch(error => {
+            // (FIX_v4.24) 顯示更詳細的錯誤訊息
             console.error('Error fetching projects:', error);
-            projectListElement.innerHTML = '<li>Error loading projects.</li>';
+            if (projectListElement) {
+                projectListElement.innerHTML = `<li>Error loading projects. Check fetch path. (${error.message})</li>`;
+            }
         });
 
     // (Request 3) 設置啟用項目
@@ -250,19 +259,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (newImageSrc) {
                 mobilePreviewImage.src = newImageSrc;
 
-                const randTop = Math.floor(Math.random() * 71) + 10; // 10% to 80%
-                const randScale = Math.random() * 0.4 + 0.8; // 0.8 to 1.2 scale
-                
-                mobilePreviewPopup.style.top = `${randTop}vh`;
-                mobilePreviewPopup.style.transform = `scale(${randScale})`;
-
-                if (Math.random() > 0.5) {
-                    mobilePreviewPopup.style.left = `${Math.floor(Math.random() * 11) + 5}vw`;
-                    mobilePreviewPopup.style.right = 'auto'; 
-                } else {
-                    mobilePreviewPopup.style.right = `${Math.floor(Math.random() * 11) + 5}vw`;
-                    mobilePreviewPopup.style.left = 'auto'; 
-                }
+                // --- (FIX_v4.25) 暫時停用隨機特效，改為固定位置 ---
+                mobilePreviewPopup.style.top = `60vh`;
+                mobilePreviewPopup.style.transform = `scale(1)`;
+                mobilePreviewPopup.style.left = 'auto';
+                mobilePreviewPopup.style.right = '5vw';
+                // --- 結束 暫停特效 ---
 
                 mobilePreviewPopup.classList.add('is-visible');
             } else {
@@ -309,7 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (Request 4) 滾輪事件處理 (僅桌面)
     function handleWheelScroll(event) {
-        startAudioContext();
+        // startAudioContext(); // (FIX_v4.25) 暫停特效
         event.preventDefault(); 
         if (isScrolling) return; 
         isScrolling = true;
@@ -328,16 +330,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (newIndex !== currentActiveIndex) {
-            if (audioSynth) {
+            /*
+            if (audioSynth) { // (FIX_v4.25) 暫停特效
                 audioSynth.triggerAttackRelease("G6", "50ms");
             }
+            */
             setActiveItem(newIndex, true);
         }
     }
 
     // (Request v3.10) 觸控事件處理 (僅手機)
     function handleTouchStart(event) {
-        startAudioContext();
+        // startAudioContext(); // (FIX_v4.25) 暫停特效
         
         // (FIX_v4.23) 動態檢查 isMobile
         if (window.innerWidth <= 768 && mobilePreviewPopup) {
@@ -376,9 +380,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (newIndex !== currentActiveIndex) {
-                if (audioSynth) {
+                /*
+                if (audioSynth) { // (FIX_v4.25) 暫停特效
                     audioSynth.triggerAttackRelease("G6", "50ms");
                 }
+                */
                 setActiveItem(newIndex, true);
             }
         }
@@ -392,7 +398,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * 2. 如果點擊的項目 *是* 當前啟用的 -> 執行頁面轉場 (開啟)
      */
     function handleItemClick(event) {
-        startAudioContext();
+        // startAudioContext(); // (FIX_v4.25) 暫停特效
         
         if (isScrolling) {
             event.preventDefault();
@@ -418,9 +424,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // 情況 1：項目未啟用 -> 滾動到該項目 (選取)
             event.preventDefault(); // 阻止 <a> 標籤的預設跳轉
             
-            if (audioSynth) {
+            /*
+            if (audioSynth) { // (FIX_v4.25) 暫停特效
                 audioSynth.triggerAttackRelease("G6", "50ms");
             }
+            */
             setActiveItem(newIndex, true);
         }
     }
@@ -433,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!targetLink) return;
         event.preventDefault(); 
         
-        startAudioContext();
+        // startAudioContext(); // (FIX_v4.25) 暫停特效
 
         const filter = targetLink.getAttribute('data-filter');
 
@@ -466,9 +474,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 重置啟用項目
         if (visibleItems.length > 0) {
-            if (audioSynth) {
+            /*
+            if (audioSynth) { // (FIX_v4.25) 暫停特效
                 audioSynth.triggerAttackRelease("G6", "50ms");
             }
+            */
             setActiveItem(0, false); // 滾動到篩選後的第一個項目
         } else {
             // 如果篩選後沒有項目
@@ -499,7 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         allLinks.forEach(link => {
             link.addEventListener('click', (event) => {
-                startAudioContext();
+                // startAudioContext(); // (FIX_v4.25) 暫停特效
                 
                 // 僅處理本地跳轉
                 if (link.hostname === window.location.hostname && !link.href.startsWith('mailto:') && !link.target) {
