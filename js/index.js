@@ -78,12 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // (FIX_v4.23) 動態檢查 isMobile
         const isMobile = window.innerWidth <= 768;
 
-        // --- FIX_v4.28: 修復桌面/手機的 Padding 邏輯 ---
+        // --- FIX_v4.28: 修復桌面/手機的 Padding 邏輯 (保留此修正) ---
         if (!isMobile) {
             // 桌面版：
             // 必須*明確還原* CSS 檔案中 (main.css) 定義的 calc() padding。
-            // 僅設為 '' 在某些瀏覽器 resize (重設大小) 時，
-            // 可能會錯誤地繼承 @media 區塊中的 '0' 值，導致置中失效。
             if (projectListElement) {
                 projectListElement.style.paddingTop = 'calc(50vh - 10rem)';
                 projectListElement.style.paddingBottom = 'calc(50vh - 10rem)';
@@ -229,32 +227,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentActiveIndex = index;
 
-        // --- (FEAT_v4.27) 鄰近狀態邏輯 (開始) ---
-        // 1. 移除所有項目上的 .is-active 和 .is-active-adjacent
-        // 說明：我們僅需遍歷 visibleItems，因為 allProjectItems 中隱藏的 (filtered out) 項目不需要更新 class
-        visibleItems.forEach(item => {
-            item.classList.remove('is-active', 'is-active-adjacent');
+        // --- (FIX_v4.30) 還原 v4.26 的邏輯 ---
+        // 1. 移除所有項目上的 .is-active
+        // (移除了 v4.27 的 .is-active-adjacent 邏輯)
+        allProjectItems.forEach(item => {
+            item.classList.remove('is-active');
         });
-        // --- (FEAT_v4.27) 鄰近狀態邏輯 (結束) ---
+        // --- (FIX_v4.30) 結束 ---
 
         const targetItem = visibleItems[index];
         if (!targetItem) return; 
 
         targetItem.classList.add('is-active');
 
-        // --- (FEAT_v4.27) 鄰近狀態邏輯 (開始) ---
-        // 2. 為鄰近項目添加 .is-active-adjacent
-        const prevItem = visibleItems[currentActiveIndex - 1];
-        const nextItem = visibleItems[currentActiveIndex + 1];
-        
-        if (prevItem) {
-            prevItem.classList.add('is-active-adjacent');
-        }
-        if (nextItem) {
-            nextItem.classList.add('is-active-adjacent');
-        }
-        // --- (FEAT_v4.27) 鄰近狀態邏輯 (結束) ---
-
+        // --- (FIX_v4.30) 移除 v4.27 的鄰近狀態邏輯 ---
+        // (v4.27 code removed)
+        // --- (FIX_v4.30) 結束 ---
 
         if (smoothScroll) {
             targetItem.scrollIntoView({
@@ -324,12 +312,12 @@ document.addEventListener('DOMContentLoaded', () => {
             mobilePreviewPopup.classList.remove('is-visible');
         }
 
-        // --- (FEAT_v4.27) 鄰近狀態邏輯 (開始) ---
-        // 3. 確保在重置預覽時，清除所有項目的鄰近狀態
+        // --- (FIX_v4.30) 還原 v4.26 的邏輯 ---
+        // (移除了 v4.27 的 .is-active-adjacent 邏輯)
         allProjectItems.forEach(item => {
-            item.classList.remove('is-active', 'is-active-adjacent');
+            item.classList.remove('is-active');
         });
-        // --- (FEAT_v4.27) 鄰近狀態邏輯 (結束) ---
+        // --- (FIX_v4.30) 結束 ---
 
 
         // (Request 3.2) 恢復預設標籤
@@ -370,10 +358,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 audioSynth.triggerAttackRelease("G6", "50ms");
             }
             */
-            // --- FIX_v4.29: 修正不協調感 ---
-            // 將 'true' (smooth scroll) 改為 'false' (auto scroll)
-            // 讓桌面版滾輪立即貼齊，消除平滑動畫的延遲
-            setActiveItem(newIndex, false);
+            // --- FIX_v4.30: 還原 v4.26 的 "smooth scroll" 邏輯 ---
+            // (還原了 v4.29 的修改)
+            setActiveItem(newIndex, true);
             // --- End of FIX ---
         }
     }
@@ -468,13 +455,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 audioSynth.triggerAttackRelease("G6", "50ms");
             }
             */
-            // --- FIX_v4.29: 修正點擊不協調感 ---
-            // 由於滾輪已改為 'false' (auto)，點擊也應改為 'false'
-            // 讓桌面版點擊立即貼齊，保持體驗一致
-            
-            // 檢查是否為手機版，僅在手機版使用 'true' (smooth)
-            const isMobile = window.innerWidth <= 768;
-            setActiveItem(newIndex, isMobile); // 桌面版 auto, 手機版 smooth
+            // --- FIX_v4.30: 還原 v4.26 的 "smooth scroll" 邏輯 ---
+            // (還原了 v4.29 的修改)
+            setActiveItem(newIndex, true); 
             // --- End of FIX ---
         }
     }
@@ -529,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // 如果篩選後沒有項目
             resetPreview();
-            // (FEAT_v4.27) resetPreview() 已經包含了 class 的清除，這裡不需要額外操作
+            // (FIX_v4.30) resetPreview() 已經包含了 class 的清除
         }
     }
 
