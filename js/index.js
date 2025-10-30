@@ -77,15 +77,23 @@ document.addEventListener('DOMContentLoaded', () => {
     function setDynamicPadding() {
         // (FIX_v4.23) 動態檢查 isMobile
         const isMobile = window.innerWidth <= 768;
-        if (!isMobile) {
-            // 如果是桌面版，確保 padding 被移除
-            if (projectListElement) {
-                projectListElement.style.paddingTop = '';
-                projectListElement.style.paddingBottom = '';
-            }
-            return;
-        }
 
+        // --- FIX_v4.28: 修復桌面/手機的 Padding 邏輯 ---
+        if (!isMobile) {
+            // 桌面版：
+            // 必須*明確還原* CSS 檔案中 (main.css) 定義的 calc() padding。
+            // 僅設為 '' 在某些瀏覽器 resize (重設大小) 時，
+            // 可能會錯誤地繼承 @media 區塊中的 '0' 值，導致置中失效。
+            if (projectListElement) {
+                projectListElement.style.paddingTop = 'calc(50vh - 10rem)';
+                projectListElement.style.paddingBottom = 'calc(50vh - 10rem)';
+            }
+            return; // 結束，不執行下方的手機版邏輯
+        }
+        // --- End of FIX ---
+
+        // (Request v3.15) 手機版：
+        // 動態計算 padding 以確保在 1fr 容器中能正確置中
         if (centerColumn && allProjectItems.length > 0) {
             const firstItem = allProjectItems[0];
             const containerHeight = centerColumn.clientHeight;
@@ -192,7 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // (FIX_v4.23) 監聽視窗大小改變，重新綁定滾動並重設 Padding
             window.addEventListener('resize', () => {
                 bindScrollListeners();
-                setDynamicPadding(); // (v3.15)
+                // (FIX_v4.28) 移除此處的 setDynamicPadding()
+                // setDynamicPadding() 已移至 bindScrollListeners() 內部
             });
             
             // (FEAT_v4.13) 綁定轉場事件到 "Me" 連結
@@ -546,3 +555,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
