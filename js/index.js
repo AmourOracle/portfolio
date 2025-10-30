@@ -370,7 +370,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 audioSynth.triggerAttackRelease("G6", "50ms");
             }
             */
-            setActiveItem(newIndex, true);
+            // --- FIX_v4.29: 修正不協調感 ---
+            // 將 'true' (smooth scroll) 改為 'false' (auto scroll)
+            // 讓桌面版滾輪立即貼齊，消除平滑動畫的延遲
+            setActiveItem(newIndex, false);
+            // --- End of FIX ---
         }
     }
 
@@ -464,7 +468,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 audioSynth.triggerAttackRelease("G6", "50ms");
             }
             */
-            setActiveItem(newIndex, true);
+            // --- FIX_v4.29: 修正點擊不協調感 ---
+            // 由於滾輪已改為 'false' (auto)，點擊也應改為 'false'
+            // 讓桌面版點擊立即貼齊，保持體驗一致
+            
+            // 檢查是否為手機版，僅在手機版使用 'true' (smooth)
+            const isMobile = window.innerWidth <= 768;
+            setActiveItem(newIndex, isMobile); // 桌面版 auto, 手機版 smooth
+            // --- End of FIX ---
         }
     }
     // --- End of (FIX_v4.23) ---
