@@ -849,26 +849,22 @@ header {
         padding-top: 0;
         padding-bottom: 0;
     }
-    /* (v3.9) 保持手機版插槽樣式 */
-    .project-item {
-        /*
-        flex-direction: column; 
-        align-items: flex-start;
-        gap: 0.5rem;
-        opacity: 1;
-        transform: scale(1);
-        */
-    }
-    .project-item.is-active {
-        /* transform: none; */
-    }
-    .project-category {
-        /*
-        min-width: auto; 
-        opacity: 1 !important; 
-        text-align: left; 
-        */
-    }
+
+    /* --- MOD: (FEAT_v4.26) 啟用手機版 iOS 選擇器視覺效果 ---
+      說明: 刪除下方 (v3.9) 的 .project-item, .project-item.is-active,
+      和 .project-category 的註解區塊。
+      透過刪除這些覆蓋(override)規則，手機版將會繼承桌面版的
+      (opacity: 0.4, scale: 0.85) 預設樣式，
+      以及 (opacity: 1, scale: 1) 的 .is-active 樣式，
+      從而實現 iOS 選擇器效果。
+    */
+    
+    /* --- (v4.26) 刪除 .project-item 註解區塊 --- */
+    
+    /* --- (v4.26) 刪除 .project-item.is-active 註解區塊 --- */
+    
+    /* --- (v4.26) 刪除 .project-category 註解區塊 --- */
+
 
     /* (v3.9) 手機版底部按鈕 (project.html) */
     /* (Task 2 Fix) 移除舊的 flex-direction: column 樣式 */
@@ -903,4 +899,3 @@ header {
         gap: 2rem; 
     }
 }
-
