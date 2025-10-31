@@ -84,22 +84,20 @@ header {
     box-sizing: border-box;
 }
 
-/* --- (FEAT_v4.14) Incoming Page Transition --- */
-/* Hide project content by default to prevent "Loading..." flash */
-/* 預設隱藏 project.html 內容，防止 "Loading..." 閃爍 */
+/* --- (FEAT_v4.14 / MOD_v4.33) Incoming Page Transition (REMOVED) --- */
+/* MOD: (v4.33) 根據使用者請求，移除 project.html 的載入動畫樣式 */
 #projectMainContainer {
-    opacity: 0;
-    filter: blur(10px); /* 採用您建議的模糊效果 */
-    transform: scale(0.98); /* 輕微縮小 */
-    /* MOD: 增加 filter 和 transform 動畫 */
-    transition: opacity 0.4s ease-out, filter 0.5s ease-out, transform 0.5s ease-out;
+    /* (MOD_v4.33) 移除 opacity, filter, transform, transition */
+    /* opacity: 0; */
+    /* filter: blur(10px); */
+    /* transform: scale(0.98); */
+    /* transition: opacity 0.4s ease-out, filter 0.5s ease-out, transform 0.5s ease-out; */
 }
-/* This class will be added by JS after content is fetched */
-/* JS 載入內容後添加此 class，觸發淡入/清晰動畫 */
 #projectMainContainer.is-loaded {
-    opacity: 1;
-    filter: blur(0px); /* 移除模糊 */
-    transform: scale(1); /* 恢復正常 */
+    /* (MOD_v4.33) 移除 opacity, filter, transform */
+    /* opacity: 1; */
+    /* filter: blur(0px); */
+    /* transform: scale(1); */
 }
 /* --- End of Incoming Transition --- */
 
@@ -434,17 +432,19 @@ header {
 /* MOD: (Request 4) 移除 .back-button-block 的 margin-top */
 /* .back-button-block { ... } */
 
-/* ADD: (Request 4) "Next Project" 按鈕的容器 */
+/* MOD: (v4.33) "Next Project" 按鈕的容器 (現在只包含 Back) */
 .project-nav-bottom {
     /* MOD: (Task 2 Fix) .project-nav-bottom 現在是 .project-container 的直接子元素 */
     /* 桌面版的樣式 */
     grid-row: 2; /* 位於第二行 */
-    grid-column: 1 / -1; /* 跨越所有欄位 */
+    /* MOD: (v4.33) 只佔據第一欄 */
+    grid-column: 1; 
     margin-top: auto; /* 將此區塊推至底部 */
     
     padding-top: 2rem;
     display: flex;
-    justify-content: space-between; /* Back (左) Next (右) */
+    /* MOD: (v4.33) 靠左對齊 */
+    justify-content: flex-start; 
     align-items: baseline; /* MOD: (Request 8) 修正對齊 */
 }
 
@@ -522,6 +522,36 @@ header {
 }
 .next-project-block:hover .arrow {
     transform: translateX(5px); /* Hover 時箭頭右移 */
+}
+
+/* ADD: (FEAT_v4.33) 內頁右下角容器 (Links + Next) */
+.project-nav-right-wrapper {
+    grid-row: 2; /* 位於第二行 */
+    grid-column: 2; /* 位於第二欄 */
+    margin-top: auto; /* 將此區塊推至底部 */
+    padding-top: 2rem;
+    
+    display: flex;
+    justify-content: space-between; /* Links (左) Next (右) */
+    align-items: baseline;
+    
+    /* 配合 .project-content-column 的 padding */
+    padding-right: 1rem; 
+    
+    /* 增加 Links 和 Next 之間的間距 */
+    gap: 2rem;
+}
+
+/* (FEAT_v4.33) 確保 .contact-links 在 wrapper 中正確對齊 */
+.project-nav-right-wrapper .contact-links {
+    margin-top: 0; /* 移除 .contact-links 預設的 margin-top */
+    padding-bottom: 0; /* 移除 padding-bottom */
+    justify-content: flex-start; /* 靠左 (在此 flex 容器中) */
+}
+
+/* (FEAT_v4.33) 確保 .next-project-block 在 wrapper 中正確對齊 */
+.project-nav-right-wrapper .next-project-block {
+    /* 預設樣式 (靠右) 已OK */
 }
 
 
@@ -823,8 +853,11 @@ header {
         grid-template-columns: 1fr; /* MOD: (v3.9) 單欄佈局 */
         padding: 2rem; 
         height: auto; 
-        /* MOD: (Task 2 Fix) 手機版 grid 順序：Info(auto), Images(1fr), Nav(auto) */
-        grid-template-rows: auto 1fr auto;
+        /* MOD: (Task 2 Fix / v4.33) 
+         * 手機版 grid 順序：Info(auto), Images(1fr), Nav(auto)
+         * MOD: (v4.33) Nav 分為 Back(auto) 和 NavRight(auto) 
+        */
+        grid-template-rows: auto 1fr auto auto;
     }
 
     /* (v3.9) 恢復顯示 left-column，並設定 DOM 順序 */
@@ -846,15 +879,36 @@ header {
         grid-row: 2; /* (Task 2 Fix) Images 位於第二行 (1fr) */
     }
 
-    /* MOD: (Task 2 Fix) project-nav-bottom 的手機版樣式 */
+    /* MOD: (Task 2 Fix / v4.33) project-nav-bottom 的手機版樣式 */
     .project-container .project-nav-bottom {
-        grid-row: 3; /* (Task 2 Fix) Nav 位於第三行 */
+        grid-row: 3; /* (Task 2 Fix) Nav (Back) 位於第三行 */
         padding-top: 2rem; /* 與圖片底部保持距離 */
         flex-direction: row; /* 水平排列 Back 和 Next */
-        justify-content: space-between; /* 兩端對齊 */
+        justify-content: flex-start; /* (v4.33) 僅包含 Back，靠左 */
         align-items: baseline; /* 保持文字基線對齊 */
         margin-top: 0; /* 移除 auto margin */
     }
+    
+    /* ADD: (FEAT_v4.33) 內頁右下角 (手機版) */
+    .project-container .project-nav-right-wrapper {
+        grid-row: 4; /* (v4.33) Nav (Right) 位於第四行 */
+        grid-column: 1; /* 佔滿寬度 */
+        padding-top: 2rem;
+        margin-top: 0;
+        padding-right: 0; /* 移除桌面 padding */
+        
+        /* (FEAT_v4.33) 手機版：Next(右) Links(左) */
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1.5rem; /* 縮小間距 */
+    }
+    
+    /* (FEAT_v4.33) 隱藏手機版內頁的 .contact-links (空間不足) */
+    .project-container .project-nav-right-wrapper .contact-links {
+        display: none;
+    }
+
 
     /* MOD: (v3.9) 重置手機版的左欄結構 */
     .left-column-top, .left-column-middle {
@@ -897,17 +951,11 @@ header {
 
     /* (v3.9) 手機版底部按鈕 (project.html) */
     /* (Task 2 Fix) 移除舊的 flex-direction: column 樣式 */
+    
+    /* MOD: (v4.33) 移除 v3.9 的手機版 text-align: left 覆蓋
+     * 因為 Next 按鈕現在固定在右側，需要靠右對齊 (繼承桌面版即可)
+     */
     /*
-    .project-nav-bottom {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1.5rem;
-    }
-    .next-project-block {
-        align-items: flex-start;
-        flex-direction: row; 
-    }
-    */
     .next-project-text-wrapper {
         align-items: flex-start; 
         text-align: left;
@@ -915,6 +963,7 @@ header {
     .next-project-block .label {
         text-align: left;
     }
+    */
     #nextProjectTitle {
         font-size: 0.9rem;
     }
@@ -928,3 +977,4 @@ header {
         gap: 2rem; 
     }
 }
+
