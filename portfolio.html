@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-AR-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sywan - Visual Designer Portfolio</title>
     
-    <!-- ADD: Favicon 設置 (路徑: /assets/images/) -->
-    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon" sizes="any">
-    <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png" sizes="180x180">
+    <!-- FIX: (v1.2) 移除 href 開頭的 "/" 改為相對路徑 -->
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" sizes="any">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" sizes="180x180">
 
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,6 +30,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.min.js"></script>
     
     <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
+    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -149,6 +150,7 @@
     <div class="page-transition-overlay" id="pageTransitionOverlay"></div>
 
     <!-- 連結外部 JavaScript 檔案 -->
+    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <script src="js/index.js"></script>
 </body>
 </html>

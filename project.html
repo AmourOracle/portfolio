@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project</title> <!-- 標題將由 JS 更新 -->
     
-    <!-- ADD: Favicon 設置 (路徑: /assets/images/) -->
-    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon" sizes="any">
-    <link rel="apple-touch-icon" href="/assets/images/apple-touch-icon.png" sizes="180x180">
+    <!-- FIX: (v1.2) 移除 href 開頭的 "/" 改為相對路徑 -->
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" sizes="any">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" sizes="180x180">
 
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,6 +27,7 @@
     </script>
     
     <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
+    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -123,6 +124,7 @@
     </main>
 
     <!-- 連結外部 JavaScript 檔案 -->
+    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <script src="js/project.js"></script>
 </body>
 </html>
