@@ -268,12 +268,15 @@ header {
     overflow-y: auto;
     box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
     
-    /* MOD: (FEAT_v4.30) 收緊 Mask 範圍 (25% -> 20%) */
+    /* * MOD: (v4.32) 根據使用者請求，加深遮罩範圍
+     * 原始: 20% (v4.30)
+     * 修改: 30%，讓淡出區域更大，過渡更平滑
+    */
     mask-image: linear-gradient(
         to bottom,
         transparent 0%,
-        black 20%,
-        black 80%,
+        black 30%,
+        black 70%,
         transparent 100%
     );
     
@@ -693,12 +696,16 @@ header {
     .portfolio-container .center-column {
         overflow-y: auto; /* 保持 list 滾動 */
         padding: 0; /* MOD: 移除左右 padding */
-        /* MOD: (FEAT_v4.30) 收緊 Mask 範圍 (25% -> 20%) */
+        
+        /* * MOD: (v4.32) 根據使用者請求，加深遮罩範圍
+         * 原始: 20% (v4.30)
+         * 修改: 30%，讓淡出區域更大，過渡更平滑
+        */
         mask-image: linear-gradient(
             to bottom,
             transparent 0%,
-            black 20%,
-            black 80%,
+            black 30%,
+            black 70%,
             transparent 100%
         );
     }
@@ -921,4 +928,3 @@ header {
         gap: 2rem; 
     }
 }
-
