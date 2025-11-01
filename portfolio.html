@@ -39,7 +39,12 @@
         <a href="portfolio.html" class="logo">SYWAN</a>
     </header>
 
-    <main class="portfolio-container">
+    <!-- MOD: (v5.0) 
+      - 重構佈局，使用新的 middle-container
+      - 保留 portfolio-container class 以維持 3 欄 grid
+      - 移除內部的 .mobile-footer (移至 main 之外)
+    -->
+    <main class="middle-container portfolio-container">
         <!-- 
           MOD: index.html (v1.2)
           - 將 .contact-links 區塊從 .profile-block 移至 nav.right-column
@@ -108,46 +113,17 @@
                 </ul>
             </div>
             
-            <!-- MOD: .contact-links 從左欄移至此處 -->
-            <!-- (FEAT_v4.13) 新增 ID "desktopContactLinks" 用於轉場綁定 -->
+            <!-- MOD: (v5.0) .contact-links (桌面版) 已移至 <footer class="main-footer"> -->
+            <!--
             <div class="contact-links" id="desktopContactLinks">
-                <!-- MOD: (v4.32) 調整連結順序並新增 Gallery 連結 -->
-                <ul>
-                    <li><a href="about.html">Me</a></li>
-                    <li><a href="gallery.html" class="nav-gallery-link">Gallery</a></li>
-                    <li><a href="#" target="_blank">Instagram</a></li>
-                    <li><a href="mailto:email@example.com">Email</a></li>
-                </ul>
+                ...
             </div>
+            -->
         </nav>
         
         <!-- (Request v3.10) 手機版 Footer -->
-        <footer class="mobile-footer">
-            <!-- (Request v3.16) 新增手機版篩選器 -->
-            <ul class="mobile-filter-nav">
-                <li><a href="#" data-filter="all" class="active">Projects</a></li>
-                <li><a href="#" data-filter="Visual">Visual</a></li>
-                <!-- MOD: (v4.32) 移除 Comm. Photo 篩選器 -->
-                <!-- <li><a href="gallery.html" class="nav-gallery-link">Comm. Photo</a></li> -->
-                <li><a href="#" data-filter="Identity">Branding</a></li>
-            </ul>
-            
-            <!-- (Request v3.10) 手機版外部連結 -->
-            <!-- (Request v3.16) 增加 class 區分 -->
-            <!-- (FEAT_v4.13) 新增 ID "mobileContactLinks" 用於轉場綁定 -->
-            <ul class="mobile-contact-links" id="mobileContactLinks">
-                <!-- MOD: (v4.32) 調整連結順序並新增 Gallery 連結 -->
-                <li><a href="about.html">Me</a></li>
-                <li><a href="gallery.html" class="nav-gallery-link">Gallery</a></li>
-                <li><a href="#" target="_blank">Instagram</a></li>
-                <li><a href="mailto:email@example.com">Email</a></li>
-            </ul>
-        </footer>
-
-        <!-- (Task 3) ADD: Mobile Preview Popup -->
-        <div id="mobilePreviewPopup" class="mobile-preview-popup">
-            <img id="mobilePreviewImage" src="" alt="Project preview">
-        </div>
+        <!-- MOD: (v5.0) .mobile-footer 已移至 <main> 之外 -->
+        
     </main>
     
     <!-- (FEAT_v4.13) 頁面轉場遮罩 -->
@@ -155,9 +131,60 @@
     <!-- (FIX_v4.20) 將 'class_name' 修正為 'class' -->
     <div class="page-transition-overlay" id="pageTransitionOverlay"></div>
 
+    <!-- (Task 3) ADD: Mobile Preview Popup -->
+    <div id="mobilePreviewPopup" class="mobile-preview-popup">
+        <img id="mobilePreviewImage" src="" alt="Project preview">
+    </div>
+
+    <!-- MOD: (v5.0) 
+      - .mobile-footer (僅含篩選器) 移至 <main> 之外
+      - .mobile-contact-links 已移至 <footer class="main-footer">
+    -->
+    <footer class="mobile-footer">
+        <!-- (Request v3.16) 新增手機版篩選器 -->
+        <ul class="mobile-filter-nav">
+            <li><a href="#" data-filter="all" class="active">Projects</a></li>
+            <li><a href="#" data-filter="Visual">Visual</a></li>
+            <!-- MOD: (v4.32) 移除 Comm. Photo 篩選器 -->
+            <!-- <li><a href="gallery.html" class="nav-gallery-link">Comm. Photo</a></li> -->
+            <li><a href="#" data-filter="Identity">Branding</a></li>
+        </ul>
+        
+        <!-- MOD: (v5.0) .mobile-contact-links 已移至 <footer class="main-footer"> -->
+        <!--
+        <ul class="mobile-contact-links" id="mobileContactLinks">
+            ...
+        </ul>
+        -->
+    </footer>
+
+    <!-- ADD: (v5.0) 新增全站 footer 結構 (放置 Links) -->
+    <footer class="main-footer">
+        <div class="footer-left">
+            <!-- 首頁左側為空 -->
+        </div>
+        <div class="footer-right">
+             <!-- (FEAT_v4.13) 桌面版連結 (從 .right-column 移入) -->
+            <div class="contact-links" id="desktopContactLinks">
+                <ul>
+                    <li><a href="about.html">Me</a></li>
+                    <li><a href="gallery.html" class="nav-gallery-link">Gallery</a></li>
+                    <li><a href="#" target="_blank">Instagram</a></li>
+                    <li><a href="mailto:email@example.com">Email</a></li>
+                </ul>
+            </div>
+            <!-- (FEAT_v4.13) 手機版連結 (從 .mobile-footer 移入) -->
+            <ul class="mobile-contact-links" id="mobileContactLinks">
+                <li><a href="about.html">Me</a></li>
+                <li><a href="gallery.html" class="nav-gallery-link">Gallery</a></li>
+                <li><a href="#" target="_blank">Instagram</a></li>
+                <li><a href="mailto:email@example.com">Email</a></li>
+            </ul>
+        </div>
+    </footer>
+
     <!-- 連結外部 JavaScript 檔案 -->
     <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <script src="js/index.js"></script>
 </body>
 </html>
-

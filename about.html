@@ -12,7 +12,7 @@
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;0,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -39,7 +39,12 @@
     <!-- MOD: (Request 9) 
       - 重新加入 about-page-layout class 來修正頂部對齊
     -->
-    <main class="project-container about-page-layout">
+    <!-- MOD: (v5.0) 
+      - 重構佈局，使用新的 middle-container
+      - 移除 project-container class
+      - 移除內部的 .project-nav-bottom (移至 footer)
+    -->
+    <main class="middle-container about-layout">
         
         <!-- 左欄：靜態資訊 -->
         <aside class="left-column">
@@ -76,12 +81,14 @@
             </div>
 
             <!-- 底部返回按鈕 -->
+            <!-- MOD: (v5.0) .project-nav-bottom 已移出並放入 footer -->
+            <!--
             <div class="project-nav-bottom">
-                <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
                 <a href="portfolio.html" class="back-button-block">
                     <span class="arrow">&larr;</span> Back
                 </a>
             </div>
+            -->
         </aside>
 
         <!-- 右欄：靜態 About 內容 -->
@@ -150,6 +157,19 @@
 
         </section>
     </main>
+
+    <!-- ADD: (v5.0) 新增全站 footer 結構 -->
+    <footer class="main-footer">
+        <div class="footer-left">
+            <!-- "Back" 按鈕 (從 .project-nav-bottom 移入) -->
+            <a href="portfolio.html" class="back-button-block">
+                <span class="arrow">&larr;</span> Back
+            </a>
+        </div>
+        <div class="footer-right">
+            <!-- About 頁面右側為空 -->
+        </div>
+    </footer>
 
     <!-- MOD: 移除 index.js 的載入 -->
     <!-- <script src="js/index.js"></script> -->

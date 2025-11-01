@@ -12,7 +12,7 @@
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;0,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -40,7 +40,12 @@
       - 新增 .gallery-container class 以便 CSS 鎖定
       - 移除 id="projectMainContainer" (不需要載入動畫)
     -->
-    <main class="project-container gallery-container">
+    <!-- MOD: (v5.0) 
+      - 重構佈局，使用新的 middle-container
+      - 移除 project-container 和 gallery-container class
+      - 移除內部的 .project-nav-bottom (移至 footer)
+    -->
+    <main class="middle-container gallery-layout">
         
         <!-- MOD: (FIX_v4.35) 根據使用者請求，移除左側欄 <aside class="left-column"> -->
         <!-- 
@@ -63,11 +68,7 @@
           - 補上 .project-nav-bottom 區塊 (僅含 Back 按鈕)
           - 結構與 project.html 同步
         -->
-        <div class="project-nav-bottom">
-            <a href="portfolio.html" class="back-button-block">
-                <span class="arrow">&larr;</span> Back
-            </a>
-        </div>
+        <!-- MOD: (v5.0) .project-nav-bottom 已移出 main 並放入 footer -->
         
         <!-- 
           MOD: (FIX_v4.35) 
@@ -80,6 +81,19 @@
         -->
 
     </main>
+
+    <!-- ADD: (v5.0) 新增全站 footer 結構 -->
+    <footer class="main-footer">
+        <div class="footer-left">
+            <!-- "Back" 按鈕 (從 .project-nav-bottom 移入) -->
+            <a href="portfolio.html" class="back-button-block">
+                <span class="arrow">&larr;</span> Back
+            </a>
+        </div>
+        <div class="footer-right">
+            <!-- Gallery 頁面右側為空 -->
+        </div>
+    </footer>
 
     <!-- 連結外部 JavaScript 檔案 -->
     <!-- ADD: (v4.32) 載入 gallery.js 腳本 -->
