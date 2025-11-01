@@ -12,18 +12,19 @@ Sywan Portfolio 專案開發指南 v4.32
 
 優點:
 
-1.  易於維護: 當您需要新增、刪除或修改一個作品時，您只需要編輯 data/projects.json 檔案，完全不需要更動任何 HTML 或 JavaScript 程式碼。
-2.  結構清晰: 程式碼保持乾淨，只專注於功能實現。
+易於維護: 當您需要新增、刪除或修改一個作品時，您只需要編輯 data/projects.json 檔案，完全不需要更動任何 HTML 或 JavaScript 程式碼。
 
+結構清晰: 程式碼保持乾淨，只專注於功能實現。
 
 專案檔案結構 (v4.32)
 
-所有檔案應依照以下結構進行組織。v4.32 關鍵：所有 .html 檔案載入資源時，都必須使用相對於 .html 檔案的「相對路徑」 (例如 data/projects.json 或 css/main.css)。
+所有檔案應依照以下結構進行組織：
 
 /sywan-portfolio/
 ├─ index.html       // 載入動畫頁 (網站進入點)
 ├─ portfolio.html   // 網站首頁 (作品索引)
 ├─ project.html     // 專案內頁 (作品範本)
+├─ gallery.html     // (新增) 攝影作品展示頁
 ├─ about.html       // 關於我頁面 (靜態內容)
 │
 ├─ /data/
@@ -34,30 +35,19 @@ Sywan Portfolio 專案開發指南 v4.32
 │
 ├─ /js/
 │  ├─ index.js       // 僅用於 portfolio.html 的腳本
-│  └─ project.js     // 僅用於 project.html 的腳本
+│  ├─ project.js     // 僅用於 project.html 的腳本
+│  └─ gallery.js     // (新增) 僅用於 gallery.html 的腳本
 │
 └─ /assets/
-   └─ /images/       // 存放所有專案圖片
-      ├─ favicon.ico
-      └─ ... (其他專案圖片)
+   └─ /images/       // (建議) 存放所有專案圖片
+      └─ ...
 
 
-[新增] v4.32 更新日誌：Favicon 與路徑修正
-
--   [FEAT] 新增 Favicon:
-    -   已將 `favicon.ico` 的 <link> 標籤添加至所有 `.html` 檔案 (`index.html`, `portfolio.html`, `project.html`, `about.html`)。
-
--   [FIX] 修正 GitHub Pages 部署路徑：
-    -   [問題] 專案部署於 GitHub Pages 的子目錄 (e.g., `.../portfolio/`)，而 v4.31 及之前版本的 HTML 檔案使用「絕對路徑」 (e.g., `href="/css/main.css"`)。
-    -   [錯誤] 這導致瀏覽器從根網域 (e.g., `user.github.io/css/...`) 請求資源，造成 404 錯誤。
-    -   [解決] 已將所有 `.html` 檔案中的靜態資源連結 (CSS, JS, Favicon) 全部修改為「相對路徑」（e.g., `href="css/main.css"`），確保在任何環境下都能正確載入。
-
-
-內容管理 (data/projects.json) (v4.17)
+內容管理 (data/projects.json)
 
 data/projects.json 是整個作品集的心臟。它是一個 JSON 陣列 (Array)，陣列中的每一個物件 (Object) 都代表一個作品。
 
-[v4.32 關鍵提醒] 由於路徑修正，本檔案中所有的 coverImage 和 images 路徑 必須 使用「相對路徑」（e.g., "assets/images/..."）。
+專案物件結構詳解:
 
 {
   "id": "kinetic-poster",
@@ -66,21 +56,19 @@ data/projects.json 是整個作品集的心臟。它是一個 JSON 陣列 (Array
   "title": "Kinetic Poster",
   "bio": "專案的簡短介紹，會顯示在首頁的 hover 預覽中。",
   "info": "專案的詳細資訊 (角色、年份等)，支援 <br> 換行。",
-  "coverImage": "assets/images/projects/cover.jpg",
+  "coverImage": "[https://placehold.co/180x320/](https://placehold.co/180x320/)...",
   "images": [
-    "assets/images/projects/img_01.jpg",
-    "assets/images/projects/img_02.jpg"
+    "[https://placehold.co/1200x800/](https://placehold.co/1200x800/)...",
+    "[https://placehold.co/1200x800/](https://placehold.co/1200x800/)..."
   ]
 }
 
-
-(欄位說明...)
 
 "id": [必要] 專案的唯一識別符 (小寫英文，可用 - 連接)。這個 ID 會被用在 URL 中 (例如 project.html?id=kinetic-poster)，絕對不能重複。
 
 "number": [備用] 專案的編號 (目前僅作為備用欄位)。
 
-"category": [必要] 專案的類別 (例如 "Visual", "Identity", "Photography")。此欄位用於首頁的篩選器以及左側預覽標籤。
+"category": [必要] 專案的類別 (例如 "Visual", "Identity", "Photography")。此欄位用於首頁的篩選器以及 gallery.html 的資料抓取。
 
 "title": [必要] 專案的完整標題。
 
@@ -88,13 +76,11 @@ data/projects.json 是整個作品集的心臟。它是一個 JSON 陣列 (Array
 
 "info": [必要] 專案的詳細資訊 (例如角色、年份、工具)，用於專案內頁的 DOCS 區塊。可以使用 <br> 標籤來換行。
 
-"coverImage": [必要] [v4.32] 必須為相對路徑 (e.g., "assets/...")。
+"coverImage": [必要] 首頁預覽時顯示的圖片路徑。
 
-"images": [必要] 一個包含多張圖片路徑的陣列。[v4.32] 必須為相對路徑 (e.g., "assets/...")。
+"images": [必要] 一個包含多張圖片路徑的陣列，用於 project.html 內頁或 gallery.html 展示區。
 
-頁面邏輯 (v4.31)
-
-(此區塊邏輯繼承 v4.31，保持不變)
+頁面邏輯 (v4.32)
 
 index.html (載入動畫頁)
 
@@ -104,76 +90,84 @@ index.html (載入動畫頁)
 
 portfolio.html (首頁 / 作品索引)
 
-[核心] 無縫迴圈邏輯 (Seamless Loop) (v4.31)
+此頁面由 js/index.js 控制，具有桌面版和行動版兩套不同的互動邏輯。
 
-頁面轉場 (Page Transition) (v4.13)
+[核心] 無縫迴圈邏輯 (v4.31):
 
-(詳細邏輯請參考 v4.31 文件)
+index.js 會 fetch 資料，並動態建立一個包含「複製體」的新列表 fullProjectList = [...clonesEnd, ...projects, ...clonesStart]。
+
+頁面載入時，立即將視圖定位到第一個「真實」項目。
+
+當使用者滾動到「複製體」上時，checkLoopJump() 函式會被觸發，立即將滾動位置無縫跳轉回對應的「真實」項目，實現視覺上的無限迴圈。
+
+此邏輯取代了舊版 padding 方案，解決了列表頂部/底部的空白問題。
+
+篩選器 (handleFilterClick):
+
+(v4.32 更新) 篩選器邏輯 (handleFilterClick) 現在只會處理帶有 [data-filter] 屬性的 <a> 標籤。
+
+"Comm. Photo" (現為 "Gallery") 連結已被移至底部連結列，並且不包含 [data-filter] 屬性，因此它不會觸發篩選，而是作為一個標準連結。
+
+頁面轉場 (handlePageTransition):
+
+(v4.32 更新) bindTransitionLinks() 函式已更新，會抓取所有 .nav-gallery-link class 的連結。
+
+當使用者點擊作品連結、"Me" 連結、或新的 "Gallery" 連結時，腳本會攔截點擊，先淡入全螢幕黑色遮罩 (.page-transition-overlay)，等待 400ms 後才執行頁面跳轉。
 
 project.html (專案內頁)
 
-邏輯 (project.js v4.16): 讀取 URL 的 ?id= 參數，fetch 資料並填入 DOM。
+此頁面由 js/project.js 控制，作為動態內容範本。
 
-Next Project: 隨機挑選下一個專案。
+邏輯: project.js 會讀取瀏覽器 URL 中的 ?id= 參數。
 
-載入轉場 (Incoming Transition) (v4.14): 使用 .is-loaded class 實現平滑淡入。
+抓取 data/projects.json 的內容，並使用 .find() 尋找 ID 相符的專案物件。
+
+將 title, category, bio, info 填入左欄。
+
+將 images 陣列動態生成 <img> 標籤並填入右欄。
+
+Next Project: project.js 會再次抓取 data/projects.json，過濾掉當前專案，從剩下的專案中隨機挑選一個，顯示在右下角的「Next Project」按鈕上。
+
+(新增) gallery.html (攝影作品展示頁)
+
+此頁面由 js/gallery.js 控制，是 v4.32 新增的攝影作品集展示牆。
+
+邏輯 (js/gallery.js):
+
+抓取資料: fetch('./data/projects.json')。
+
+篩選資料: 過濾 projects 陣列，只保留 category === "Photography" 的項目。
+
+合併圖片: 將所有 "Photography" 項目的 images 陣列合併 (flatten) 成一個包含所有圖片 URL 的單一陣列 allPhotographyImages。
+
+響應式佈局: 腳本會檢查 window.innerWidth。
+
+桌面版 ( > 768px): 執行 renderDesktopCollage()。此函式會遍歷所有圖片，為每張圖計算出隨機的 width (vw), top (vh), left (vw), transform: rotate() (deg) 和 z-index，並將其作為 inline-style 應用於 position: absolute 的 <div> 元素上，實現隨機拼貼效果。
+
+手機版 ( <= 768px): 執行 renderMobileGrid()。此函式會放棄隨機佈局，改為將圖片填入一個標準的 CSS 雙欄網格中，並為容器添加 .is-mobile-grid class。
 
 about.html (關於我頁面)
 
 邏輯: 一個完全靜態的「關於我」頁面，不載入任何 js/index.js 或 js/project.js 腳本。
 
-[更新] 除錯與最佳實踐 (v4.32)
+行動版佈局 (main.css): 與 project.html 的行動版佈局規則一致（單欄、可滾動）。
 
-根據近期的除錯經驗，新增以下開發守則：
+除錯與最佳實踐 (v4.31+)
 
-[新增] 1. 靜態資源路徑 (Static Path)
+驗證 fetch 路徑 (Verify fetch Path):
 
--   [最重要] 由於專案託管於 GitHub Pages 子目錄，所有 HTML 檔案中的資源連結 **必須** 使用「相對路徑」。
--   [範例] href="css/main.css" (O), href="/css/main.css" (X)
--   [範圍] 這包括 <link> (CSS, Favicon) 和 <script> (JS) 標籤。
+[最重要] 專案中最常發生的致命錯誤，是 index.js, project.js 或 gallery.js 中的 fetch() 路徑與本指南中定義的檔案結構不符。
 
+路徑必須為：./data/projects.json。
 
-[原 v4.25] 2. 驗證 fetch 路徑 (Verify fetch Path)
+如果 fetch 404 失敗，.then() 區塊將不會執行，導致所有 JS 功能（滾動、篩選、點擊、載入圖片）全部靜默失敗。
 
--   [最重要] 專案中最常發生的致命錯誤，是 index.js 或 project.js 中的 fetch() 路徑與本指南中定義的檔案結構不符。
--   [路徑] 路徑必須為：`./data/projects.json` 或 `data/projects.json`。
--   [錯誤] 如果 fetch 404 失敗，.then() 區塊將不會執行，導致所有 JS 功能（滾動、篩選、點擊）全部靜默失敗。
+DOMContentLoaded 作用域 (Scoping):
 
+所有需要與 DOM 互動的程式碼（例如 getElementById, addEventListener），必須被包裹在 document.addEventListener('DOMContentLoaded', () => { ... }); 事件監聽器之內。
 
-[新增] 3. JSON 內部路徑 (JSON-Internal Path)
+響應式事件綁定 (Responsive Event Binding):
 
--   [最重要] 承上兩點，`data/projects.json` 檔案 **內部** 儲存的所有圖片路徑 (e.g., `coverImage`, `images` 陣列) **也必須** 使用「相對路徑」。
--   [範例] "coverImage": "assets/images/projectA.jpg" (O)
--   [範例] "coverImage": "/assets/images/projectA.jpg" (X)
--   [狀態] 這是 v4.32 之後需要立即檢查並修正的關鍵任務。
+對於在桌面版（滾輪）和手機版（觸控）有不同互動的邏輯 (如 index.js 的 bindScrollListeners())，事件監聽器必須在 window.resize 事件觸發時重新評估。
 
-
-[原 v4.25] 4. DOMContentLoaded 作用域 (Scoping)
-
--   所有需要與 DOM 互動的程式碼（例如 getElementById, addEventListener），必須被包裹在 document.addEventListener('DOMContentLoaded', () => { ... }); 事件監聽器之內。
-
-
-[原 v4.25] 5. 響應式事件綁定 (Responsive Event Binding)
-
--   對於在桌面版（滾輪）和手機版（觸控）有不同互動的邏輯，事件監聽器必須在 window.resize 事件觸發時重新評估。
--   應使用一個專門的函式（如 bindScrollListeners()）來先「移除舊監聽器」，再「根據當前寬度綁定新監聽器」。
-
-
-[原 v4.25] 6. 漸進式開發 (Incremental Development)
-
--   當新增複雜的非核心功能時（例如 Tone.js 音效），應在確保核心功能（滾動、篩選）穩定的基礎上，逐一添加。
-
-
-[新增] 滾動邏輯演進 (v4.28 - v4.31)
-
-(此區塊邏輯繼承 v4.31，保持不變)
-
--   [問題 (v4.28)] 置中 vs 平滑度衝突
-    -   我們發現在 padding 方案下，桌面版的 behavior: 'smooth' (平滑滾動) 與 300ms 的節流 (DESKTOP_WHEEL_THROTTLE) 存在根本性衝突。
-    
--   [決策 (v4.29)] 體驗優先於動畫
-    -   index.js 中的 handleWheelScroll (桌面滾輪) 和 handleItemClick (桌面點擊) 被修改為使用 setActiveItem(..., false)。
-    -   這將滾動行為從 behavior: 'smooth' (平滑) 改為 behavior: 'auto' (立即貼齊)，徹底解決了桌面版的所有滾動延遲和置中失敗的問題。
-    
--   [決策 (v4.31)] 解決視覺中斷
-    -   為了進一步解決 v4.29 方案中「空 padding」的視覺中斷問題，v4.31 引入了「無縫迴圈」架構，用「複製體」取代了 padding，實現了視覺和功能的雙重無限迴圈。
+應使用一個專門的函式來先「移除舊監聽器」，再「根據當前寬度綁定新監聽器」。
