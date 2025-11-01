@@ -292,7 +292,15 @@ header {
 .project-list {
     list-style: none;
     margin: 0;
-    padding: 0;
+    /* padding: 0; */ /* (v6.1) 移除 */
+    
+    /* ADD: (FIX_v6.1) 
+     * 新增垂直 padding，為滾動置中 (scroll-into-view) 提供緩衝空間。
+     * 40vh 是一個估算值，約為 (容器高度 / 2) - (項目高度 / 2)。
+     * 這允許第一個和最後一個項目也能被滾動到螢幕中央。
+    */
+    padding: 40vh 0;
+    box-sizing: border-box; /* 確保 padding 正確計算 */
 }
 
 /* MOD: FIX_pickerWheel_v3.4
