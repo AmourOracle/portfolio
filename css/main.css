@@ -196,7 +196,8 @@ header {
 /* --- INDEX 頁面專用 --- */
 .portfolio-container {
     /* MOD: (Request v3.12) 統一左欄寬度，改用 28.57% (1.2 / 4.2) */
-    grid-template-columns: 28.57% 1fr 5vw;
+    /* MOD: (FIX_v4.34) 將右欄寬度從 5vw 增加到 10vw，以防止 .contact-links 溢出並與 .center-column 重疊 */
+    grid-template-columns: 28.57% 1fr 10vw;
     grid-template-rows: 1fr; /* (Task 2 Fix) 確保 portfolio-container 只有一行 */
 }
 .profile-block { 
@@ -1009,15 +1010,11 @@ header {
         mask-image: none; /* ADD: 移除遮罩效果 */
     }
     
-    /* MOD: (Request v3.13) 僅重設內頁的 project-list padding */
     .project-container .project-list {
         padding-top: 0;
         padding-bottom: 0;
     }
     
-    /* --- (FIX_v4.26) 啟用手機版選擇器視覺 --- */
-    /* (v3.9) 保持手機版插槽樣式 */
-    /* 註解已被移除，手機版現在會繼承桌面的 .project-item 樣式 */
     .project-item {
         /* (繼承) opacity: 0.4, transform: scale(0.85) */
     }
@@ -1027,24 +1024,7 @@ header {
     .project-category {
         /* (繼承) opacity: 0 (當 .is-active) */
     }
-    /* --- (FIX_v4.26) 結束 --- */
 
-
-    /* (v3.9) 手機版底部按鈕 (project.html) */
-    /* (Task 2 Fix) 移除舊的 flex-direction: column 樣式 */
-    
-    /* MOD: (v4.33) 移除 v3.9 的手機版 text-align: left 覆蓋
-     * 因為 Next 按鈕現在固定在右側，需要靠右對齊 (繼承桌面版即可)
-     */
-    /*
-    .next-project-text-wrapper {
-        align-items: flex-start; 
-        text-align: left;
-    }
-    .next-project-block .label {
-        text-align: left;
-    }
-    */
     #nextProjectTitle {
         font-size: 0.9rem;
     }
