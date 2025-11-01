@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // 1. 獲取專案資料並生成列表
-    // --- (FIX_v4.25) 恢復 portfolioDevGuide.md 中指定的正確路徑 ---
+    // --- (FIX_v4.25) 恢復 portfolioDevGuide.md 中指定的正確路径 ---
     fetch('./data/projects.json')
         .then(response => {
             if (!response.ok) {
@@ -623,15 +623,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function bindTransitionLinks() {
-        const desktopLinks = document.querySelectorAll('#desktopContactLinks a');
-        const mobileLinks = document.querySelectorAll('#mobileContactLinks a');
+        // MOD: (FIX_v4.33) 
+        // 修正 v4.32 中因選擇器重複 (desktop/mobile links + .nav-gallery-link)
+        // 導致 allLinks 陣列包含重複 DOM 元素的問題。
+        //
+        // 新邏輯：
+        // 1. 抓取所有 desktop 和 mobile 連結。
+        // 2. 將 NodeList 轉換為陣列。
+        // 3. 使用 Set 和 Array.from() 來建立一個*唯一*的連結陣列。
         
-        // ADD: (v4.32) 抓取新的 Gallery 連結 (包含 about.html 和 project.html 上的)
-        // (我們使用 .nav-gallery-link class 來抓取)
-        const galleryLinks = document.querySelectorAll('.nav-gallery-link');
+        const desktopLinks = Array.from(document.querySelectorAll('#desktopContactLinks a'));
+        const mobileLinks = Array.from(document.querySelectorAll('#mobileContactLinks a'));
+        
+        // (v4.32) .nav-gallery-link 選擇器是多餘的，
+        // 因為在 portfolio.html 中, .nav-gallery-link 
+        // 已經包含在 #desktopContactLinks 和 #mobileContactLinks 中。
+        // const galleryLinks = document.querySelectorAll('.nav-gallery-link');
 
-        // MOD: (v4.32) 將所有連結合併
-        const allLinks = [...desktopLinks, ...mobileLinks, ...galleryLinks];
+        // MOD: (v4.33) 使用 Set 確保 allLinks 中的每個 DOM 元素都是唯一的
+        const allLinks = Array.from(new Set([...desktopLinks, ...mobileLinks]));
 
         allLinks.forEach(link => {
             link.addEventListener('click', (event) => {
