@@ -46,57 +46,20 @@
       - 移除內部的 .project-nav-bottom (移至 footer)
     -->
     <main class="middle-container gallery-layout">
-        
-        <!-- MOD: (FIX_v4.35) 根據使用者請求，移除左側欄 <aside class="left-column"> -->
-        <!-- 
-        <aside class="left-column">
-            ... (已移除) ...
-        </aside>
-        -->
-
-        <!-- 右欄：專案圖片展示 (將由 JS 動態生成) -->
-        <!-- MOD: (v4.32) 
-          - 變更 ID 為 galleryContainer (以匹配 gallery.js)
-          - 新增 class gallery-content-column
-        -->
         <section id="galleryContainer" class="gallery-content-column">
-            <!-- 圖片將由 js/gallery.js 填入 -->
         </section>
-
-        <!-- 
-          ADD: (v4.32) 
-          - 補上 .project-nav-bottom 區塊 (僅含 Back 按鈕)
-          - 結構與 project.html 同步
-        -->
-        <!-- MOD: (v5.0) .project-nav-bottom 已移出 main 並放入 footer -->
-        
-        <!-- 
-          MOD: (FIX_v4.35) 
-          - 根據使用者請求，移除 .project-nav-right-wrapper (外部連結)
-        -->
-        <!--
-        <div class="project-nav-right-wrapper">
-            ... (已移除) ...
-        </div>
-        -->
-
     </main>
 
-    <!-- ADD: (v5.0) 新增全站 footer 結構 -->
     <footer class="main-footer">
         <div class="footer-left">
-            <!-- "Back" 按鈕 (從 .project-nav-bottom 移入) -->
             <a href="portfolio.html" class="back-button-block">
                 <span class="arrow">&larr;</span> Back
             </a>
         </div>
         <div class="footer-right">
-            <!-- Gallery 頁面右側為空 -->
         </div>
     </footer>
 
-    <!-- 連結外部 JavaScript 檔案 -->
-    <!-- ADD: (v4.32) 載入 gallery.js 腳本 -->
     <script src="js/gallery.js"></script>
 </body>
 </html>

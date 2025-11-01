@@ -1,6 +1,3 @@
-/* --- Google Fonts --- */
-/* MOD: 移除 Montserrat 和 Roboto Mono 的 @import */
-
 /* --- CSS 變數 --- */
 :root {
     --background-color: #121212;
@@ -90,22 +87,6 @@ header {
     box-sizing: border-box;
 }
 
-/* --- (FEAT_v4.14 / MOD_v4.33) Incoming Page Transition (REMOVED) --- */
-/* MOD: (v4.33) 根據使用者請求，移除 project.html 的載入動畫樣式 */
-#projectMainContainer {
-    /* (MOD_v4.33) 移除 opacity, filter, transform, transition */
-    /* opacity: 0; */
-    /* filter: blur(10px); */
-    /* transform: scale(0.98); */
-    /* transition: opacity 0.4s ease-out, filter 0.5s ease-out, transform 0.5s ease-out; */
-}
-#projectMainContainer.is-loaded {
-    /* (MOD_v4.33) 移除 opacity, filter, transform */
-    /* opacity: 1; */
-    /* filter: blur(0px); */
-    /* transform: scale(1); */
-}
-/* --- End of Incoming Transition --- */
 
 
 /* --- 左側欄位 (通用) --- */
@@ -317,11 +298,6 @@ header {
     list-style: none;
     margin: 0;
     padding: 0;
-    /* MOD: (Req 1) 增加巨大的上下 padding，確保列表頭尾能滾動到螢幕中央 */
-    /* 50vh = 視窗高度一半, 10rem = 約 3 個 item 高度的一半，用於校正 */
-    /* MOD: (FEAT_v4.31) 移除 padding，改用複製體邏輯 */
-    /* padding-top: calc(50vh - 10rem); */
-    /* padding-bottom: calc(50vh - 10rem); */
 }
 
 /* MOD: FIX_pickerWheel_v3.4
@@ -393,20 +369,6 @@ header {
 }
 
 
-/* --- (FIX_v4.30) 移除 v4.27 的鄰近狀態樣式 --- */
-/*
-.project-item.is-active-adjacent {
-    opacity: 0.7;
-    transform: scale(0.95);
-}
-.project-item.is-active-adjacent .project-category {
-    opacity: 0;
-}
-.project-item.is-active-adjacent a {
-    color: #999;
-}
-*/
-/* --- (FIX_v4.30) 結束 --- */
 
 
 .right-column {
@@ -458,15 +420,6 @@ header {
     grid-template-rows: 1fr;
 }
 
-/* MOD: (Request 4) 移除 .back-button-block 的 margin-top */
-/* .back-button-block { ... } */
-
-/* MOD: (v5.0) 移除 .project-nav-bottom，樣式已移至 .main-footer */
-/*
-.project-nav-bottom {
-    ...
-}
-*/
 
 /* MOD: (Request 1) 將 .back-button-block 改為 <a> 標籤 */
 .back-button-block { 
@@ -521,9 +474,6 @@ header {
     text-align: right;
 }
 
-/* MOD: (Request 2) 移除 wrapper 樣式 */
-/* .next-project-title-wrapper { ... } */
-
 /* ADD: (Request 2) 直接設定標題樣式 */
 #nextProjectTitle {
     font-family: var(--font-mono); 
@@ -544,27 +494,13 @@ header {
     transform: translateX(5px); /* Hover 時箭頭右移 */
 }
 
-/* MOD: (v5.0) 移除 .project-nav-right-wrapper，樣式已移至 .main-footer */
-/*
-.project-nav-right-wrapper {
-    ...
-}
-*/
-
 /* (FEAT_v4.33) 確保 .contact-links 在 wrapper 中正確對齊 */
 /* MOD: (v5.0) 選擇器更新為 .main-footer */
 .main-footer .contact-links {
-    margin-top: 0; /* 移除 .contact-links 預設的 margin-top */
-    padding-bottom: 0; /* 移除 padding-bottom */
-    justify-content: flex-start; /* 靠左 (在此 flex 容器中) */
+    margin-top: 0;
+    padding-bottom: 0;
+    justify-content: flex-start;
 }
-
-/* (FEAT_v4.33) 確保 .next-project-block 在 wrapper 中正確對齊 */
-/* MOD: (v5.0) 選擇器更新為 .main-footer */
-.main-footer .next-project-block {
-    /* 預設樣式 (靠右) 已OK */
-}
-
 
 .project-content-column { 
     padding-top: 1.5rem; 
@@ -585,7 +521,7 @@ header {
 
 .project-content-column img { width: 100%; height: auto; margin-bottom: 2rem; }
 
-/* --- ADD: (Request 5) About Page 靜態內容樣式 --- */
+/* --- About Page 靜態內容樣式 --- */
 
 .about-intro-text {
     margin-bottom: 4rem;
@@ -633,51 +569,18 @@ header {
 /* --- End of About Page Styles --- */
 
 
-/* --- MOD: (Request 7) 移除 About Page Alignment Fix --- */
-/*
-.about-page-layout .left-column-top {
-    height: auto;
-}
-.about-page-layout .project-content-column {
-    padding-top: 2rem; 
-}
-*/
-/* --- End of Alignment Fix --- */
-
-/* --- ADD: (Request 9) About Page Alignment Fix --- */
-/* MOD: (v5.0) 選擇器更新 */
 .about-layout .project-content-column {
-    padding-top: 2rem; /* 將右欄設為 2rem，與左欄 .left-column-top 的 padding-top (2rem) 對齊 */
+    padding-top: 2rem;
 }
-/* --- End of Alignment Fix --- */
 
 
-/* --- ADD: (FEAT_v4.32) Gallery Page (gallery.html) 專用樣式 --- */
-
-/* ADD: (FIX_v4.35) Gallery Page Layout Override */
-/* 覆蓋 .project-container (2欄) 為 (1欄) */
-/* MOD: (v5.0) 選擇器更新 */
+/* --- Gallery Page 專用樣式 --- */
 .middle-container.gallery-layout {
     grid-template-columns: 1fr;
 }
 .gallery-layout .gallery-content-column {
-    /* 確保內容佔據第 1 欄 */
     grid-column: 1;
 }
-/* MOD: (v5.0) .project-nav-bottom 相關樣式已移除 */
-/*
-.gallery-container .project-nav-bottom {
-    ...
-}
-*/
-/* MOD: (v5.0) .project-nav-right-wrapper 相關樣式已移除 */
-/*
-.gallery-container .project-nav-right-wrapper {
-    ...
-}
-*/
-/* --- End of (FIX_v4.35) --- */
-
 
 /* 桌面版：隨機拼貼容器 */
 .gallery-content-column {
@@ -789,48 +692,31 @@ header {
     display: none; /* 預設在桌面版隱藏 */
 }
 
-/* --- (Task 3) ADD: Mobile Preview Popup --- */
-/* --- MOD: (FEAT_v4.11) 移除固定的 top/right 定位，改由 JS 控制 --- */
+/* --- Mobile Preview Popup --- */
 .mobile-preview-popup {
-    display: none; /* 預設隱藏 */
-    position: fixed; /* 固定於視窗 */
-    
-    /* MOD: (FEAT_v4.11) 移除 top, right, left, bottom */
-    /* top: 60%; */
-    /* right: 5vw; */
-    /* left: auto; */
-    /* bottom: auto; */
-
-    width: 180px; /* 固定寬度 180px */
-    aspect-ratio: 16 / 9; /* ! 關鍵：橫向比例 */
-    
+    display: none;
+    position: fixed;
+    width: 180px;
+    aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
-    z-index: 2000; /* 顯示在最上層 */
-    
-    /* 動畫效果 */
+    z-index: 2000;
     opacity: 0;
-    /* MOD: (FEAT_v4.11) 移除 translateY，改為純 scale (JS 將提供 scale/rotate) */
-    transform: scale(0.9); /* 初始狀態 (縮小) */
-    
-    /* MOD: (FEAT_v4.13) 優化彈出動畫，使用 cubic-bezier 模擬彈簧效果 */
+    transform: scale(0.9);
     transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    
-    pointer-events: none; /* 避免攔截觸控 */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* 增加陰影 */
-    overflow: hidden; /* MOD: (Task 1 Fix v4.6) 裁切超出範圍的圖片 */
+    pointer-events: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    overflow: hidden;
 }
 
-/* MOD: (Task 1 Fix v4.6) 新增圖片樣式 */
 .mobile-preview-popup img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 關鍵：強制圖片填滿 16:9 容器 */
-    display: block; /* 移除圖片底部多餘空間 */
+    object-fit: cover;
+    display: block;
 }
 
 
-/* --- (Task 1 Fix) 僅在桌面版 ( > 768px ) 強制隱藏 popup --- */
 @media (min-width: 769px) {
     .mobile-preview-popup {
         display: none !important;
@@ -922,20 +808,7 @@ header {
         gap: 1rem;
     }
     
-    /* MOD: (v3.16) 通用列表樣式 */
-    /* MOD: (v5.1) 移除 .mobile-footer ul 通用樣式，.mobile-contact-links 已有獨立樣式 */
-    /*
-    .mobile-footer ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        justify-content: center; /* 置中 */
-        gap: 1.5rem; 
-    }
-    */
-    
-    /* (v3.16) 手機版篩選器連結樣式 */
+    /* 手機版篩選器連結樣式 */
     /* (Task 1 Fix) 修正 Filter Bar 換行問題 */
     .mobile-filter-nav {
         width: 100%; /* 佔滿寬度 */
@@ -997,27 +870,18 @@ header {
         color: var(--primary-color);
     }
 
-    /* MOD: (Request v3.15) 移除手機版首頁的 List Padding，交由 JS (v3.12) 控制 */
     .portfolio-container .project-list {
-        /* * 覆蓋桌面版的 calc(50vh - 10rem) 
-         * JS (setDynamicPadding) 將會動態計算並注入
-         * (containerHeight / 2) - (itemHeight / 2)
-         * 來確保項目在 1fr 容器中置中
-        */
-        /* MOD: (FEAT_v4.31) 移除 padding，改用複製體邏輯 */
         padding-top: 0;
         padding-bottom: 0;
     }
 
-    /* (Task 1 Fix) 僅在 768px 以下啟用 mobile-preview-popup 的 display: block */
-    /* --- MOD: (FEAT_v4.11) 移除 .is-visible 的 transform，改由 JS 控制 --- */
     .mobile-preview-popup.is-visible {
         display: block;
         opacity: 1;
-        /* MOD: (FEAT_v4.11) 移除 transform，讓 JS 的 inline-style 接管 */
-        /* transform: translateY(-50%) scale(1); */
     }
-    /* --- (Request v3.9) 手機版內頁 (project.html, about.html) --- */
+}
+
+/* 手機版內頁 (project.html, about.html) */
 @media (max-width: 768px) {
     /* MOD: (v5.0) .project-container -> .middle-container */
     body:has(.middle-container) {
@@ -1044,59 +908,32 @@ header {
     }
 
 
-    /* (v3.9) 恢復顯示 left-column，並設定 DOM 順序 */
-    /* MOD: (v5.0) .project-container -> .middle-container */
     .middle-container .left-column {
         display: flex;
         position: static; 
         height: auto; 
         margin-bottom: 3rem; 
         gap: 2rem; 
-        grid-row: 1; /* (Task 2 Fix) Info 位於第一行 */
+        grid-row: 1;
     }
     
-    /* (v3.9) 恢復顯示 project-content-column，並設定 DOM 順序 */
-    /* MOD: (v5.0) .project-container -> .middle-container */
     .middle-container .project-content-column {
         overflow-y: visible;
         padding-right: 0;
-        padding-top: 0; /* (v3.9) 移除桌面版的 padding-top */
-        mask-image: none;
-        grid-row: 2; /* (Task 2 Fix) Images 位於第二行 (1fr) */
-    }
-    
-    /* ADD: (v4.32) 手機版 Gallery 頁面的容器設定 */
-    /* 覆蓋 .project-container .project-content-column 的 overflow: visible */
-    /* MOD: (FIX_v4.36) 修正手機版 Gallery 佈局 */
-    /* MOD: (v5.0) .gallery-container -> .gallery-layout */
-    .gallery-layout .gallery-content-column {
-        overflow-y: auto; /* 恢復滾動 */
         padding-top: 0;
         mask-image: none;
-        grid-row: 1; /* MOD: (v5.0) 應位於第 1 行 */
+        grid-row: 2;
     }
-    /* MOD: (FIX_v4.36) 確保手機版 grid-template-rows 正確 */
-    /* MOD: (v5.0) .gallery-container -> .gallery-layout */
-    .gallery-layout {
-        grid-template-rows: 1fr; /* 圖片區 (1fr) */
-    }
-
-
-    /* MOD: (Task 2 Fix / v4.33) project-nav-bottom 的手機版樣式 */
-    /* MOD: (v5.0) .project-container .project-nav-bottom 已移除 */
-    /*
-    .project-container .project-nav-bottom {
-        ...
-    }
-    */
     
-    /* ADD: (FEAT_v4.33) 內頁右下角 (手機版) */
-    /* MOD: (v5.0) .project-container .project-nav-right-wrapper 已移除 */
-    /*
-    .project-container .project-nav-right-wrapper {
-        ...
+    .gallery-layout .gallery-content-column {
+        overflow-y: auto;
+        padding-top: 0;
+        mask-image: none;
+        grid-row: 1;
     }
-    */
+    .gallery-layout {
+        grid-template-rows: 1fr;
+    }
 
     /* ADD: (v5.0) 手機版 .main-footer 樣式 */
     /* MOD: (v5.1) 此規則應為通用 (包含 portfolio.html) */
@@ -1205,48 +1042,14 @@ header {
         mask-image: none; /* ADD: 移除遮罩效果 */
     }
     
-    /* MOD: (Request v3.13) 僅重設內頁的 project-list padding */
-    /* MOD: (v5.0) .project-container -> .middle-container */
     .middle-container .project-list {
         padding-top: 0;
         padding-bottom: 0;
     }
-    
-    /* --- (FIX_v4.26) 啟用手機版選擇器視覺 --- */
-    /* (v3.9) 保持手機版插槽樣式 */
-    /* 註解已被移除，手機版現在會繼承桌面的 .project-item 樣式 */
-    .project-item {
-        /* (繼承) opacity: 0.4, transform: scale(0.85) */
-    }
-    .project-item.is-active {
-        /* (繼承) opacity: 1, transform: scale(1) */
-    }
-    .project-category {
-        /* (繼承) opacity: 0 (當 .is-active) */
-    }
-    /* --- (FIX_v4.26) 結束 --- */
 
-
-    /* (v3.9) 手機版底部按鈕 (project.html) */
-    /* (Task 2 Fix) 移除舊的 flex-direction: column 樣式 */
-    
-    /* MOD: (v4.33) 移除 v3.9 的手機版 text-align: left 覆蓋
-     * 因為 Next 按鈕現在固定在右側，需要靠右對齊 (繼承桌面版即可)
-     */
-    /*
-    .next-project-text-wrapper {
-        align-items: flex-start; 
-        text-align: left;
-    }
-    .next-project-block .label {
-        text-align: left;
-    }
-    */
     #nextProjectTitle {
         font-size: 0.9rem;
     }
-
-    /* (v3.9) About Page 響應式 */
     .about-intro-text p {
         font-size: 1.5rem; 
     }

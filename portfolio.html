@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-AR-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sywan - Visual Designer Portfolio</title>
     
@@ -26,9 +26,6 @@
       })(document);
     </script>
     
-    <!-- (FEAT_v4.19) 載入 Tone.js 用於互動音效 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.min.js"></script>
-    
     <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
     <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <link rel="stylesheet" href="css/main.css">
@@ -52,7 +49,6 @@
         <aside class="left-column">
             <div class="left-column-top">
                 <div class="name-block">
-                    <!-- MOD: (Request 3.2) 新增 ID 用於動態標籤 -->
                     <span id="previewLabelNo" class="label">NO.</span>
                     <span id="previewLabelCategory" class="label" style="display: none;">CATEGORY</span>
                     <h1 id="previewTitle">Sywan</h1>
@@ -61,110 +57,59 @@
             
             <div class="left-column-middle">
                 <div id="previewBlockBio" class="info-divider-block">
-                    <!-- MOD: (Request 3.2) 新增 ID 用於動態標籤 -->
                     <span id="previewLabelInfo" class="label">BIO</span>
                     <span id="previewLabelDocs" class="label" style="display: none;">DOCS</span>
                     <p id="previewBio">A visual designer based in Taiwan, focusing on creating compelling brand identities and digital experiences.</p>
                 </div>
                 <div class="info-divider-block">
-                    <!-- MOD: (Request 3.2) 新增 ID 用於動態標籤 (label) -->
-                    <!-- MOD: (v3.9) 修正 ID 重複問題，第二個 INFO/DOCS 應有獨立 ID 或移除 (暫時移除) -->
-                    <!-- 
-                    <span id="previewLabelInfo" class="label">INFO</span>
-                    <span id="previewLabelDocs" class="label" style="display: none;">DOCS</span>
-                    <p id="previewInfo">This space is reserved for future content or additional information about a project.</p>
-                    -->
-                    
-                    <!-- (Request 3.2) 獲取預設 INFO (確保 previewInfo 存在) -->
-                    <!-- 修正：將 INFO 區塊補回，並確保 ID 正確 -->
                     <span id="previewLabelInfo_Default" class="label">INFO</span>
                     <span id="previewLabelDocs_Project" class="label" style="display: none;">DOCS</span>
                     <p id="previewInfo">This space is reserved for future content or additional information about a project.</p>
-
                 </div>
             </div>
 
             <div class="profile-block">
-                <!-- 修改：將 div 換成 img 標籤，並加上 id -->
                 <div class="image-placeholder">
                     <img id="previewImage" src="https://placehold.co/180x320/121212/121212?text=+" alt="Project preview">
                 </div>
-                <!-- .contact-links 已移至 right-column -->
             </div>
         </aside>
 
-        <!-- 中欄：作品列表 (將由 JS 動態生成) -->
         <section class="center-column">
             <ul class="project-list" id="projectList">
-                <!-- 內容將由 js/index.js 填入 -->
             </ul>
         </section>
 
-        <!-- 右欄：作品分類 & 外部連結 (僅桌面版) -->
         <nav class="right-column">
             <div class="category-nav" id="categoryNav">
-                <!-- (Request 3) 篩選器 -->
                 <ul>
                     <li><a href="#" data-filter="all" class="active">Projects</a></li>
                     <li><a href="#" data-filter="Visual">Visual</a></li>
-                    <!-- MOD: (v4.32) 移除 Comm. Photo 篩選器 -->
-                    <!-- <li><a href="gallery.html" class="nav-gallery-link">Comm. Photo</a></li> -->
                     <li><a href="#" data-filter="Identity">Branding</a></li>
                 </ul>
             </div>
-            
-            <!-- MOD: (v5.0) .contact-links (桌面版) 已移至 <footer class="main-footer"> -->
-            <!--
-            <div class="contact-links" id="desktopContactLinks">
-                ...
-            </div>
-            -->
         </nav>
-        
-        <!-- (Request v3.10) 手機版 Footer -->
-        <!-- MOD: (v5.0) .mobile-footer 已移至 <main> 之外 -->
         
     </main>
     
-    <!-- (FEAT_v4.13) 頁面轉場遮罩 -->
-    <!-- 注意：此元素必須放置在 <main> 之外，以確保 z-index 正常運作 -->
-    <!-- (FIX_v4.20) 將 'class_name' 修正為 'class' -->
     <div class="page-transition-overlay" id="pageTransitionOverlay"></div>
 
-    <!-- (Task 3) ADD: Mobile Preview Popup -->
     <div id="mobilePreviewPopup" class="mobile-preview-popup">
         <img id="mobilePreviewImage" src="" alt="Project preview">
     </div>
 
-    <!-- MOD: (v5.0) 
-      - .mobile-footer (僅含篩選器) 移至 <main> 之外
-      - .mobile-contact-links 已移至 <footer class="main-footer">
-    -->
     <footer class="mobile-footer">
-        <!-- (Request v3.16) 新增手機版篩選器 -->
         <ul class="mobile-filter-nav">
             <li><a href="#" data-filter="all" class="active">Projects</a></li>
             <li><a href="#" data-filter="Visual">Visual</a></li>
-            <!-- MOD: (v4.32) 移除 Comm. Photo 篩選器 -->
-            <!-- <li><a href="gallery.html" class="nav-gallery-link">Comm. Photo</a></li> -->
             <li><a href="#" data-filter="Identity">Branding</a></li>
         </ul>
-        
-        <!-- MOD: (v5.0) .mobile-contact-links 已移至 <footer class="main-footer"> -->
-        <!--
-        <ul class="mobile-contact-links" id="mobileContactLinks">
-            ...
-        </ul>
-        -->
     </footer>
 
-    <!-- ADD: (v5.0) 新增全站 footer 結構 (放置 Links) -->
     <footer class="main-footer">
         <div class="footer-left">
-            <!-- 首頁左側為空 -->
         </div>
         <div class="footer-right">
-             <!-- (FEAT_v4.13) 桌面版連結 (從 .right-column 移入) -->
             <div class="contact-links" id="desktopContactLinks">
                 <ul>
                     <li><a href="about.html">Me</a></li>
@@ -173,7 +118,6 @@
                     <li><a href="mailto:email@example.com">Email</a></li>
                 </ul>
             </div>
-            <!-- (FEAT_v4.13) 手機版連結 (從 .mobile-footer 移入) -->
             <ul class="mobile-contact-links" id="mobileContactLinks">
                 <li><a href="about.html">Me</a></li>
                 <li><a href="gallery.html" class="nav-gallery-link">Gallery</a></li>
@@ -183,8 +127,6 @@
         </div>
     </footer>
 
-    <!-- 連結外部 JavaScript 檔案 -->
-    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <script src="js/index.js"></script>
 </body>
 </html>

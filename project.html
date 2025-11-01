@@ -42,15 +42,7 @@
       - 移除內部的 .project-nav-bottom 和 .project-nav-right-wrapper (移至 footer)
     -->
     <main class="middle-container project-layout">
-        <!-- 
-          MOD: (Request 1 & 2) 
-          - 重構 <aside> 結構，使其與 index.html 一致
-          - 使用 left-column-top 和 left-column-middle
-          - 將 .back-button-block 移至 <aside> 的最底層
-        -->
         <aside class="left-column">
-            
-            <!-- 專案標題 (頂部) -->
             <div class="left-column-top">
                 <div class="name-block">
                     <span id="projectNumber" class="label">CATEGORY</span>
@@ -58,58 +50,30 @@
                 </div>
             </div>
             
-            <!-- 專案資訊 (中部) -->
             <div class="left-column-middle">
-                <!-- MOD: (Request 1) 新增 hide-section class 來隱藏 BIO -->
                 <div class="info-divider-block hide-section">
                     <span class="label">BIO</span>
                     <p id="projectBio">Loading project description...</p>
                 </div>
                 
                 <div class="info-divider-block">
-                    <!-- MOD: (Request 1) 標籤從 INFO 改為 DOCS -->
                     <span class="label">DOCS</span>
                     <p id="projectInfo">Loading project details...</p>
                 </div>
             </div>
-
-            <!-- 
-              (Task 2 Fix) 
-              - .project-nav-bottom 區塊已從此處移至 <main> 的末端
-            -->
-            <!-- MOD: (v5.0) .project-nav-bottom 已移出 main 並放入 footer -->
         </aside>
 
-        <!-- 右欄：專案圖片展示 (將由 JS 動態生成) -->
         <section id="projectImages" class="project-content-column">
-            <!-- 圖片將由 js/project.js 填入 -->
         </section>
-
-        <!-- 
-          (Task 2 Fix / MOD v4.33) 
-          - .project-nav-bottom 移至此處
-          - MOD: (v4.33) 此容器現在只包含 "Back" 按鈕
-        -->
-        <!-- MOD: (v5.0) .project-nav-bottom 已移出 main 並放入 footer -->
-        
-        <!-- ADD: (FEAT_v4.33) 內頁右下角容器 (Links + Next) -->
-        <!-- MOD: (v5.0) .project-nav-right-wrapper 已移出 main 並放入 footer -->
-        
     </main>
 
-    <!-- ADD: (v5.0) 新增全站 footer 結構 -->
     <footer class="main-footer">
         <div class="footer-left">
-            <!-- "Back" 按鈕 (從 .project-nav-bottom 移入) -->
             <a href="portfolio.html" class="back-button-block">
                 <span class="arrow">&larr;</span> Back
             </a>
         </div>
         <div class="footer-right">
-            <!-- 內容 (從 .project-nav-right-wrapper 移入) -->
-            
-            <!-- (FEAT_v4.33) 外部連結 (與 portfolio.html 同步) -->
-            <!-- 注意：此區塊在手機版 (<= 768px) 將被 CSS 隱藏以節省空間 -->
             <div class="contact-links" id="projectContactLinks">
                 <ul>
                     <li><a href="mailto:email@example.com">Email</a></li>
@@ -118,7 +82,6 @@
                 </ul>
             </div>
 
-            <!-- "Next Project" 按鈕 (從 .project-nav-bottom 移至此處) -->
             <a href="#" id="nextProjectLink" class="next-project-block">
                 <div class="next-project-text-wrapper">
                     <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
@@ -126,12 +89,9 @@
                 </div>
                 <span class="arrow">&rarr;</span>
             </a>
-            
         </div>
     </footer>
 
-    <!-- 連結外部 JavaScript 檔案 -->
-    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <script src="js/project.js"></script>
 </body>
 </html>

@@ -33,7 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 2. 抓取並處理資料
-    // --- (FIX_v4.25) 恢復 portfolioDevGuide.md 中指定的正確路徑 ---
     fetch('./data/projects.json')
         .then(response => {
             if (!response.ok) {

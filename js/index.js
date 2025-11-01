@@ -31,39 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (FEAT_v4.13) 獲取轉場遮罩
     const pageTransitionOverlay = document.getElementById('pageTransitionOverlay');
-
-    // --- (FIX_v4.25) 暫時停用 Tone.js 特效 ---
-    /*
-    let audioSynth = null;
-    let audioStarted = false;
-    if (typeof Tone !== 'undefined') {
-        try {
-            audioSynth = new Tone.Synth().toDestination();
-        } catch (e) {
-            console.error("Could not initialize Tone.js:", e);
-        }
-    } else {
-        console.warn("Tone.js not loaded.");
-    }
-
-    function startAudioContext() {
-        if (!audioStarted && Tone && Tone.context && Tone.context.state !== 'running' && Tone.start) {
-            Tone.start();
-            audioStarted = true;
-        }
-    }
-    */
-    // --- 結束 暫停特效 ---
-
-
-    // --- (FIX_v4.23) 滾動與觸控變數 ---
-    let allProjectItems = []; 
+    // 滾動與觸控變數
+    let allProjectItems = [];
     
-    // --- (FEAT_v4.31) 無縫迴圈變數 ---
+    // 無縫迴圈變數
     let originalProjectCount = 0;
-    const cloneCount = 3; // 複製頭尾各 3 個項目
-    let currentActiveIndex = cloneCount; // 初始位置必須是第一個 "真實" 項目
-    // --- (FEAT_v4.31) 結束 ---
+    const cloneCount = 3;
+    let currentActiveIndex = cloneCount;
 
     let isScrolling = false; 
     let visibleItems = []; 
@@ -76,14 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let touchEndY = 0;
     const touchThreshold = 50; 
     
-    const DESKTOP_WHEEL_THROTTLE = 300; 
-    const MOBILE_TOUCH_THROTTLE = 150;  
-
-    // --- (FEAT_v4.31) 移除 setDynamicPadding 函式 ---
-    // (setDynamicPadding 函式已刪除)
-    // --- (FEAT_v4.31) 結束 ---
-
-    // --- (FIX_v4.23) 響應式滾動監聽器 ---
+    // 響應式滾動監聽器
     /**
      * 根據當前視窗寬度，綁定滾輪 (Wheel) 或觸控 (Touch) 事件
      */
@@ -108,14 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // 綁定滾輪事件
             centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
         }
-        
-        // 3. (FEAT_v4.31) 移除 setDynamicPadding()
     }
-    // --- End of (FIX_v4.23) ---
 
 
     // 1. 獲取專案資料並生成列表
-    // --- (FIX_v4.25) 恢復 portfolioDevGuide.md 中指定的正確路径 ---
     fetch('./data/projects.json')
         .then(response => {
             if (!response.ok) {
@@ -125,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return response.json();
         })
         .then(projects => {
-            // --- (FEAT_v4.31) 無縫迴圈列表生成 (開始) ---
             if (!projects || projects.length === 0) {
                 throw new Error("No projects loaded from JSON.");
             }
@@ -177,10 +139,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 立即 (false) 跳轉到初始位置，不顯示動畫
                 setActiveItem(currentActiveIndex, false); 
             }
-            // --- (FEAT_v4.31) 無縫迴圈列表生成 (結束) ---
 
-
-            // (FIX_v4.23) 綁定初始的滾動監聽器
+            // 綁定初始的滾動監聽器
             bindScrollListeners();
 
             // (Request 4) 監聽點擊事件
@@ -195,10 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 mobileFooterElement.addEventListener('click', handleFilterClick);
             }
             
-            // (FIX_v4.23) 監聽視窗大小改變，重新綁定滾動
+            // 監聽視窗大小改變，重新綁定滾動
             window.addEventListener('resize', () => {
                 bindScrollListeners();
-                // (FEAT_v4.31) 移除 setDynamicPadding()
             });
             
             // (FEAT_v4.13) 綁定轉場事件到 "Me" 連結
@@ -239,8 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         targetItem.classList.add('is-active');
 
-        // (FIX_v4.30) 移除 v4.27 鄰近狀態
-
         if (smoothScroll) {
             targetItem.scrollIntoView({
                 behavior: 'smooth',
@@ -265,19 +222,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewImageElement && newImageSrc) previewImageElement.src = newImageSrc;
         if (previewInfoElement) previewInfoElement.innerHTML = newInfo; 
 
-        // (Task 3) 更新手機版懸浮視窗
-        // (FIX_v4.23) 動態檢查 isMobile
+        // 更新手機版懸浮視窗
         if (window.innerWidth <= 768 && mobilePreviewPopup && mobilePreviewImage) {
             if (newImageSrc) {
                 mobilePreviewImage.src = newImageSrc;
-
-                // --- (FIX_v4.25) 暫時停用隨機特效，改為固定位置 ---
                 mobilePreviewPopup.style.top = `60vh`;
                 mobilePreviewPopup.style.transform = `scale(1)`;
                 mobilePreviewPopup.style.left = 'auto';
                 mobilePreviewPopup.style.right = '5vw';
-                // --- 結束 暫停特效 ---
-
                 mobilePreviewPopup.classList.add('is-visible');
             } else {
                 mobilePreviewPopup.classList.remove('is-visible');
@@ -304,15 +256,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewImageElement) previewImageElement.src = defaultImageSrc;
         if (previewInfoElement) previewInfoElement.textContent = defaultInfo; 
 
-        // (FIX_v4.23) 動態檢查 isMobile
         if (window.innerWidth <= 768 && mobilePreviewPopup) {
             mobilePreviewPopup.classList.remove('is-visible');
         }
 
-        // (FIX_v4.30) 還原 v4.26 的邏輯
         allProjectItems.forEach(item => {
             item.classList.remove('is-active');
-            // (FIX_v4.30) 移除 v4.27 鄰近狀態
         });
 
 
@@ -328,7 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- (FEAT_v4.31) 無縫迴圈跳轉邏輯 (開始) ---
+    // 無縫迴圈跳轉邏輯
     function checkLoopJump() {
         if (!visibleItems[currentActiveIndex]) return;
 
@@ -366,58 +315,29 @@ document.addEventListener('DOMContentLoaded', () => {
             isScrolling = false;
         }, 50); // 短暫延遲
     }
-    // --- (FEAT_v4.31) 無縫迴圈跳轉邏輯 (結束) ---
 
 
-    // (Request 4) 滾輪事件處理 (僅桌面)
+    // 滾輪事件處理
     function handleWheelScroll(event) {
-        // startAudioContext(); // (FIX_v4.25) 暫停特效
         event.preventDefault(); 
         if (isScrolling) return; 
         isScrolling = true;
 
-        // (FEAT_v4.31) 移除節流 (Throttle)
-        // setTimeout(() => { isScrolling = false; }, DESKTOP_WHEEL_THROTTLE); 
-        // 節流會由 checkLoopJump 控制
-
         const direction = event.deltaY > 0 ? 1 : -1; 
         let newIndex = currentActiveIndex + direction;
-
-        // (FEAT_v4.31) 移除 JS 索引迴圈 (v3.11)
         
         if (newIndex !== currentActiveIndex) {
-            /*
-            if (audioSynth) { // (FIX_v4.25) 暫停特效
-                audioSynth.triggerAttackRelease("G6", "50ms");
-            }
-            */
-            // MOD: (FIX_v4.35) 
-            // 將 'false' (auto scroll) 改為 'true' (smooth scroll)
-            // 修復滾動不滑順，以及 'Still Life' (最後一個項目) 無法置中的問題
             setActiveItem(newIndex, true);
-            
-            // (FEAT_v4.31) 立即檢查是否需要跳轉
-            // MOD: (FIX_v4.35) 
-            // 由於 setActiveItem 改為 'true' (smooth)，我們需要像手機版一樣
-            // 等待滾動 (約 500ms) 後再檢查跳轉
             setTimeout(checkLoopJump, 500); 
         }
         
-        // (FEAT_v4.31) 釋放滾動鎖
-        // (如果 checkLoopJump 沒執行，也需要釋放)
-        // MOD: (FIX_v4.36) 
-        // 檢查 !visibleItems[currentActiveIndex] 是否存在以避免錯誤
         if (visibleItems[currentActiveIndex] && !visibleItems[currentActiveIndex].hasAttribute('data-is-clone')) {
-             // 50ms 延遲以匹配 checkLoopJump 的延遲
             setTimeout(() => { isScrolling = false; }, 50);
         }
     }
 
-    // (Request v3.10) 觸控事件處理 (僅手機)
+    // 觸控事件處理
     function handleTouchStart(event) {
-        // startAudioContext(); // (FIX_v4.25) 暫停特效
-        
-        // (FIX_v4.23) 動態檢查 isMobile
         if (window.innerWidth <= 768 && mobilePreviewPopup) {
             mobilePreviewPopup.classList.remove('is-visible');
         }
@@ -440,23 +360,12 @@ document.addEventListener('DOMContentLoaded', () => {
             event.preventDefault();
 
             isScrolling = true;
-            // (FEAT_v4.31) 節流由 checkLoopJump 控制
-            // setTimeout(() => { isScrolling = false; }, MOBILE_TOUCH_THROTTLE); 
 
             const direction = deltaY > 0 ? -1 : 1; 
             let newIndex = currentActiveIndex + direction;
 
-            // (FEAT_v4.31) 移除 JS 索引迴圈 (v3.11)
-
             if (newIndex !== currentActiveIndex) {
-                /*
-                if (audioSynth) { // (FIX_v4.25) G6", "50ms");
-                }
-                */
-                // (FIX_v4.29) 手機版使用 'true' (smooth scroll)
                 setActiveItem(newIndex, true);
-                
-                // (FEAT_v4.31) 等待平滑滾動 (約 400-500ms) 後再檢查跳轉
                 setTimeout(checkLoopJump, 500); 
             } else {
                 // 如果沒有滾動，也要釋放
@@ -465,16 +374,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- (FIX_v4.23) 重構點擊事件處理 ---
-    /**
-     * 處理項目列表的點擊事件
-     * 邏輯：
-     * 1. 如果點擊的項目 *不是* 當前啟用的 -> 滾動到該項目 (選取)
-     * 2. 如果點擊的項目 *是* 當前啟用的 -> 執行頁面轉場 (開啟)
-     */
+    // 點擊事件處理
     function handleItemClick(event) {
-        // startAudioContext(); // (FIX_v4.25) 暫停特效
-        
         if (isScrolling) {
             event.preventDefault();
             return;
@@ -503,42 +404,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 handlePageTransition(link.href);
             }
         } else {
-            // 情況 1：項目未啟用 -> 滾動到該項目 (選取)
-            event.preventDefault(); // 阻止 <a> 標籤的預設跳轉
-            
-            /*
-            if (audioSynth) { // (FIX_v4.25) 暫停特效
-                audioSynth.triggerAttackRelease("G6", "50ms");
-            }
-            */
-            
-            // MOD: (FIX_v4.36) 
-            // 統一使用 'true' (smooth scroll)
-            // 解決桌面版點擊項目時置中失效的問題
+            event.preventDefault();
             setActiveItem(newIndex, true); 
-            
-            // (FEAT_v4.31) 檢查跳轉
-            // MOD: (FIX_v4.36) 
-            // 由於 setActiveItem 已改為 'true' (smooth scroll)
-            // 我們統一延遲 500ms 檢查跳轉
             setTimeout(checkLoopJump, 500);
         }
     }
-    // --- End of (FIX_v4.23) ---
 
-    // (Request 3) 篩選器點擊事件處理
+    // 篩選器點擊事件處理
     function handleFilterClick(event) {
-        // MOD: (v4.32) 只處理帶有 data-filter 屬性的 <a> 標籤
         const targetLink = event.target.closest('a[data-filter]');
         
-        if (!targetLink) return; // 如果點擊的是 "Gallery" 或其他連結，則忽略
+        if (!targetLink) return;
         event.preventDefault(); 
-        
-        // startAudioContext(); // (FIX_v4.25) 暫停特效
 
         const filter = targetLink.getAttribute('data-filter');
 
-        // --- (FIX_v4.22) 修正篩選器 .active 狀態的同步邏輯 ---
         if (categoryNavElement) { 
             categoryNavElement.querySelectorAll('a[data-filter]').forEach(a => a.classList.remove('active'));
         }
@@ -547,14 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const activeLinks = document.querySelectorAll(`a[data-filter="${filter}"]`);
         activeLinks.forEach(a => a.classList.add('active'));
-        // --- End of Fix ---
 
-        // (FEAT_v4.31) 篩選器會破壞複製體邏輯
-        // 我們必須在篩選時使用 *真實* 項目，並在 "all" 時 *重建* 複製體
-        
-        // --- (FEAT_v4.31) 篩選器邏輯重構 (開始) ---
-        
-        // 1. 停止滾動並重置
         isScrolling = true; 
         
         // 2. 獲取真實的項目 (排除複製體)
@@ -588,56 +461,27 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         
-        // 重置啟用項目
         if (visibleItems.length > 0) {
-            /*
-            if (audioSynth) { // (FIX_v4.25) 暫停特效
-                audioSynth.triggerAttackRelease("G6", "50ms");
-            }
-            */
-            
-            // (FEAT_v4.31) 根據情況設定初始索引
             let targetIndex = 0;
             if (filter === 'all') {
-                // 如果是 "All"，跳轉到第一個真實項目
                 const safeCloneCount = Math.min(cloneCount, originalProjectCount);
                 targetIndex = safeCloneCount;
             } else {
-                // 如果是篩選，跳轉到可見列表的第一個
                 targetIndex = 0; 
             }
 
-            // MOD: (FIX_v4.35) 
-            // 解決 Filter 跑版問題 (如 image_b77c1c.png 所示)
-            // 
-            // 延遲 50ms 執行 setActiveItem，
-            // 讓瀏覽器有時間 "Reflow" (重排) 佈局 (處理 .hide class 的變化)，
-            // 這樣 scrollIntoView({ block: 'center' }) 才能正確計算置中位置。
-            //
-            // MOD: (FIX_v4.36)
-            // 將 'false' (auto) 改為 'true' (smooth)，
-            // 確保篩選後也有平滑的置中動畫。
             setTimeout(() => {
-                setActiveItem(targetIndex, true); // 使用 'true' (smooth) 平滑滾動
-                isScrolling = false; // 在延遲後釋放滾動
-            }, 50); // 50ms 延遲
+                setActiveItem(targetIndex, true);
+                isScrolling = false;
+            }, 50);
 
         } else {
-            // 如果篩選後沒有項目
             resetPreview();
-            isScrolling = false; // 釋放滾動
+            isScrolling = false;
         }
-        
-        // MOD: (FIX_v4.35) 
-        // 由於 setActiveItem 已被移入 setTimeout，
-        // isScrolling 必須在 setTimeout 內部或在此處被延遲釋放。
-        // 我們選擇在 setTimeout 內部釋放。
-        // (isScrolling = false; 已移除) 
-        
-        // --- (FEAT_v4.31) 篩選器邏輯重構 (結束) ---
     }
 
-    // --- (FEAT_v4.13) 頁面轉場 ---
+    // 頁面轉場
     const TRANSITION_DURATION = 400;
 
     function handlePageTransition(destination) {
@@ -652,31 +496,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function bindTransitionLinks() {
-        // MOD: (FIX_v4.33) 
-        // 修正 v4.32 中因選擇器重複 (desktop/mobile links + .nav-gallery-link)
-        // 導致 allLinks 陣列包含重複 DOM 元素的問題。
-        //
-        // 新邏輯：
-        // 1. 抓取所有 desktop 和 mobile 連結。
-        // 2. 將 NodeList 轉換為陣列。
-        // 3. 使用 Set 和 Array.from() 來建立一個*唯一*的連結陣列。
-        
         const desktopLinks = Array.from(document.querySelectorAll('#desktopContactLinks a'));
         const mobileLinks = Array.from(document.querySelectorAll('#mobileContactLinks a'));
-        
-        // (v4.32) .nav-gallery-link 選擇器是多餘的，
-        // 因為在 portfolio.html 中, .nav-gallery-link 
-        // 已經包含在 #desktopContactLinks 和 #mobileContactLinks 中。
-        // const galleryLinks = document.querySelectorAll('.nav-gallery-link');
-
-        // MOD: (v4.33) 使用 Set 確保 allLinks 中的每個 DOM 元素都是唯一的
         const allLinks = Array.from(new Set([...desktopLinks, ...mobileLinks]));
 
         allLinks.forEach(link => {
             link.addEventListener('click', (event) => {
-                // startAudioContext(); // (FIX_v4.25) 暫停特效
-                
-                // 僅處理本地跳轉
                 if (link.hostname === window.location.hostname && !link.href.startsWith('mailto:') && !link.target) {
                     event.preventDefault(); 
                     handlePageTransition(link.href);
