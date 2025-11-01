@@ -378,6 +378,16 @@ header {
     /* MOD: 確保 .right-column 佔滿高度 */
     height: 100%;
 }
+
+/* ADD: (FIX_v5.2) 
+  - 為移回 .right-column 的 .contact-links (僅 portfolio.html) 設定樣式
+  - 確保它能與 .profile-block 齊底
+*/
+.right-column .contact-links {
+    margin-top: auto; /* 關鍵：將連結推到底部 */
+    padding-bottom: 0.5rem; /* 增加底部間距 (匹配 .contact-links) */
+}
+
 .category-nav {
     /* MOD: FEAT_projectsFilter_v2.0 (Request 2)
       - 確保垂直置中

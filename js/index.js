@@ -321,19 +321,24 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleWheelScroll(event) {
         event.preventDefault(); 
         if (isScrolling) return; 
-        isScrolling = true;
+        isScrolling = true; // 鎖定
 
         const direction = event.deltaY > 0 ? 1 : -1; 
         let newIndex = currentActiveIndex + direction;
         
         if (newIndex !== currentActiveIndex) {
-            setActiveItem(newIndex, true);
+            setActiveItem(newIndex, true); // 開始滾動
+            
+            // (FIX_v5.2) 安排跳轉檢查。
+            // 這個延遲 (500ms) 應該略長於 'smooth' 滾動的持續時間。
             setTimeout(checkLoopJump, 500); 
         }
         
-        if (visibleItems[currentActiveIndex] && !visibleItems[currentActiveIndex].hasAttribute('data-is-clone')) {
-            setTimeout(() => { isScrolling = false; }, 50);
-        }
+        // (FIX_v5.2) 關鍵修復：
+        // 無論如何，都在一個很短的延遲後釋放鎖。
+        // 這消除了滾動到「複製體」時長達 500ms 的「黏滯」感。
+        // 100ms 足以防止意外的雙重滾動，同時保持流暢。
+        setTimeout(() => { isScrolling = false; }, 100);
     }
 
     // 觸控事件處理
@@ -357,20 +362,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const deltaY = touchEndY - touchStartY;
 
         if (Math.abs(deltaY) > touchThreshold) {
-            event.preventDefault();
+            event.preventDefault(); // 僅在有效滑動時阻止預設行為
+            isScrolling = true; // 鎖定
 
-            isScrolling = true;
-
-            const direction = deltaY > 0 ? -1 : 1; 
+            const direction = deltaY > 0 ? -1 : 1; // 觸控方向與滾輪相反
             let newIndex = currentActiveIndex + direction;
 
             if (newIndex !== currentActiveIndex) {
                 setActiveItem(newIndex, true);
+                // (FIX_v5.2) 匹配滾輪邏輯，安排跳轉檢查
                 setTimeout(checkLoopJump, 500); 
             } else {
-                // 如果沒有滾動，也要釋放
+                // (FIX_v5.2) 如果索引沒有變化（例如滑到底部/頂部），
+                // 必須釋放鎖，否則會卡住。
                 isScrolling = false;
             }
+        }
+
+        // (FIX_v5.2) 關鍵修復：
+        // 如果觸發了鎖定，也在 100ms 後釋放，以保持流暢。
+        if (isScrolling) {
+            setTimeout(() => { isScrolling = false; }, 100);
         }
     }
 
