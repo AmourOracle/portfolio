@@ -170,6 +170,16 @@ body:has(.portfolio-container) .left-column-top {
     gap: 2rem; /* ADD: 增加按鈕間距 */
 }
 
+/* ADD: (FIX_v6.5) 
+  - 修正 project.html 頁面的底部按鈕對齊
+  - 覆蓋 .left-column-bottom 的 flex-start
+  - 讓 "Next" 按鈕靠右 (與左欄同寬)
+*/
+.project-layout .left-column-bottom {
+    justify-content: space-between; /* 恢復左右分散對齊 */
+    gap: 0; /* 移除 gap，由 space-between 控制 */
+}
+
 
 .name-block { position: relative; }
 .name-block .label { 
