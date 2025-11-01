@@ -95,8 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
      * 渲染桌面版的隨機拼貼佈局
      */
     function renderDesktopCollage(images) {
-        // 確保容器有足夠的高度 (例如每張圖 20vh)
-        // (v4.32 CSS 中已設定 min-height: 200vh，此處作為備用)
+        // MOD: (FIX_v4.36) 
+        // 移除對 .style.minHeight 的直接操作
+        // CSS (v4.36) 已將容器設為 overflow-y: auto;
+        // 我們將改為在 fragment 中添加一個 spacer 元素來撐開滾動高度。
         // galleryContainer.style.minHeight = `${images.length * 20}vh`;
 
         const fragment = document.createDocumentFragment();
@@ -133,6 +135,21 @@ document.addEventListener('DOMContentLoaded', () => {
             item.appendChild(img);
             fragment.appendChild(item);
         });
+
+        // ADD: (FIX_v4.36) 
+        // 新增一個間隔 (Spacer) 元素
+        // 由於 .gallery-content-column (容器) 已被 CSS 設為 overflow: auto;
+        // 我們需要在*內部*放置一個元素來定義總滾動高度。
+        // 我們將其設為 190vh (略高於隨機 top 的最大值 180vh)。
+        const spacer = document.createElement('div');
+        spacer.style.position = 'absolute';
+        spacer.style.top = '190vh';
+        spacer.style.left = '0';
+        spacer.style.height = '10px';
+        spacer.style.width = '10px';
+        spacer.style.pointerEvents = 'none'; // 避免干擾
+        fragment.appendChild(spacer);
+        // --- End of (FIX_v4.36) ---
 
         galleryContainer.appendChild(fragment);
     }

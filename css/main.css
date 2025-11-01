@@ -665,13 +665,28 @@ header {
 
 /* 桌面版：隨機拼貼容器 */
 .gallery-content-column {
-    position: relative; /* 關鍵：讓 .gallery-item 的 absolute 定位生效 */
-    overflow: hidden; /* 隱藏旋轉時可能超出的邊角 */
-    min-height: 200vh; /* 給予足夠的垂直空間讓圖片散佈 */
+    /* MOD: (FIX_v4.36) 
+     * 移除 min-height: 200vh; 和 overflow: hidden; (這是導致空白的 Bug)
+     * 改為與 .project-content-column 相同的滾動屬性
+     */
+    position: relative; /* 保持，為了 .gallery-item 的 absolute 定位 */
+    overflow-y: auto; /* MOD: 允許滾動 */
+    overflow-x: hidden; /* ADD: 隱藏水平滾動 */
+    min-height: auto; /* MOD: 移除 200vh */
+    height: 100%; /* ADD: 填滿 1fr 網格高度 */
+    
     padding-top: 1.5rem; 
     padding-right: 1rem; 
     grid-row: 1; /* 確保在 .project-container 中位於第一行 */
+
+    /* ADD: 隱藏滾動條 (同 .project-content-column) */
+    scrollbar-width: none; /* For Firefox */
 }
+/* ADD: (FIX_v4.36) 隱藏滾動條 */
+.gallery-content-column::-webkit-scrollbar {
+    display: none;
+}
+
 
 /* 桌面版：隨機拼貼項目 */
 .gallery-item {
@@ -699,6 +714,7 @@ header {
     position: static;
     overflow-y: auto; /* 允許右欄滾動 */
     min-height: auto; /* 移除桌面版的高度 */
+    height: auto; /* 覆蓋 100% */
     
     /* 啟用簡單的 2 欄網格 */
     display: grid;
@@ -965,14 +981,17 @@ header {
     
     /* ADD: (v4.32) 手機版 Gallery 頁面的容器設定 */
     /* 覆蓋 .project-container .project-content-column 的 overflow: visible */
+    /* MOD: (FIX_v4.36) 修正手機版 Gallery 佈局 */
     .gallery-container .gallery-content-column {
         overflow-y: auto; /* 恢復滾動 */
         padding-top: 0;
         mask-image: none;
         grid-row: 2;
-        /* MOD: (v4.32) 修正高度計算，確保 .project-nav-bottom (auto) 可見 */
-        /* height: calc(100vh - 60px - 4rem); */ 
         /* (v4.32) 讓 grid-row: 2 (1fr) 自動填滿剩餘空間即可 */
+    }
+    /* MOD: (FIX_v4.36) 確保手機版 grid-template-rows 正確 */
+    .gallery-container {
+        grid-template-rows: 1fr auto; /* 圖片區 (1fr), Back 按鈕 (auto) */
     }
 
 
@@ -985,6 +1004,11 @@ header {
         align-items: baseline; /* 保持文字基線對齊 */
         margin-top: 0; /* 移除 auto margin */
     }
+    /* MOD: (FIX_v4.36) 修正手機版 Gallery Back 按鈕位置 */
+    .gallery-container .project-nav-bottom {
+        grid-row: 2; /* 應位於第 2 行 */
+    }
+
     
     /* ADD: (FEAT_v4.33) 內頁右下角 (手機版) */
     .project-container .project-nav-right-wrapper {
@@ -1007,8 +1031,9 @@ header {
     }
     
     /* ADD: (FEAT_v4.32) 顯示手機版 Gallery 頁面的 .contact-links */
+    /* MOD: (FIX_v4.36) 隱藏 (已在 gallery.html 中移除) */
     .gallery-container .project-nav-right-wrapper .contact-links {
-        display: flex;
+        display: none;
     }
 
 
@@ -1036,6 +1061,9 @@ header {
         padding-bottom: 0;
     }
     
+    /* --- (FIX_v4.26) 啟用手機版選擇器視覺 --- */
+    /* (v3.9) 保持手機版插槽樣式 */
+    /* 註解已被移除，手機版現在會繼承桌面的 .project-item 樣式 */
     .project-item {
         /* (繼承) opacity: 0.4, transform: scale(0.85) */
     }
@@ -1045,7 +1073,24 @@ header {
     .project-category {
         /* (繼承) opacity: 0 (當 .is-active) */
     }
+    /* --- (FIX_v4.26) 結束 --- */
 
+
+    /* (v3.9) 手機版底部按鈕 (project.html) */
+    /* (Task 2 Fix) 移除舊的 flex-direction: column 樣式 */
+    
+    /* MOD: (v4.33) 移除 v3.9 的手機版 text-align: left 覆蓋
+     * 因為 Next 按鈕現在固定在右側，需要靠右對齊 (繼承桌面版即可)
+     */
+    /*
+    .next-project-text-wrapper {
+        align-items: flex-start; 
+        text-align: left;
+    }
+    .next-project-block .label {
+        text-align: left;
+    }
+    */
     #nextProjectTitle {
         font-size: 0.9rem;
     }
@@ -1059,4 +1104,3 @@ header {
         gap: 2rem; 
     }
 }
-

@@ -405,7 +405,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // (FEAT_v4.31) 釋放滾動鎖
         // (如果 checkLoopJump 沒執行，也需要釋放)
-        if (!visibleItems[currentActiveIndex].hasAttribute('data-is-clone')) {
+        // MOD: (FIX_v4.36) 
+        // 檢查 !visibleItems[currentActiveIndex] 是否存在以避免錯誤
+        if (visibleItems[currentActiveIndex] && !visibleItems[currentActiveIndex].hasAttribute('data-is-clone')) {
              // 50ms 延遲以匹配 checkLoopJump 的延遲
             setTimeout(() => { isScrolling = false; }, 50);
         }
@@ -509,19 +511,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 audioSynth.triggerAttackRelease("G6", "50ms");
             }
             */
-            // (FIX_v4.29) 桌面版 auto, 手機版 smooth
-            const isMobile = window.innerWidth <= 768;
-            setActiveItem(newIndex, isMobile); 
+            
+            // MOD: (FIX_v4.36) 
+            // 統一使用 'true' (smooth scroll)
+            // 解決桌面版點擊項目時置中失效的問題
+            setActiveItem(newIndex, true); 
             
             // (FEAT_v4.31) 檢查跳轉
-            if (isMobile) {
-                setTimeout(checkLoopJump, 500);
-            } else {
-                // MOD: (FIX_v4.35) 
-                // 由於 setActiveItem 改為 'true' (smooth scroll)
-                // 這裡也需要延遲 500ms
-                setTimeout(checkLoopJump, 500);
-            }
+            // MOD: (FIX_v4.36) 
+            // 由於 setActiveItem 已改為 'true' (smooth scroll)
+            // 我們統一延遲 500ms 檢查跳轉
+            setTimeout(checkLoopJump, 500);
         }
     }
     // --- End of (FIX_v4.23) ---
@@ -613,8 +613,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // 延遲 50ms 執行 setActiveItem，
             // 讓瀏覽器有時間 "Reflow" (重排) 佈局 (處理 .hide class 的變化)，
             // 這樣 scrollIntoView({ block: 'center' }) 才能正確計算置中位置。
+            //
+            // MOD: (FIX_v4.36)
+            // 將 'false' (auto) 改為 'true' (smooth)，
+            // 確保篩選後也有平滑的置中動畫。
             setTimeout(() => {
-                setActiveItem(targetIndex, false); // 使用 'false' (auto) 立即跳轉
+                setActiveItem(targetIndex, true); // 使用 'true' (smooth) 平滑滾動
                 isScrolling = false; // 在延遲後釋放滾動
             }, 50); // 50ms 延遲
 
@@ -681,3 +685,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
