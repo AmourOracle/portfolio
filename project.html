@@ -61,36 +61,36 @@
                     <p id="projectInfo">Loading project details...</p>
                 </div>
             </div>
+
+            <!-- 
+              ADD: (v6.3) 
+              - 新增 left-column-bottom 容器
+              - 將 Back / Next 按鈕從 footer 移至此處
+            -->
+            <div class="left-column-bottom">
+                <a href="portfolio.html" class="back-button-block">
+                    <span class="arrow">&larr;</span> Back
+                </a>
+                
+                <a href="#" id="nextProjectLink" class="next-project-block">
+                    <div class="next-project-text-wrapper">
+                        <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
+                        <span id="nextProjectTitle">Loading...</span>
+                    </div>
+                    <span class="arrow">&rarr;</span>
+                </a>
+            </div>
+
         </aside>
 
         <section id="projectImages" class="project-content-column">
         </section>
     </main>
 
-    <footer class="main-footer">
-        <div class="footer-left">
-            <a href="portfolio.html" class="back-button-block">
-                <span class="arrow">&larr;</span> Back
-            </a>
-        </div>
-        <div class="footer-right">
-            <div class="contact-links" id="projectContactLinks">
-                <ul>
-                    <li><a href="mailto:email@example.com">Email</a></li>
-                    <li><a href="#" target="_blank">Instagram</a></li>
-                    <li><a href="about.html">Me</a></li>
-                </ul>
-            </div>
-
-            <a href="#" id="nextProjectLink" class="next-project-block">
-                <div class="next-project-text-wrapper">
-                    <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
-                    <span id="nextProjectTitle">Loading...</span>
-                </div>
-                <span class="arrow">&rarr;</span>
-            </a>
-        </div>
-    </footer>
+    <!-- 
+      MOD: (v6.3) 移除 footer
+      <footer class="main-footer"> ... </footer> 
+    -->
 
     <script src="js/project.js"></script>
 </body>

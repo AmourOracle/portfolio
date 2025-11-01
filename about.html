@@ -80,6 +80,17 @@
                 </div>
             </div>
 
+            <!-- 
+              ADD: (v6.3) 
+              - 新增 left-column-bottom 容器
+              - 將 Back 按鈕從 footer 移至此處
+            -->
+            <div class="left-column-bottom">
+                <a href="portfolio.html" class="back-button-block">
+                    <span class="arrow">&larr;</span> Back
+                </a>
+            </div>
+
         </aside>
 
         <section class="project-content-column about-content">
@@ -147,18 +158,10 @@
         </section>
     </main>
 
-    <!-- ADD: (v5.0) 新增全站 footer 結構 -->
-    <footer class="main-footer">
-        <div class="footer-left">
-            <!-- "Back" 按鈕 (從 .project-nav-bottom 移入) -->
-            <a href="portfolio.html" class="back-button-block">
-                <span class="arrow">&larr;</span> Back
-            </a>
-        </div>
-        <div class="footer-right">
-            <!-- About 頁面右側為空 -->
-        </div>
-    </footer>
+    <!-- 
+      MOD: (v6.3) 移除 footer
+      <footer class="main-footer"> ... </footer> 
+    -->
 
     <!-- MOD: 移除 index.js 的載入 -->
     <!-- <script src="js/index.js"></script> -->
