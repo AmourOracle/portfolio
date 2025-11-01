@@ -12,7 +12,7 @@
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;0,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -42,29 +42,12 @@
     -->
     <main class="project-container gallery-container">
         
+        <!-- MOD: (FIX_v4.35) 根據使用者請求，移除左側欄 <aside class="left-column"> -->
+        <!-- 
         <aside class="left-column">
-            
-            <!-- 專案標題 (頂部) -->
-            <div class="left-column-top">
-                <div class="name-block">
-                    <!-- MOD: (v4.32) 改為靜態標題 -->
-                    <span id="projectNumber" class="label">GALLERY</span>
-                    <h1 id="projectTitle">Comm. Photo</h1>
-                </div>
-            </div>
-            
-            <!-- 專案資訊 (中部) -->
-            <div class="left-column-middle">
-                <!-- MOD: (v4.32) 移除 BIO 區塊 -->
-                
-                <div class="info-divider-block">
-                    <!-- MOD: (v4.32) 改為靜態 INFO -->
-                    <span class="label">INFO</span>
-                    <p id="projectInfo">A collection of commercial photography work, presented in a randomized collage layout.</p>
-                </div>
-            </div>
-
+            ... (已移除) ...
         </aside>
+        -->
 
         <!-- 右欄：專案圖片展示 (將由 JS 動態生成) -->
         <!-- MOD: (v4.32) 
@@ -87,23 +70,14 @@
         </div>
         
         <!-- 
-          ADD: (v4.32) 
-          - 補上 .project-nav-right-wrapper (僅含 Links)
-          - 結構與 project.html 同步，但移除 "Next Project"
+          MOD: (FIX_v4.35) 
+          - 根據使用者請求，移除 .project-nav-right-wrapper (外部連結)
         -->
+        <!--
         <div class="project-nav-right-wrapper">
-            <!-- (FEAT_v4.33) 外部連結 (與 portfolio.html 同步) -->
-            <div class="contact-links" id="projectContactLinks">
-                <ul>
-                    <!-- MOD: (v4.32) 更新連結順序 -->
-                    <li><a href="about.html">Me</a></li>
-                    <!-- 此頁面即為 Gallery，故不顯示 -->
-                    <!-- <li><a href="gallery.html" class="nav-gallery-link">Gallery</a></li> -->
-                    <li><a href="#" target="_blank">Instagram</a></li>
-                    <li><a href="mailto:email@example.com">Email</a></li>
-                </ul>
-            </div>
+            ... (已移除) ...
         </div>
+        -->
 
     </main>
 
@@ -112,4 +86,3 @@
     <script src="js/gallery.js"></script>
 </body>
 </html>
-

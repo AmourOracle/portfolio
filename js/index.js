@@ -391,11 +391,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 audioSynth.triggerAttackRelease("G6", "50ms");
             }
             */
-            // (FIX_v4.29) 桌面版使用 'false' (auto scroll)
-            setActiveItem(newIndex, false);
+            // MOD: (FIX_v4.35) 
+            // 將 'false' (auto scroll) 改為 'true' (smooth scroll)
+            // 修復滾動不滑順，以及 'Still Life' (最後一個項目) 無法置中的問題
+            setActiveItem(newIndex, true);
             
             // (FEAT_v4.31) 立即檢查是否需要跳轉
-            checkLoopJump();
+            // MOD: (FIX_v4.35) 
+            // 由於 setActiveItem 改為 'true' (smooth)，我們需要像手機版一樣
+            // 等待滾動 (約 500ms) 後再檢查跳轉
+            setTimeout(checkLoopJump, 500); 
         }
         
         // (FEAT_v4.31) 釋放滾動鎖
@@ -443,8 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (newIndex !== currentActiveIndex) {
                 /*
-                if (audioSynth) { // (FIX_v4.25) 暫停特效
-                    audioSynth.triggerAttackRelease("G6", "50ms");
+                if (audioSynth) { // (FIX_v4.25) G6", "50ms");
                 }
                 */
                 // (FIX_v4.29) 手機版使用 'true' (smooth scroll)
@@ -513,7 +517,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isMobile) {
                 setTimeout(checkLoopJump, 500);
             } else {
-                checkLoopJump();
+                // MOD: (FIX_v4.35) 
+                // 由於 setActiveItem 改為 'true' (smooth scroll)
+                // 這裡也需要延遲 500ms
+                setTimeout(checkLoopJump, 500);
             }
         }
     }
@@ -590,21 +597,39 @@ document.addEventListener('DOMContentLoaded', () => {
             */
             
             // (FEAT_v4.31) 根據情況設定初始索引
+            let targetIndex = 0;
             if (filter === 'all') {
                 // 如果是 "All"，跳轉到第一個真實項目
                 const safeCloneCount = Math.min(cloneCount, originalProjectCount);
-                setActiveItem(safeCloneCount, false);
+                targetIndex = safeCloneCount;
             } else {
                 // 如果是篩選，跳轉到可見列表的第一個
-                setActiveItem(0, false); 
+                targetIndex = 0; 
             }
+
+            // MOD: (FIX_v4.35) 
+            // 解決 Filter 跑版問題 (如 image_b77c1c.png 所示)
+            // 
+            // 延遲 50ms 執行 setActiveItem，
+            // 讓瀏覽器有時間 "Reflow" (重排) 佈局 (處理 .hide class 的變化)，
+            // 這樣 scrollIntoView({ block: 'center' }) 才能正確計算置中位置。
+            setTimeout(() => {
+                setActiveItem(targetIndex, false); // 使用 'false' (auto) 立即跳轉
+                isScrolling = false; // 在延遲後釋放滾動
+            }, 50); // 50ms 延遲
+
         } else {
             // 如果篩選後沒有項目
             resetPreview();
+            isScrolling = false; // 釋放滾動
         }
         
-        // 釋放滾動
-        isScrolling = false;
+        // MOD: (FIX_v4.35) 
+        // 由於 setActiveItem 已被移入 setTimeout，
+        // isScrolling 必須在 setTimeout 內部或在此處被延遲釋放。
+        // 我們選擇在 setTimeout 內部釋放。
+        // (isScrolling = false; 已移除) 
+        
         // --- (FEAT_v4.31) 篩選器邏輯重構 (結束) ---
     }
 

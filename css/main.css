@@ -643,6 +643,26 @@ header {
 
 /* --- ADD: (FEAT_v4.32) Gallery Page (gallery.html) 專用樣式 --- */
 
+/* ADD: (FIX_v4.35) Gallery Page Layout Override */
+/* 覆蓋 .project-container (2欄) 為 (1欄) */
+.gallery-container {
+    grid-template-columns: 1fr;
+}
+.gallery-container .gallery-content-column {
+    /* 確保內容佔據第 1 欄 */
+    grid-column: 1;
+}
+.gallery-container .project-nav-bottom {
+     /* 確保 Back 按鈕佔據第 1 欄 */
+    grid-column: 1;
+}
+.gallery-container .project-nav-right-wrapper {
+    /* 隱藏 (已在 gallery.html 中移除) */
+    display: none;
+}
+/* --- End of (FIX_v4.35) --- */
+
+
 /* 桌面版：隨機拼貼容器 */
 .gallery-content-column {
     position: relative; /* 關鍵：讓 .gallery-item 的 absolute 定位生效 */
@@ -1010,6 +1030,7 @@ header {
         mask-image: none; /* ADD: 移除遮罩效果 */
     }
     
+    /* MOD: (Request v3.13) 僅重設內頁的 project-list padding */
     .project-container .project-list {
         padding-top: 0;
         padding-bottom: 0;
@@ -1038,3 +1059,4 @@ header {
         gap: 2rem; 
     }
 }
+
