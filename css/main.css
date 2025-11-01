@@ -256,10 +256,14 @@ body:has(.portfolio-container) .left-column-top {
 }
 
 /* ADD: (v6.0) portfolio 頁面中，位於左欄底部的連結樣式 */
+/* MOD: (v6.4) 
+  - 此樣式現在也由 .left-column-bottom 共用
+  - 將 .left-column .contact-links 移至 .left-column-bottom
+*/
 .left-column .contact-links {
-    margin-top: auto; /* 關鍵：將連結推到底部 */
-    padding-bottom: 0.5rem; /* 匹配間距 */
-    flex-shrink: 0; /* (v6.0) 確保底部區塊不被壓縮 */
+    /* margin-top: auto; */ /* (v6.4) 移至 .left-column-bottom */
+    /* padding-bottom: 0.5rem; */
+    /* flex-shrink: 0; */
 }
 /* ADD: (v6.0) 覆蓋 .contact-links ul 的預設 'flex-end' */
 .left-column .contact-links ul {
@@ -1088,6 +1092,136 @@ body:has(.portfolio-container) .left-column-top {
     .main-footer #desktopContactLinks {
         display: none;
     }
-    .main-f...
-[Immersive content redacted for brevity.]
+    .main-footer #mobileContactLinks {
+        display: flex; /* 使用 flex 以匹配 ul 樣式 */
+    }
+    
+    /* ADD: (v5.1) 
+      - portfolio.html 頁面的 .main-footer (連結)
+      - 移除頂部 padding 和 border，因為它緊跟在 .mobile-footer (篩選器) 之後
+    */
+    body:has(.portfolio-container) .main-footer {
+         padding-top: 0;
+         border-top: none;
+    }
+    /* ADD: (v5.1) 
+      - portfolio.html 頁面的 .main-footer 連結
+      - 必須覆蓋 .mobile-contact-links 的 padding: 0 2rem
+      - 因為 .main-footer 已經有 padding
+    */
+    body:has(.portfolio-container) .main-footer .mobile-contact-links {
+        padding: 0; /* 移除繼承的 padding */
+    }
+
+    /* (v6.3) 移除 .footer-left, .footer-right 的手機版樣式 (因為 footer 已移除) */
+    /*
+    .footer-left, .footer-right {
+        width: 100%;
+        gap: 1.5rem;
+    }
+    .footer-right {
+        justify-content: space-between;
+    }
+    */
+
+    /* (FEAT_v4.33) 隱藏手機版內頁的 .contact-links (空間不足) */
+    /* MOD: (v5.0) 更新選擇器 */
+    /* (v6.3) .contact-links 已不存在於 footer 中，移除此規則 */
+    /*
+    .project-layout .footer-right .contact-links,
+    .about-layout .footer-right .contact-links,
+    .gallery-layout .footer-right .contact-links {
+        display: none;
+    }
+    */
+    
+    /* MOD: (v5.1) 修正：在內頁隱藏 #mobileContactLinks (手機連結) */
+    /* (v6.3) footer 已移除，移除此規則 */
+    /*
+    .project-layout .footer-right #mobileContactLinks,
+    .about-layout .footer-right #mobileContactLinks,
+    .gallery-layout .footer-right #mobileContactLinks {
+        display: none;
+    }
+    */
+    
+    /* ADD: (v5.0) 如果 links 隱藏，將 next project 推到最右側 */
+    /* (v6.3) .footer-right 已移除，移除此規則 */
+    /*
+    .project-layout .footer-right {
+        justify-content: flex-end;
+    }
+    */
+    
+    /* ADD: (v5.0) 如果 right-footer 為空 (about/gallery)，則將其隱藏 */
+    /* (v6.3) .footer-right 已移除，移除此規則 */
+    /*
+    .about-layout .footer-right,
+    .gallery-layout .footer-right {
+        display: none;
+    }
+    */
+    
+    /* (FEAT_v4.33) 顯示手機版 Gallery 頁面的 .contact-links */
+    /* MOD: (FIX_v4.36) 隱藏 (已在 gallery.html 中移除) */
+    /* MOD: (v5.0) 已由 .gallery-layout .footer-right .contact-links 處理 */
+    /*
+    .gallery-container .project-nav-right-wrapper .contact-links {
+        display: none;
+    }
+    */
+
+
+    /* MOD: (v3.9) 重置手機版的左欄結構 */
+    .left-column-top, .left-column-middle {
+        height: auto;
+        overflow: visible;
+        padding-top: 0;
+    }
+    .name-block .label {
+        position: absolute;
+        top: -1.5rem;
+        left: 0.2rem;
+    }
+    .center-column {
+        overflow-y: visible;
+        padding-right: 0; 
+        padding: 0;
+        mask-image: none; /* ADD: 移除遮罩效果 */
+    }
+    
+    /* MOD: (v6.1) 手機版 project-list 應移除緩衝 padding */
+    /* (v6.2) 再次確認移除 */
+    .middle-container .project-list {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    #nextProjectTitle {
+        font-size: 0.9rem;
+    }
+    .about-intro-text p {
+        font-size: 1.5rem; 
+    }
+    .about-details-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem; 
+    }
+    
+    /* ADD: (v6.3) 手機版 .left-column-bottom 導航按鈕樣式 */
+    /* MOD: (v6.4) 
+      - .left-column-bottom 採用 flex-start
+      - .next-project-block 單獨推到右側
+    */
+    .left-column-bottom {
+        flex-direction: row; /* MOD: 恢復 row */
+        align-items: flex-end;
+        justify-content: space-between; /* MOD: 手機版維持左右分散 */
+        /* gap: 1.5rem; */ /* (v6.4) 移除 gap */
+    }
+    .left-column-bottom .next-project-block {
+        /* 在手機上，Next 按鈕移到 Back 按鈕下方 */
+        /* align-self: flex-end; */ /* (v6.4) 移除 */
+    }
+}
 
