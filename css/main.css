@@ -189,33 +189,14 @@ header {
     grid-template-columns: 28.57% 1fr 10vw;
     grid-template-rows: 1fr; /* (Task 2 Fix) 確保 portfolio-container 只有一行 */
 }
-.profile-block { 
-    display: flex; 
-    /* MOD: 移除 gap，因為連結已移走 */
-    align-items: flex-end; 
-    /* MOD: 使用 margin-top: auto 將其推至底部 */
-    margin-top: auto;
-    flex-shrink: 0; /* MOD: 確保底部區塊不被壓縮 */
-}
-.image-placeholder {
-    /* MOD: (Request 3) 縮小 0.5 倍 (360px * 0.5 = 180px) */
-    width: 180px;
-    aspect-ratio: 16 / 9;
-    background-color: #222;
-    border: 1px solid var(--divider-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    font-size: 0.7rem;
-    color: var(--secondary-color);
-}
-/* ADD: 讓圖片填滿 placeholder */
-.image-placeholder img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+
+/* (v6.0) 移除 .profile-block 和 .image-placeholder 樣式 */
+/*
+.profile-block { ... }
+.image-placeholder { ... }
+.image-placeholder img { ... }
+*/
+
 
 /* MOD: FEAT_projectsFilter_v2.0 (Request 2)
   - 移除 margin-top: auto; 解決與 .category-nav 的置中衝突
@@ -225,6 +206,20 @@ header {
     margin-top: 1rem; 
     padding-bottom: 0.5rem; /* 增加底部間距 */
 }
+
+/* ADD: (v6.0) portfolio 頁面中，位於左欄底部的連結樣式 */
+.left-column .contact-links {
+    margin-top: auto; /* 關鍵：將連結推到底部 */
+    padding-bottom: 0.5rem; /* 匹配間距 */
+    flex-shrink: 0; /* (v6.0) 確保底部區塊不被壓縮 */
+}
+/* ADD: (v6.0) 覆蓋 .contact-links ul 的預設 'flex-end' */
+.left-column .contact-links ul {
+    justify-content: flex-start; /* 靠左對齊 */
+    gap: clamp(0.5rem, 1.2vw, 1.2rem); /* 調整間距 */
+}
+
+
 /* MOD: (v5.0) main-footer 中的 contact-links 應移除邊距 */
 .main-footer .contact-links {
     margin-top: 0;
@@ -237,7 +232,7 @@ header {
     display: flex;
     /* MOD: 響應式 gap */
     gap: clamp(0.5rem, 1.5vw, 1.5rem);
-    /* MOD: 靠右對齊 */
+    /* MOD: 靠右對齊 (預設) */
     justify-content: flex-end;
 }
 .contact-links li {
@@ -379,14 +374,13 @@ header {
     height: 100%;
 }
 
-/* ADD: (FIX_v5.2) 
-  - 為移回 .right-column 的 .contact-links (僅 portfolio.html) 設定樣式
-  - 確保它能與 .profile-block 齊底
-*/
+/* (v6.0) 移除 .right-column .contact-links 樣式 */
+/*
 .right-column .contact-links {
-    margin-top: auto; /* 關鍵：將連結推到底部 */
-    padding-bottom: 0.5rem; /* 增加底部間距 (匹配 .contact-links) */
+    margin-top: auto;
+    padding-bottom: 0.5rem; 
 }
+*/
 
 .category-nav {
     /* MOD: FEAT_projectsFilter_v2.0 (Request 2)
@@ -702,35 +696,59 @@ header {
     display: none; /* 預設在桌面版隱藏 */
 }
 
-/* --- Mobile Preview Popup --- */
-.mobile-preview-popup {
-    display: none;
+/* --- (v6.0) 移除 Mobile Preview Popup --- */
+/*
+.mobile-preview-popup { ... }
+.mobile-preview-popup img { ... }
+*/
+
+
+/* --- (v6.0) 新增 Random Preview Popup --- */
+.random-preview-popup {
     position: fixed;
-    width: 180px;
+    /* 預設大小，會被 JS 覆蓋 */
+    width: 220px; 
     aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
-    z-index: 2000;
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 2000; /* 應高於 header/footer (1000) */
     pointer-events: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     overflow: hidden;
+    
+    /* 預設隱藏 */
+    opacity: 0;
+    transform-origin: center center;
+    
+    /* 過渡效果 */
+    transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* 初始位置 (將被 JS 覆蓋) */
+    top: 0; 
+    left: 0;
+    transform: translate(50vw, 50vh) scale(0.5);
 }
 
-.mobile-preview-popup img {
+.random-preview-popup.is-visible {
+    opacity: 1;
+}
+
+.random-preview-popup img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
+/* --- End of (v6.0) --- */
 
 
 @media (min-width: 769px) {
+    /* (v6.0) 移除 .mobile-preview-popup 規則 */
+    /*
     .mobile-preview-popup {
         display: none !important;
     }
+    */
 }
 
 
@@ -885,10 +903,13 @@ header {
         padding-bottom: 0;
     }
 
+    /* (v6.0) 移除 .mobile-preview-popup.is-visible 樣式 */
+    /*
     .mobile-preview-popup.is-visible {
         display: block;
         opacity: 1;
     }
+    */
 }
 
 /* 手機版內頁 (project.html, about.html) */
