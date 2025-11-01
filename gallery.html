@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sywan - Gallery</title>
+    
+    <!-- FIX: (v1.2) 移除 href 開頭的 "/" 改為相對路徑 -->
+    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" sizes="any">
+    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" sizes="180x180">
+
+    <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+
+    <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
+    <script>
+      (function(d) {
+        var config = {
+          kitId: 'hcg4voj',
+          scriptTimeout: 3000,
+          async: true
+        },
+        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
+      })(document);
+    </script>
+    
+    <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
+    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <header>
+        <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
+        <a href="portfolio.html" class="logo">SYWAN</a>
+    </header>
+
+    <!-- ADD: (v4.32) 
+      - 新增 .gallery-container class 以便 CSS 鎖定
+      - 移除 id="projectMainContainer" (不需要載入動畫)
+    -->
+    <main class="project-container gallery-container">
+        
+        <aside class="left-column">
+            
+            <!-- 專案標題 (頂部) -->
+            <div class="left-column-top">
+                <div class="name-block">
+                    <!-- MOD: (v4.32) 改為靜態標題 -->
+                    <span id="projectNumber" class="label">GALLERY</span>
+                    <h1 id="projectTitle">Comm. Photo</h1>
+                </div>
+            </div>
+            
+            <!-- 專案資訊 (中部) -->
+            <div class="left-column-middle">
+                <!-- MOD: (v4.32) 移除 BIO 區塊 -->
+                
+                <div class="info-divider-block">
+                    <!-- MOD: (v4.32) 改為靜態 INFO -->
+                    <span class="label">INFO</span>
+                    <p id="projectInfo">A collection of commercial photography work, presented in a randomized collage layout.</p>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- 右欄：專案圖片展示 (將由 JS 動態生成) -->
+        <!-- MOD: (v4.32) 
+          - 變更 ID 為 galleryContainer (以匹配 gallery.js)
+          - 新增 class gallery-content-column
+        -->
+        <section id="galleryContainer" class="gallery-content-column">
+            <!-- 圖片將由 js/gallery.js 填入 -->
+        </section>
+
+        <!-- 
+          ADD: (v4.32) 
+          - 補上 .project-nav-bottom 區塊 (僅含 Back 按鈕)
+          - 結構與 project.html 同步
+        -->
+        <div class="project-nav-bottom">
+            <a href="portfolio.html" class="back-button-block">
+                <span class="arrow">&larr;</span> Back
+            </a>
+        </div>
+        
+        <!-- 
+          ADD: (v4.32) 
+          - 補上 .project-nav-right-wrapper (僅含 Links)
+          - 結構與 project.html 同步，但移除 "Next Project"
+        -->
+        <div class="project-nav-right-wrapper">
+            <!-- (FEAT_v4.33) 外部連結 (與 portfolio.html 同步) -->
+            <div class="contact-links" id="projectContactLinks">
+                <ul>
+                    <!-- MOD: (v4.32) 更新連結順序 -->
+                    <li><a href="about.html">Me</a></li>
+                    <!-- 此頁面即為 Gallery，故不顯示 -->
+                    <!-- <li><a href="gallery.html" class="nav-gallery-link">Gallery</a></li> -->
+                    <li><a href="#" target="_blank">Instagram</a></li>
+                    <li><a href="mailto:email@example.com">Email</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 連結外部 JavaScript 檔案 -->
+    <!-- ADD: (v4.32) 載入 gallery.js 腳本 -->
+    <script src="js/gallery.js"></script>
+</body>
+</html>
+

@@ -12,7 +12,7 @@
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;0,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -102,7 +102,8 @@
                 <ul>
                     <li><a href="#" data-filter="all" class="active">Projects</a></li>
                     <li><a href="#" data-filter="Visual">Visual</a></li>
-                    <li><a href="#" data-filter="Photography">Comm. Photo</a></li>
+                    <!-- MOD: (v4.32) 移除 Comm. Photo 篩選器 -->
+                    <!-- <li><a href="gallery.html" class="nav-gallery-link">Comm. Photo</a></li> -->
                     <li><a href="#" data-filter="Identity">Branding</a></li>
                 </ul>
             </div>
@@ -110,10 +111,12 @@
             <!-- MOD: .contact-links 從左欄移至此處 -->
             <!-- (FEAT_v4.13) 新增 ID "desktopContactLinks" 用於轉場綁定 -->
             <div class="contact-links" id="desktopContactLinks">
+                <!-- MOD: (v4.32) 調整連結順序並新增 Gallery 連結 -->
                 <ul>
-                    <li><a href="mailto:email@example.com">Email</a></li>
-                    <li><a href="#" target="_blank">Instagram</a></li>
                     <li><a href="about.html">Me</a></li>
+                    <li><a href="gallery.html" class="nav-gallery-link">Gallery</a></li>
+                    <li><a href="#" target="_blank">Instagram</a></li>
+                    <li><a href="mailto:email@example.com">Email</a></li>
                 </ul>
             </div>
         </nav>
@@ -124,7 +127,8 @@
             <ul class="mobile-filter-nav">
                 <li><a href="#" data-filter="all" class="active">Projects</a></li>
                 <li><a href="#" data-filter="Visual">Visual</a></li>
-                <li><a href="#" data-filter="Photography">Comm. Photo</a></li>
+                <!-- MOD: (v4.32) 移除 Comm. Photo 篩選器 -->
+                <!-- <li><a href="gallery.html" class="nav-gallery-link">Comm. Photo</a></li> -->
                 <li><a href="#" data-filter="Identity">Branding</a></li>
             </ul>
             
@@ -132,9 +136,11 @@
             <!-- (Request v3.16) 增加 class 區分 -->
             <!-- (FEAT_v4.13) 新增 ID "mobileContactLinks" 用於轉場綁定 -->
             <ul class="mobile-contact-links" id="mobileContactLinks">
-                <li><a href="mailto:email@example.com">Email</a></li>
-                <li><a href="#" target="_blank">Instagram</a></li>
+                <!-- MOD: (v4.32) 調整連結順序並新增 Gallery 連結 -->
                 <li><a href="about.html">Me</a></li>
+                <li><a href="gallery.html" class="nav-gallery-link">Gallery</a></li>
+                <li><a href="#" target="_blank">Instagram</a></li>
+                <li><a href="mailto:email@example.com">Email</a></li>
             </ul>
         </footer>
 
@@ -154,3 +160,4 @@
     <script src="js/index.js"></script>
 </body>
 </html>
+

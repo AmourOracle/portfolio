@@ -521,9 +521,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (Request 3) 篩選器點擊事件處理
     function handleFilterClick(event) {
+        // MOD: (v4.32) 只處理帶有 data-filter 屬性的 <a> 標籤
         const targetLink = event.target.closest('a[data-filter]');
         
-        if (!targetLink) return;
+        if (!targetLink) return; // 如果點擊的是 "Gallery" 或其他連結，則忽略
         event.preventDefault(); 
         
         // startAudioContext(); // (FIX_v4.25) 暫停特效
@@ -625,7 +626,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const desktopLinks = document.querySelectorAll('#desktopContactLinks a');
         const mobileLinks = document.querySelectorAll('#mobileContactLinks a');
         
-        const allLinks = [...desktopLinks, ...mobileLinks];
+        // ADD: (v4.32) 抓取新的 Gallery 連結 (包含 about.html 和 project.html 上的)
+        // (我們使用 .nav-gallery-link class 來抓取)
+        const galleryLinks = document.querySelectorAll('.nav-gallery-link');
+
+        // MOD: (v4.32) 將所有連結合併
+        const allLinks = [...desktopLinks, ...mobileLinks, ...galleryLinks];
 
         allLinks.forEach(link => {
             link.addEventListener('click', (event) => {
@@ -640,4 +646,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-

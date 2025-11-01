@@ -293,8 +293,9 @@ header {
     padding: 0;
     /* MOD: (Req 1) 增加巨大的上下 padding，確保列表頭尾能滾動到螢幕中央 */
     /* 50vh = 視窗高度一半, 10rem = 約 3 個 item 高度的一半，用於校正 */
-    padding-top: calc(50vh - 10rem);
-    padding-bottom: calc(50vh - 10rem);
+    /* MOD: (FEAT_v4.31) 移除 padding，改用複製體邏輯 */
+    /* padding-top: calc(50vh - 10rem); */
+    /* padding-bottom: calc(50vh - 10rem); */
 }
 
 /* MOD: FIX_pickerWheel_v3.4
@@ -639,6 +640,67 @@ header {
 /* --- End of Alignment Fix --- */
 
 
+/* --- ADD: (FEAT_v4.32) Gallery Page (gallery.html) 專用樣式 --- */
+
+/* 桌面版：隨機拼貼容器 */
+.gallery-content-column {
+    position: relative; /* 關鍵：讓 .gallery-item 的 absolute 定位生效 */
+    overflow: hidden; /* 隱藏旋轉時可能超出的邊角 */
+    min-height: 200vh; /* 給予足夠的垂直空間讓圖片散佈 */
+    padding-top: 1.5rem; 
+    padding-right: 1rem; 
+    grid-row: 1; /* 確保在 .project-container 中位於第一行 */
+}
+
+/* 桌面版：隨機拼貼項目 */
+.gallery-item {
+    position: absolute;
+    display: block;
+    background-color: #222;
+    border: 1px solid var(--divider-color);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+}
+.gallery-item:hover {
+    transform: scale(1.05) !important; /* 覆蓋 inline-style 的 rotate */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    z-index: 999 !important; /* 確保 hover 時在最上層 */
+}
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 手機版：網格容器 (當 .is-mobile-grid class 被 JS 加入時) */
+.gallery-content-column.is-mobile-grid {
+    position: static;
+    overflow-y: auto; /* 允許右欄滾動 */
+    min-height: auto; /* 移除桌面版的高度 */
+    
+    /* 啟用簡單的 2 欄網格 */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    
+    /* (與 project.html 右欄一致) */
+    scrollbar-width: none; 
+}
+.gallery-content-column.is-mobile-grid::-webkit-scrollbar {
+    display: none;
+}
+
+/* 手機版：網格項目 (img) */
+.gallery-content-column.is-mobile-grid img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    aspect-ratio: 1 / 1.25; /* 統一下圖片比例 */
+}
+/* --- End of Gallery Page Styles --- */
+
+
 /* --- ADD: (Request v3.13) 預設隱藏手機版 Footer --- */
 .mobile-footer {
     display: none; /* 預設在桌面版隱藏 */
@@ -829,6 +891,7 @@ header {
          * (containerHeight / 2) - (itemHeight / 2)
          * 來確保項目在 1fr 容器中置中
         */
+        /* MOD: (FEAT_v4.31) 移除 padding，改用複製體邏輯 */
         padding-top: 0;
         padding-bottom: 0;
     }
@@ -878,6 +941,19 @@ header {
         mask-image: none;
         grid-row: 2; /* (Task 2 Fix) Images 位於第二行 (1fr) */
     }
+    
+    /* ADD: (v4.32) 手機版 Gallery 頁面的容器設定 */
+    /* 覆蓋 .project-container .project-content-column 的 overflow: visible */
+    .gallery-container .gallery-content-column {
+        overflow-y: auto; /* 恢復滾動 */
+        padding-top: 0;
+        mask-image: none;
+        grid-row: 2;
+        /* MOD: (v4.32) 修正高度計算，確保 .project-nav-bottom (auto) 可見 */
+        /* height: calc(100vh - 60px - 4rem); */ 
+        /* (v4.32) 讓 grid-row: 2 (1fr) 自動填滿剩餘空間即可 */
+    }
+
 
     /* MOD: (Task 2 Fix / v4.33) project-nav-bottom 的手機版樣式 */
     .project-container .project-nav-bottom {
@@ -907,6 +983,11 @@ header {
     /* (FEAT_v4.33) 隱藏手機版內頁的 .contact-links (空間不足) */
     .project-container .project-nav-right-wrapper .contact-links {
         display: none;
+    }
+    
+    /* ADD: (FEAT_v4.32) 顯示手機版 Gallery 頁面的 .contact-links */
+    .gallery-container .project-nav-right-wrapper .contact-links {
+        display: flex;
     }
 
 
@@ -977,4 +1058,3 @@ header {
         gap: 2rem; 
     }
 }
-
