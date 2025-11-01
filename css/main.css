@@ -53,6 +53,17 @@ body {
     text-rendering: optimizeLegibility;
 }
 
+/* ADD: (v6.3) 
+  - 移除 .project, .about, .gallery 頁面的 body 底部 padding
+  - (portfolio.html 仍保留 padding-bottom: 60px)
+*/
+body:has(.project-layout),
+body:has(.about-layout),
+body:has(.gallery-layout) {
+    padding-bottom: 0;
+}
+
+
 /* --- Header --- */
 header {
     position: fixed;
@@ -87,6 +98,16 @@ header {
     box-sizing: border-box;
 }
 
+/* ADD: (v6.3) 
+  - 修正 .project, .about, .gallery 頁面的 .middle-container 高度
+  - (portfolio.html 仍保留 height: calc(100vh - 120px))
+*/
+body:has(.project-layout) .middle-container,
+body:has(.about-layout) .middle-container,
+body:has(.gallery-layout) .middle-container {
+    height: calc(100vh - 60px); /* 只減去 header 的高度 */
+}
+
 
 
 /* --- 左側欄位 (通用) --- */
@@ -105,7 +126,12 @@ header {
 .left-column-top {
     /* MOD: 固定高度為 50vh - header，讓 BIO 區從 50% 處開始 */
     /* MOD: (v5.0) 高度計算變更 (120px = header+footer) */
-    height: calc(50vh - 120px);
+    /* MOD: (v6.3) 
+      - 高度計算基準變更 (僅 60px header)
+      - portfolio.html (v6.3) 仍使用 120px，但 .left-column-top 不受影響
+    */
+    height: calc(50vh - 60px); /* 僅減去 header */
+    
     box-sizing: border-box; /* 確保 padding 不會增加高度 */
     padding-top: 2rem; /* MOD: 與 .center-column 對齊 */
     display: flex;
@@ -113,6 +139,11 @@ header {
     justify-content: flex-start; /* 標題置頂 */
     flex-shrink: 0;
 }
+/* ADD: (v6.3) 修正 portfolio.html 頁面的 .left-column-top 高度 */
+body:has(.portfolio-container) .left-column-top {
+    height: calc(50vh - 120px); /* 恢復減去 header + footer */
+}
+
 
 /* ADD: 左欄中部 (BIO/INFO 區) */
 .left-column-middle {
@@ -122,6 +153,23 @@ header {
     flex-direction: column;
     justify-content: flex-start; /* 內容從此區塊頂部開始 */
 }
+
+/* ADD: (v6.3) 左欄底部 (Nav 區) */
+.left-column-bottom {
+    margin-top: auto; /* 關鍵：推到底部 */
+    padding-bottom: 0.5rem; /* 匹配間距 */
+    flex-shrink: 0;
+    
+    /* MOD: (v6.4) 
+      - 統一樣式，使其與 portfolio.html 的 .contact-links (flex-start) 對齊
+      - Back/Next 按鈕將並排顯示在左側
+    */
+    display: flex;
+    justify-content: flex-start; /* MOD: 從 space-between 改為 flex-start */
+    align-items: flex-end;
+    gap: 2rem; /* ADD: 增加按鈕間距 */
+}
+
 
 .name-block { position: relative; }
 .name-block .label { 
@@ -221,6 +269,7 @@ header {
 
 
 /* MOD: (v5.0) main-footer 中的 contact-links 應移除邊距 */
+/* (v6.3) 此樣式僅 portfolio.html 的 .main-footer (手機版) 會用到 */
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;
@@ -254,6 +303,7 @@ header {
   - 預設隱藏手機版連結 (桌面版 .main-footer 應顯示 #desktopContactLinks)
   - 預設顯示桌面版連結
 */
+/* (v6.3) 此樣式僅 portfolio.html 會用到 */
 .main-footer #mobileContactLinks {
     display: none;
 }
@@ -508,6 +558,7 @@ header {
 
 /* (FEAT_v4.33) 確保 .contact-links 在 wrapper 中正確對齊 */
 /* MOD: (v5.0) 選擇器更新為 .main-footer */
+/* (v6.3) 此樣式僅 portfolio.html 會用到 */
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;
@@ -587,11 +638,21 @@ header {
 
 
 /* --- Gallery Page 專用樣式 --- */
-.middle-container.gallery-layout {
-    grid-template-columns: 1fr;
+/* MOD: (v6.3) 
+  - .gallery-layout 現在使用雙欄
+  - 規則與 .about-layout 合併
+*/
+.middle-container.gallery-layout { 
+    grid-template-columns: 28.57% 1fr; 
+    grid-template-rows: 1fr;
 }
+
+/* (v6.3) .gallery-content-column 現在是右欄，調整 padding */
 .gallery-layout .gallery-content-column {
-    grid-column: 1;
+    /* grid-column: 1; */ /* (v6.3) 移除 */
+    padding-top: 1.5rem; 
+    padding-right: 1rem; 
+    grid-row: 1;
 }
 
 /* 桌面版：隨機拼貼容器 */
@@ -606,9 +667,12 @@ header {
     min-height: auto; /* MOD: 移除 200vh */
     height: 100%; /* ADD: 填滿 1fr 網格高度 */
     
+    /* (v6.3) padding 已移至 .gallery-layout .gallery-content-column */
+    /*
     padding-top: 1.5rem; 
     padding-right: 1rem; 
-    grid-row: 1; /* 確保在 .project-container 中位於第一行 */
+    grid-row: 1; 
+    */
 
     /* ADD: 隱藏滾動條 (同 .project-content-column) */
     scrollbar-width: none; /* For Firefox */
@@ -670,6 +734,7 @@ header {
 
 
 /* --- ADD: (v5.0) 全站 Footer --- */
+/* (v6.3) 此 footer 僅 portfolio.html 會使用 */
 .main-footer {
     position: fixed;
     bottom: 0;
@@ -700,6 +765,7 @@ header {
 
 
 /* --- ADD: (Request v3.13) 預設隱藏手機版 Footer --- */
+/* (v6.3) 此 footer 僅 portfolio.html 會使用 */
 .mobile-footer {
     display: none; /* 預設在桌面版隱藏 */
 }
@@ -774,7 +840,8 @@ header {
     
     /* MOD: (v5.0) .project-container -> layout class */
     .middle-container.project-layout,
-    .middle-container.about-layout { 
+    .middle-container.about-layout,
+    .middle-container.gallery-layout { /* (v6.3) 新增 gallery-layout */
         grid-template-columns: 1fr 2fr; 
         /* MOD: (v5.0) 移除 grid-template-rows，繼承 1fr */
         grid-template-rows: 1fr;
@@ -835,6 +902,7 @@ header {
     
     /* (v3.9) 顯示手機版 Footer */
     /* MOD: (v3.16) 改為 flex 佈局 */
+    /* (v6.3) 此 footer 僅 portfolio.html 會使用 */
     .mobile-footer {
         display: flex;
         flex-direction: column; /* 垂直堆疊 Filter 和 Links */
@@ -931,12 +999,14 @@ header {
     }
 }
 
-/* 手機版內頁 (project.html, about.html) */
+/* 手機版內頁 (project.html, about.html, gallery.html) */
 @media (max-width: 768px) {
     /* MOD: (v5.0) .project-container -> .middle-container */
+    /* MOD: (v6.3) 新增 .gallery-layout */
     body:has(.middle-container) {
         overflow: auto; /* 恢復 body 滾動 */
         /* ADD: (v5.1) 移除 body padding-bottom，因為 footer 是 static */
+        /* (v6.3) 此規則現在適用於 project, about, gallery */
         padding-bottom: 0;
     }
 
@@ -949,13 +1019,18 @@ header {
     }
     
     /* MOD: (v5.0) 新增 layout class 響應式 */
+    /* MOD: (v6.3) 新增 .gallery-layout */
     .middle-container.project-layout,
-    .middle-container.about-layout {
+    .middle-container.about-layout,
+    .middle-container.gallery-layout {
         grid-template-rows: auto 1fr; /* Info (auto), Images (1fr) */
     }
+    /* (v6.3) 移除 gallery-layout 的特殊單欄規則 */
+    /*
     .middle-container.gallery-layout {
-        grid-template-rows: 1fr; /* Gallery (1fr) */
+        grid-template-rows: 1fr;
     }
+    */
 
 
     .middle-container .left-column {
@@ -979,15 +1054,19 @@ header {
         overflow-y: auto;
         padding-top: 0;
         mask-image: none;
-        grid-row: 1;
+        grid-row: 2; /* (v6.3) 改為 2 */
     }
+    /* (v6.3) 移除 gallery-layout 的特殊單欄規則 */
+    /*
     .gallery-layout {
         grid-template-rows: 1fr;
     }
+    */
 
     /* ADD: (v5.0) 手機版 .main-footer 樣式 */
     /* MOD: (v5.1) 此規則應為通用 (包含 portfolio.html) */
-    .main-footer {
+    /* MOD: (v6.3) 此規則僅 portfolio.html 會使用 */
+    body:has(.portfolio-container) .main-footer {
         padding: 0 2rem; /* 匹配 container padding */
         height: auto; /* 允許 footer 增長 */
         min-height: 60px;
@@ -1005,109 +1084,10 @@ header {
       - 手機版 .main-footer 連結可見性
       - 適用於 *所有* 頁面
     */
+    /* (v6.3) 此規則僅 portfolio.html 會使用 */
     .main-footer #desktopContactLinks {
         display: none;
     }
-    .main-footer #mobileContactLinks {
-        display: flex; /* 使用 flex 以匹配 ul 樣式 */
-    }
-    
-    /* ADD: (v5.1) 
-      - portfolio.html 頁面的 .main-footer (連結)
-      - 移除頂部 padding 和 border，因為它緊跟在 .mobile-footer (篩選器) 之後
-    */
-    body:has(.portfolio-container) .main-footer {
-         padding-top: 0;
-         border-top: none;
-    }
-    /* ADD: (v5.1) 
-      - portfolio.html 頁面的 .main-footer 連結
-      - 必須覆蓋 .mobile-contact-links 的 padding: 0 2rem
-      - 因為 .main-footer 已經有 padding
-    */
-    body:has(.portfolio-container) .main-footer .mobile-contact-links {
-        padding: 0; /* 移除繼承的 padding */
-    }
-
-    .footer-left, .footer-right {
-        width: 100%;
-        gap: 1.5rem;
-    }
-    
-    .footer-right {
-        justify-content: space-between; /* 在 Links 和 Next 之間留出空間 */
-    }
-
-    /* (FEAT_v4.33) 隱藏手機版內頁的 .contact-links (空間不足) */
-    /* MOD: (v5.0) 更新選擇器 */
-    .project-layout .footer-right .contact-links,
-    .about-layout .footer-right .contact-links,
-    .gallery-layout .footer-right .contact-links {
-        display: none; /* 隱藏 #desktopContactLinks */
-    }
-    
-    /* MOD: (v5.1) 修正：在內頁隱藏 #mobileContactLinks (手機連結) */
-    .project-layout .footer-right #mobileContactLinks,
-    .about-layout .footer-right #mobileContactLinks,
-    .gallery-layout .footer-right #mobileContactLinks {
-        display: none;
-    }
-    
-    /* ADD: (v5.0) 如果 links 隱藏，將 next project 推到最右側 */
-    .project-layout .footer-right {
-        justify-content: flex-end;
-    }
-    
-    /* ADD: (v5.0) 如果 right-footer 為空 (about/gallery)，則將其隱藏 */
-    .about-layout .footer-right,
-    .gallery-layout .footer-right {
-        display: none;
-    }
-    
-    /* (FEAT_v4.33) 顯示手機版 Gallery 頁面的 .contact-links */
-    /* MOD: (FIX_v4.36) 隱藏 (已在 gallery.html 中移除) */
-    /* MOD: (v5.0) 已由 .gallery-layout .footer-right .contact-links 處理 */
-    /*
-    .gallery-container .project-nav-right-wrapper .contact-links {
-        display: none;
-    }
-    */
-
-
-    /* MOD: (v3.9) 重置手機版的左欄結構 */
-    .left-column-top, .left-column-middle {
-        height: auto;
-        overflow: visible;
-        padding-top: 0;
-    }
-    .name-block .label {
-        position: absolute;
-        top: -1.5rem;
-        left: 0.2rem;
-    }
-    .center-column {
-        overflow-y: visible;
-        padding-right: 0; 
-        padding: 0;
-        mask-image: none; /* ADD: 移除遮罩效果 */
-    }
-    
-    /* MOD: (v6.1) 手機版 project-list 應移除緩衝 padding */
-    /* (v6.2) 再次確認移除 */
-    .middle-container .project-list {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
-
-    #nextProjectTitle {
-        font-size: 0.9rem;
-    }
-    .about-intro-text p {
-        font-size: 1.5rem; 
-    }
-    .about-details-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem; 
-    }
-}
+    .main-f...
+[Immersive content redacted for brevity.]
 
