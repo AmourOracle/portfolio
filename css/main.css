@@ -895,7 +895,8 @@ body:has(.portfolio-container) .left-column-top {
     body:has(.portfolio-container) {
         overflow: hidden; /* 鎖定 body 滾動 */
         /* ADD: (v5.1) 移除 body padding-bottom，因為 footer 是 static */
-        padding-bottom: 0;
+        /* MOD: (v6.8) 恢復 padding-bottom，為 fixed footers 騰出空間 (61px + 60px) */
+        padding-bottom: 121px;
     }
 
     .portfolio-container { 
@@ -904,9 +905,11 @@ body:has(.portfolio-container) .left-column-top {
         /* MOD: (v5.1) .mobile-footer 已移至 <main> 外，<main> 應只有 1fr */
         grid-template-rows: 1fr; 
         /* MOD: (v6.7) 新增 60px 底部 padding */
-        padding: 2rem 0 60px 0; 
+        /* MOD: (v6.8) 移除底部 padding，因為 body 已有 padding */
+        padding: 2rem 0 0 0; 
         /* MOD: (v6.6) 統一高度，僅減去 header */
-        height: calc(100vh - 60px); 
+        /* MOD: (v6.8) 統一高度，減去 header 和 fixed footers (60 + 61 + 60) */
+        height: calc(100vh - 181px); 
     }
     
     .portfolio-container .center-column {
@@ -943,9 +946,23 @@ body:has(.portfolio-container) .left-column-top {
         padding: 1.5rem 0; /* (Task 1 Fix) 移除左右 padding，交給子元素控制 */
         border-top: 1px solid var(--divider-color);
         /* ADD: (v5.1) 手機版 footer 應為 static */
-        position: static;
+        /* MOD: (v6.8) 
+          - 改為 fixed 佈局，固定在 .main-footer (60px) 之上
+        */
+        position: fixed;
+        bottom: 60px;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background-color: var(--background-color);
+        box-sizing: border-box;
+        
+        /* ADD: (v6.8) 指定高度並調整 padding */
+        height: 61px; /* 60px + 1px border */
+        padding: 1rem 0;
+
         /* ADD: (v5.1) 移除底部 padding，讓 .main-footer 緊貼 */
-        padding-bottom: 0;
+        padding-bottom: 1rem; /* MOD: (v6.8) 恢復 padding */
         gap: 1rem;
     }
     
@@ -1111,7 +1128,22 @@ body:has(.portfolio-container) .left-column-top {
         padding-bottom: 1.5rem;
         gap: 1.5rem;
         /* MOD: (v5.0) 手機版 footer 應為 static，以便跟隨 body 滾動 */
-        position: static;
+        /* MOD: (v6.8)
+          - 改為 fixed 佈局，固定在底部
+        */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background-color: var(--background-color);
+        box-sizing: border-box;
+        
+        /* ADD: (v6.8) 強制高度和佈局 */
+        height: 60px;
+        flex-direction: row;
+        align-items: center;
+        
         border-top: 1px solid var(--divider-color);
     }
     
@@ -1142,6 +1174,9 @@ body:has(.portfolio-container) .left-column-top {
     */
     body:has(.portfolio-container) .main-footer .mobile-contact-links {
         padding: 0; /* 移除繼承的 padding */
+        /* ADD: (v6.8) 確保其在 fixed footer 中水平置中 */
+        width: 100%;
+        justify-content: center;
     }
 
     /* (v6.3) 移除 .footer-left, .footer-right 的手機版樣式 (因為 footer 已移除) */

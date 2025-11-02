@@ -329,9 +329,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // 觸控事件處理
     function handleTouchStart(event) {
         // (v6.0) 隱藏隨機預覽
+        /* MOD: (v6.8) 根據使用者請求，在手機觸控時不再隱藏預覽
         if (randomPreviewPopup) {
             randomPreviewPopup.classList.remove('is-visible');
         }
+        */
         
         touchStartY = event.touches[0].clientY;
         touchEndY = event.touches[0].clientY; 
