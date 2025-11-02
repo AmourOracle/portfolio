@@ -901,6 +901,7 @@ body:has(.portfolio-container) .left-column-top {
 
     .portfolio-container { 
         /* MOD: (v3.9) 改為 2 欄 grid，List (1fr) + Footer (auto) */
+        /* MOD: (v6.9) 改回單欄，讓 .center-column 繼承 */
         grid-template-columns: 1fr;
         /* MOD: (v5.1) .mobile-footer 已移至 <main> 外，<main> 應只有 1fr */
         grid-template-rows: 1fr; 
@@ -930,9 +931,13 @@ body:has(.portfolio-container) .left-column-top {
     }
 
     /* (v3.9) 隱藏桌面版的左右欄 */
+    /* MOD: (v6.9) 
+       - 新增 !important 
+       - 這是為了修復 IMG_2465.PNG 中 .left-column 內容殘留的 BUG
+    */
     .portfolio-container .left-column,
     .portfolio-container .right-column {
-        display: none;
+        display: none !important;
     }
     
     /* (v3.9) 顯示手機版 Footer */
@@ -1029,9 +1034,12 @@ body:has(.portfolio-container) .left-column-top {
     }
 
     /* MOD: (v6.1) 手機版 project-list 應移除緩衝 padding */
+    /* MOD: (v6.9) 
+       - 恢復 40vh padding
+       - 這是修復「滾動置中」失效 (Request 2) 的關鍵
+    */
     .portfolio-container .project-list {
-        padding-top: 0;
-        padding-bottom: 0;
+        padding: 40vh 0;
     }
 
     /* (v6.0) 移除 .mobile-preview-popup.is-visible 樣式 */
@@ -1258,6 +1266,10 @@ body:has(.portfolio-container) .left-column-top {
     
     /* MOD: (v6.1) 手機版 project-list 應移除緩衝 padding */
     /* (v6.2) 再次確認移除 */
+    /* MOD: (v6.9) 
+       - 此規則是針對內頁的，保持 padding: 0
+       - 僅 portfolio.html 頁面的 .project-list 需要 40vh padding
+    */
     .middle-container .project-list {
         padding-top: 0;
         padding-bottom: 0;
