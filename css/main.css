@@ -35,11 +35,19 @@
 
 
 /* --- 基本設定 --- */
+/* ADD: (v6.8) 鎖定 HTML 高度並隱藏滾動條 */
+html {
+    height: 100vh;
+    overflow: hidden;
+}
+
 body {
     margin: 0;
     font-family: var(--font-main);
     background-color: var(--background-color);
     color: var(--text-color);
+    /* MOD: (v6.8) 鎖定 Body 高度並隱藏滾動條 */
+    height: 100%;
     overflow: hidden; /* 防止 body 本身滾動 (主要用於 portfolio.html) */
     font-size: 16px;
     padding-top: 60px; /* MOD: 縮小 header 高度 */
@@ -51,6 +59,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    box-sizing: border-box; /* ADD: (v6.8) 確保 padding-top 被正確計算 */
 }
 
 /* MOD: (v6.6) 
@@ -1077,6 +1086,8 @@ body:has(.portfolio-container) .left-column-top {
         /* ADD: (v5.1) 移除 body padding-bottom，因為 footer 是 static */
         /* (v6.3) 此規則現在適用於 project, about, gallery */
         padding-bottom: 0;
+        /* MOD: (v6.8) 確保內頁的 body 高度是自動的 */
+        height: auto;
     }
 
     /* MOD: (v5.0) .project-container -> .middle-container */
@@ -1329,4 +1340,3 @@ body:has(.portfolio-container) .left-column-top {
         /* align-self: flex-end; */ /* (v6.4) 移除 */
     }
 }
-

@@ -59,10 +59,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 1. (v7.1) 移除所有舊的監聽器 (Bug Fix: 移除對 'handleWheelScroll' 等不存在函式的引用)
         // (v7.1) 假設 'handleFreeScroll' 是唯一的監聽器
-        centerColumn.removeEventListener('scroll', handleFreeScroll, { passive: false });
+        centerColumn.removeEventListener('scroll', handleFreeScroll);
 
-        // 2. (v7.0) 新增: 綁定 'scroll' 事件
-        centerColumn.addEventListener('scroll', handleFreeScroll, { passive: false });
+        // 2. (MOD: v7.1) 
+        // - 新增: 綁定 'scroll' 事件
+        // - 將 { passive: false } 改為 { passive: true }
+        // - 理由: 我們只是監聽滾動，沒有要阻止它，
+        //   設為 true 可以大幅提升手機上的滾動效能。
+        centerColumn.addEventListener('scroll', handleFreeScroll, { passive: true });
     }
 
 
@@ -442,4 +446,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
