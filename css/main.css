@@ -345,6 +345,9 @@ body:has(.portfolio-container) .left-column-top {
     overflow-y: auto;
     box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
     
+    /* ADD: (v7.2) 啟用 CSS 滾動吸附 (iOS 選擇器效果) - 桌面版 */
+    scroll-snap-type: y mandatory;
+    
     /* * MOD: (v4.32) 根據使用者請求，加深遮罩範圍
      * 原始: 20% (v4.30)
      * 修改: 30%，讓淡出區域更大，過渡更平滑
@@ -395,6 +398,9 @@ body:has(.portfolio-container) .left-column-top {
     /* MOD: (Req 1) 變更 transform-origin 為 center center 修正對稱 */
     transform-origin: center center;
     cursor: pointer; /* ADD: 增加點擊指標 */
+
+    /* ADD: (v7.2) 啟用 CSS 滾動吸附 (iOS 選擇器效果) - 桌面版 */
+    scroll-snap-align: center;
 
     /* MOD: (Req 4) 預設樣式 (非啟用) */
     opacity: 0.4;
@@ -967,25 +973,31 @@ body:has(.portfolio-container) .left-column-top {
     
     /* 手機版篩選器連結樣式 */
     /* (Task 1 Fix) 修正 Filter Bar 換行問題 */
+    /* MOD: (v7.2) 修復 Filter 樣式 (Problem 2) */
     .mobile-filter-nav {
         width: 100%; /* 佔滿寬度 */
         overflow-x: auto; /* 允許水平滾動 */
         -webkit-overflow-scrolling: touch; /* iOS 滾動優化 */
         scrollbar-width: none; /* 隱藏滾動條 (Firefox) */
         
-        /* (Task 1 Fix) 覆蓋 .mobile-footer ul 的設定 */
-        flex-wrap: nowrap; /* ! 關鍵：禁止換行 */
-        white-space: nowrap; /* 確保內容不換行 */
-        /* MOD: (v7.0) 改為置中 */
+        /* MOD: (v7.2) 新增 flex 屬性，使其橫向排列 */
+        display: flex;
         justify-content: center; 
+        gap: 1.5rem; /* 增加項目間距 */
+        
         padding: 0 2rem; /* 左右保留間距 */
         box-sizing: border-box;
+        
+        /* MOD: (v7.2) 移除項目符號 */
+        list-style: none;
+        margin: 0;
     }
     .mobile-filter-nav::-webkit-scrollbar {
         display: none; /* 隱藏滾動條 (Chrome, Safari) */
     }
     .mobile-filter-nav li {
         flex-shrink: 0; /* 防止項目被壓縮 */
+        margin-bottom: 0; /* MOD: (v7.2) 移除 display:flex 造成的 margin */
     }
     /* (End Task 1 Fix) */
 
