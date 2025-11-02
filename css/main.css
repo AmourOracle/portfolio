@@ -95,8 +95,12 @@ header {
     gap: 2rem;
     /* MOD: (v6.6) 統一所有頁面的高度，僅減去 header (60px) */
     height: calc(100vh - 60px); 
-    /* MOD: (v5.0) 移除 4rem 底部 padding (已由 body.padding-bottom 取代) */
-    padding: 0 4rem 0 4rem;
+    
+    /* MOD: (v6.7) 
+      - 新增 60px 底部 padding 作為「安全區域」
+      - 防止瀏覽器 UI 遮擋底部按鈕
+    */
+    padding: 0 4rem 60px 4rem;
     box-sizing: border-box;
 }
 
@@ -854,7 +858,8 @@ body:has(.portfolio-container) .left-column-top {
 @media (max-width: 1024px) {
     /* MOD: (v5.0) .container padding 調整 */
     .portfolio-container, .middle-container {
-        padding: 0 2rem 0 2rem;
+        /* MOD: (v6.7) 新增 60px 底部 padding */
+        padding: 0 2rem 60px 2rem;
     }
     
     .portfolio-container {
@@ -898,7 +903,8 @@ body:has(.portfolio-container) .left-column-top {
         grid-template-columns: 1fr;
         /* MOD: (v5.1) .mobile-footer 已移至 <main> 外，<main> 應只有 1fr */
         grid-template-rows: 1fr; 
-        padding: 2rem 0; /* MOD: 移除左右 padding */
+        /* MOD: (v6.7) 新增 60px 底部 padding */
+        padding: 2rem 0 60px 0; 
         /* MOD: (v6.6) 統一高度，僅減去 header */
         height: calc(100vh - 60px); 
     }
@@ -1039,7 +1045,8 @@ body:has(.portfolio-container) .left-column-top {
     /* MOD: (v5.0) .project-container -> .middle-container */
     .middle-container { 
         grid-template-columns: 1fr; /* MOD: (v3.9) 單欄佈局 */
-        padding: 2rem; 
+        /* MOD: (v6.7) 新增 60px 底部 padding */
+        padding: 2rem 2rem 60px 2rem; 
         height: auto; 
         /* MOD: (v5.0) 移除 grid-template-rows，改用 layout class */
     }
