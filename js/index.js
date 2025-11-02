@@ -109,11 +109,24 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (visibleItems.length > 0) {
                 currentActiveIndex = 0;
-                // (MOD: v7.0) 
-                // 初始載入時，立即滾動到頂部 (auto)，然後手動觸發一次滾動檢查
-                // 這會高光第一個項目
-                setActiveItem(currentActiveIndex, 'auto'); 
-                handleFreeScroll();
+                
+                // (MOD: v7.2) 
+                // 將初始的 setActiveItem 呼叫包裹在 setTimeout(0) 中。
+                // 這會將「滾動置中」的任務推遲到瀏覽器完成當前 DOM 繪製之後，
+                // 確保 .scrollIntoView() 能夠在元素準備就緒時正確執行。
+                setTimeout(() => {
+                    // (Problem 1 Fix) 立即跳轉 ('auto') 到第一個項目
+                    setActiveItem(currentActiveIndex, 'auto'); 
+                    // 手動觸發一次滾動檢查，確保 UI (左欄) 更新
+                    handleFreeScroll(); 
+
+                    // (FEAT_v7.2) 觸發 CSS 入場動畫
+                    // 在第一個項目置中後，為容器添加 .is-loaded class
+                    const mainContainer = document.querySelector('.portfolio-container');
+                    if (mainContainer) {
+                        mainContainer.classList.add('is-loaded');
+                    }
+                }, 0); // 0ms 延遲，僅為推遲執行緒
             }
 
             // 綁定初始的滾動監聽器
@@ -152,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // (MOD: v7.0) 
     // smoothScroll: 
     //   true ('smooth') = 平滑滾動 (用於點擊)
-    //   'auto' = 立即跳轉 (用於篩選)
+    //   'auto' = 立即跳轉 (用於篩選/載入)
     //   false = 僅更新 UI，不滾動 (用於 'scroll' 事件)
     function setActiveItem(index, smoothScroll = true) {
         
@@ -297,6 +310,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // 使用計時器來實現 "debounce" (防抖)
         // 確保只在滾動停止時才觸發計算
         clearTimeout(scrollTimer);
+
+        // (MOD: v7.2) (Problem 2 Fix)
+        // 將延遲從 100ms 降低到 50ms，
+        // 讓滾動停止後的 UI 更新響應更即時。
         scrollTimer = setTimeout(() => {
             if (!centerColumn || visibleItems.length === 0) return;
 
@@ -327,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 傳入 'false' (不觸發滾動)，僅更新 UI
                 setActiveItem(newIndex, false);
             }
-        }, 100); // 100ms 延遲
+        }, 50); // MOD: 降低延遲
     }
 
     // 點擊事件處理
@@ -446,3 +463,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+

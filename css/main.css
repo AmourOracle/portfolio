@@ -136,6 +136,11 @@ body:has(.gallery-layout) .middle-container {
     /* (Task 2 Fix) 確保在 .project-container 中位於第一行 */
     /* MOD: (v5.0) .project-container -> .middle-container */
     grid-row: 1;
+
+    /* ADD: (FEAT_v7.2) 入場動畫 (初始狀態) */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
 /* ADD: 左欄頂部 (標題區) */
@@ -264,6 +269,26 @@ body:has(.portfolio-container) .left-column-top {
     grid-template-rows: 1fr; /* (Task 2 Fix) 確保 portfolio-container 只有一行 */
 }
 
+/* ADD: (FEAT_v7.2) 入場動畫 (觸發狀態) */
+.portfolio-container.is-loaded .left-column,
+.portfolio-container.is-loaded .center-column,
+.portfolio-container.is-loaded .right-column {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ADD: (FEAT_v7.2) 階層式 (Staggered) 動畫延遲 */
+.portfolio-container.is-loaded .left-column {
+    transition-delay: 0.1s;
+}
+.portfolio-container.is-loaded .right-column {
+    transition-delay: 0.2s;
+}
+.portfolio-container.is-loaded .center-column {
+    transition-delay: 0.3s; /* 列表最後滑入 */
+}
+
+
 /* (v6.0) 移除 .profile-block 和 .image-placeholder 樣式 */
 /*
 .profile-block { ... }
@@ -371,6 +396,11 @@ body:has(.portfolio-container) .left-column-top {
     
     /* ADD: 隱藏滾動條 */
     scrollbar-width: none; /* For Firefox */
+
+    /* ADD: (FEAT_v7.2) 入場動畫 (初始狀態) */
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
 /* ADD: 隱藏滾動條 for Chrome, Safari, Opera */
@@ -472,6 +502,11 @@ body:has(.portfolio-container) .left-column-top {
     flex-direction: column;
     /* MOD: 確保 .right-column 佔滿高度 */
     height: 100%;
+
+    /* ADD: (FEAT_v7.2) 入場動畫 (初始狀態) */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
 
 /* (v6.0) 移除 .right-column .contact-links 樣式 */
@@ -1340,3 +1375,4 @@ body:has(.portfolio-container) .left-column-top {
         /* align-self: flex-end; */ /* (v6.4) 移除 */
     }
 }
+
