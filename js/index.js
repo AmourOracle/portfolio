@@ -50,18 +50,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.random() * (max - min) + min;
     }
     
-    // (MOD: v7.0) 
+    // (MOD: v7.1) 
     /**
-     * 綁定滾動監聽器 (移除 wheel/touch，改用 scroll)
+     * 綁定滾動監聽器 (修復 v7.0 的 bug)
      */
     function bindScrollListeners() {
         if (!centerColumn) return;
 
-        // 1. 移除所有舊的監聽器
-        centerColumn.removeEventListener('wheel', handleWheelScroll, { passive: false });
-        centerColumn.removeEventListener('touchstart', handleTouchStart, { passive: false });
-        centerColumn.removeEventListener('touchmove', handleTouchMove, { passive: false });
-        centerColumn.removeEventListener('touchend', handleTouchEnd, { passive: false });
+        // 1. (v7.1) 移除所有舊的監聽器 (Bug Fix: 移除對 'handleWheelScroll' 等不存在函式的引用)
+        // (v7.1) 假設 'handleFreeScroll' 是唯一的監聽器
+        centerColumn.removeEventListener('scroll', handleFreeScroll, { passive: false });
 
         // 2. (v7.0) 新增: 綁定 'scroll' 事件
         centerColumn.addEventListener('scroll', handleFreeScroll, { passive: false });
