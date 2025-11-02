@@ -44,8 +44,8 @@ body {
     font-size: 16px;
     padding-top: 60px; /* MOD: 縮小 header 高度 */
     
-    /* ADD: (v5.0) 新增 60px 底部 padding，為 fixed footer 騰出空間 */
-    padding-bottom: 60px; 
+    /* MOD: (v6.6) 移除 60px 底部 padding，統一由 .middle-container 控制高度 */
+    padding-bottom: 0; 
     
     /* ADD: 提升中文字體渲染的清晰度 */
     -webkit-font-smoothing: antialiased;
@@ -53,15 +53,17 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-/* ADD: (v6.3) 
-  - 移除 .project, .about, .gallery 頁面的 body 底部 padding
-  - (portfolio.html 仍保留 padding-bottom: 60px)
+/* MOD: (v6.6) 
+  - 移除 .project, .about, .gallery 頁面的 body 底部 padding 規則
+  - (因為 body 預設 padding-bottom: 0)
 */
+/*
 body:has(.project-layout),
 body:has(.about-layout),
 body:has(.gallery-layout) {
     padding-bottom: 0;
 }
+*/
 
 
 /* --- Header --- */
@@ -91,23 +93,24 @@ header {
 .portfolio-container, .middle-container {
     display: grid;
     gap: 2rem;
-    /* MOD: (v5.0) 高度需減去 header (60px) 和 new footer (60px) */
-    height: calc(100vh - 120px); 
+    /* MOD: (v6.6) 統一所有頁面的高度，僅減去 header (60px) */
+    height: calc(100vh - 60px); 
     /* MOD: (v5.0) 移除 4rem 底部 padding (已由 body.padding-bottom 取代) */
     padding: 0 4rem 0 4rem;
     box-sizing: border-box;
 }
 
-/* ADD: (v6.3) 
-  - 修正 .project, .about, .gallery 頁面的 .middle-container 高度
-  - (portfolio.html 仍保留 height: calc(100vh - 120px))
+/* MOD: (v6.6) 
+  - 移除 .project, .about, .gallery 頁面的 .middle-container 高度覆寫規則
+  - (因為 .middle-container 預設高度已是 100vh - 60px)
 */
+/*
 body:has(.project-layout) .middle-container,
 body:has(.about-layout) .middle-container,
 body:has(.gallery-layout) .middle-container {
-    height: calc(100vh - 60px); /* 只減去 header 的高度 */
+    height: calc(100vh - 60px); 
 }
-
+*/
 
 
 /* --- 左側欄位 (通用) --- */
@@ -124,13 +127,8 @@ body:has(.gallery-layout) .middle-container {
 
 /* ADD: 左欄頂部 (標題區) */
 .left-column-top {
-    /* MOD: 固定高度為 50vh - header，讓 BIO 區從 50% 處開始 */
-    /* MOD: (v5.0) 高度計算變更 (120px = header+footer) */
-    /* MOD: (v6.3) 
-      - 高度計算基準變更 (僅 60px header)
-      - portfolio.html (v6.3) 仍使用 120px，但 .left-column-top 不受影響
-    */
-    height: calc(50vh - 60px); /* 僅減去 header */
+    /* MOD: (v6.6) 統一所有頁面高度，僅減去 header (60px) */
+    height: calc(50vh - 60px); 
     
     box-sizing: border-box; /* 確保 padding 不會增加高度 */
     padding-top: 2rem; /* MOD: 與 .center-column 對齊 */
@@ -139,10 +137,15 @@ body:has(.gallery-layout) .middle-container {
     justify-content: flex-start; /* 標題置頂 */
     flex-shrink: 0;
 }
-/* ADD: (v6.3) 修正 portfolio.html 頁面的 .left-column-top 高度 */
+/* MOD: (v6.6) 
+  - 移除 portfolio.html 頁面的 .left-column-top 高度覆寫規則
+  - (因為 .left-column-top 預設高度已是 50vh - 60px)
+*/
+/*
 body:has(.portfolio-container) .left-column-top {
-    height: calc(50vh - 120px); /* 恢復減去 header + footer */
+    height: calc(50vh - 120px);
 }
+*/
 
 
 /* ADD: 左欄中部 (BIO/INFO 區) */
@@ -318,12 +321,18 @@ body:has(.portfolio-container) .left-column-top {
   - 預設顯示桌面版連結
 */
 /* (v6.3) 此樣式僅 portfolio.html 會用到 */
+/* MOD: (v6.6) 
+  - #mobileContactLinks 預設隱藏
+  - #desktopContactLinks 規則移除 (因為 .contact-links 已在左欄)
+*/
 .main-footer #mobileContactLinks {
     display: none;
 }
+/*
 .main-footer #desktopContactLinks {
-    display: block; /* 預設 .contact-links (div) 為 block */
+    display: block; 
 }
+*/
 
 
 .center-column {
@@ -749,7 +758,9 @@ body:has(.portfolio-container) .left-column-top {
 
 /* --- ADD: (v5.0) 全站 Footer --- */
 /* (v6.3) 此 footer 僅 portfolio.html 會使用 */
+/* MOD: (v6.6) 預設隱藏 .main-footer (僅在手機版啟用) */
 .main-footer {
+    display: none; 
     position: fixed;
     bottom: 0;
     left: 0;
@@ -757,12 +768,11 @@ body:has(.portfolio-container) .left-column-top {
     height: 60px; /* 匹配 header */
     padding: 0 4rem; /* 匹配 container padding */
     box-sizing: border-box;
-    display: flex;
+    /* display: flex; */ /* (v6.6) 移除 */
     justify-content: space-between;
     align-items: center;
     background-color: var(--background-color);
     z-index: 1000;
-    /* ADD: (v5.0) 增加頂部邊線，使其與內容區分隔 */
     /* border-top: 1px solid var(--divider-color); */
 }
 
@@ -863,6 +873,7 @@ body:has(.portfolio-container) .left-column-top {
     .right-column { display: none; }
     
     /* MOD: (v5.0) footer padding 調整 */
+    /* (v6.6) .main-footer 在平板電腦版預設隱藏 */
     .main-footer {
         padding: 0 2rem;
     }
@@ -888,7 +899,8 @@ body:has(.portfolio-container) .left-column-top {
         /* MOD: (v5.1) .mobile-footer 已移至 <main> 外，<main> 應只有 1fr */
         grid-template-rows: 1fr; 
         padding: 2rem 0; /* MOD: 移除左右 padding */
-        height: calc(100vh - 120px); /* MOD: (v5.0) 修正高度 */
+        /* MOD: (v6.6) 統一高度，僅減去 header */
+        height: calc(100vh - 60px); 
     }
     
     .portfolio-container .center-column {
@@ -1080,7 +1092,9 @@ body:has(.portfolio-container) .left-column-top {
     /* ADD: (v5.0) 手機版 .main-footer 樣式 */
     /* MOD: (v5.1) 此規則應為通用 (包含 portfolio.html) */
     /* MOD: (v6.3) 此規則僅 portfolio.html 會使用 */
+    /* MOD: (v6.6) 啟用 .main-footer */
     body:has(.portfolio-container) .main-footer {
+        display: flex; /* ADD: (v6.6) 啟用 flex */
         padding: 0 2rem; /* 匹配 container padding */
         height: auto; /* 允許 footer 增長 */
         min-height: 60px;
@@ -1229,6 +1243,13 @@ body:has(.portfolio-container) .left-column-top {
         justify-content: space-between; /* MOD: 手機版維持左右分散 */
         /* gap: 1.5rem; */ /* (v6.4) 移除 gap */
     }
+    /* (v6.5) 移除 .project-layout .left-column-bottom 的手機版覆寫 */
+    /*
+    .project-layout .left-column-bottom {
+        justify-content: space-between; 
+        gap: 0; 
+    }
+    */
     .left-column-bottom .next-project-block {
         /* 在手機上，Next 按鈕移到 Back 按鈕下方 */
         /* align-self: flex-end; */ /* (v6.4) 移除 */
