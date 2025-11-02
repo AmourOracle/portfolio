@@ -928,6 +928,9 @@ body:has(.portfolio-container) .left-column-top {
             black 70%,
             transparent 100%
         );
+        
+        /* ADD: (v7.0) 啟用 CSS 滾動吸附 (iOS 選擇器效果) */
+        scroll-snap-type: y mandatory;
     }
 
     /* (v3.9) 隱藏桌面版的左右欄 */
@@ -943,17 +946,14 @@ body:has(.portfolio-container) .left-column-top {
     /* (v3.9) 顯示手機版 Footer */
     /* MOD: (v3.16) 改為 flex 佈局 */
     /* (v6.3) 此 footer 僅 portfolio.html 會使用 */
+    /* MOD: (v7.0) 修復 Filter 佈局 */
     .mobile-footer {
         display: flex;
-        flex-direction: column; /* 垂直堆疊 Filter 和 Links */
+        /* flex-direction: column; */ /* MOD: (v7.0) 移除，應為 row */
         align-items: center; /* 水平置中 */
-        gap: 1.5rem; /* 兩個列表之間的間距 */
-        padding: 1.5rem 0; /* (Task 1 Fix) 移除左右 padding，交給子元素控制 */
+        /* gap: 1.5rem; */ /* 移除 */
+        /* padding: 1.5rem 0; */ /* 移除 */
         border-top: 1px solid var(--divider-color);
-        /* ADD: (v5.1) 手機版 footer 應為 static */
-        /* MOD: (v6.8) 
-          - 改為 fixed 佈局，固定在 .main-footer (60px) 之上
-        */
         position: fixed;
         bottom: 60px;
         left: 0;
@@ -961,14 +961,8 @@ body:has(.portfolio-container) .left-column-top {
         z-index: 1000;
         background-color: var(--background-color);
         box-sizing: border-box;
-        
-        /* ADD: (v6.8) 指定高度並調整 padding */
         height: 61px; /* 60px + 1px border */
-        padding: 1rem 0;
-
-        /* ADD: (v5.1) 移除底部 padding，讓 .main-footer 緊貼 */
-        padding-bottom: 1rem; /* MOD: (v6.8) 恢復 padding */
-        gap: 1rem;
+        padding: 0; /* MOD: (v7.0) 移除 padding，讓 nav 填滿 */
     }
     
     /* 手機版篩選器連結樣式 */
@@ -982,7 +976,8 @@ body:has(.portfolio-container) .left-column-top {
         /* (Task 1 Fix) 覆蓋 .mobile-footer ul 的設定 */
         flex-wrap: nowrap; /* ! 關鍵：禁止換行 */
         white-space: nowrap; /* 確保內容不換行 */
-        justify-content: flex-start; /* 從左側開始 */
+        /* MOD: (v7.0) 改為置中 */
+        justify-content: center; 
         padding: 0 2rem; /* 左右保留間距 */
         box-sizing: border-box;
     }
@@ -1041,6 +1036,11 @@ body:has(.portfolio-container) .left-column-top {
     .portfolio-container .project-list {
         padding: 40vh 0;
     }
+    
+    /* ADD: (v7.0) 啟用 CSS 滾動吸附 (iOS 選擇器效果) */
+    .portfolio-container .project-item {
+        scroll-snap-align: center;
+    }
 
     /* (v6.0) 移除 .mobile-preview-popup.is-visible 樣式 */
     /*
@@ -1078,15 +1078,21 @@ body:has(.portfolio-container) .left-column-top {
     
     /* MOD: (v5.0) 新增 layout class 響應式 */
     /* MOD: (v6.3) 新增 .gallery-layout */
+    /* MOD: (v7.0) 
+       - 修復問題 4 (project.html 佈局)
+       - 增加特異性，強制 Gird 變為 1 欄
+    */
     .middle-container.project-layout,
     .middle-container.about-layout,
     .middle-container.gallery-layout {
+        grid-template-columns: 1fr; /* 覆蓋桌面版的 2 欄設定 */
         grid-template-rows: auto 1fr; /* Info (auto), Images (1fr) */
     }
-    /* (v6.3) 移除 gallery-layout 的特殊單欄規則 */
-    /*
+    /* (v6.9) 此規則現在多餘了，已合併到上面
+    .middle-container.project-layout,
+    .middle-container.about-layout,
     .middle-container.gallery-layout {
-        grid-template-rows: 1fr;
+        grid-template-rows: auto 1fr;
     }
     */
 
@@ -1125,20 +1131,18 @@ body:has(.portfolio-container) .left-column-top {
     /* MOD: (v5.1) 此規則應為通用 (包含 portfolio.html) */
     /* MOD: (v6.3) 此規則僅 portfolio.html 會使用 */
     /* MOD: (v6.6) 啟用 .main-footer */
+    /* MOD: (v7.0) 修復 Links 垂直置中與邊框 */
     body:has(.portfolio-container) .main-footer {
         display: flex; /* ADD: (v6.6) 啟用 flex */
         padding: 0 2rem; /* 匹配 container padding */
-        height: auto; /* 允許 footer 增長 */
-        min-height: 60px;
-        flex-direction: column; /* 垂直堆疊 */
-        align-items: flex-start; /* 靠左對齊 */
-        padding-top: 1.5rem;
-        padding-bottom: 1.5rem;
-        gap: 1.5rem;
-        /* MOD: (v5.0) 手機版 footer 應為 static，以便跟隨 body 滾動 */
-        /* MOD: (v6.8)
-          - 改為 fixed 佈局，固定在底部
-        */
+        /* height: auto; */ /* (v7.0) 移除 */
+        min-height: 60px; /* (v7.0) 移除 */
+        /* flex-direction: column; */ /* (v7.0) 移除 */
+        /* align-items: flex-start; */ /* (v7.0) 移除 */
+        /* padding-top: 1.5rem; */ /* (v7.0) 移除 */
+        /* padding-bottom: 1.5rem; */ /* (v7.0) 移除 */
+        /* gap: 1.5rem; */ /* (v7.0) 移除 */
+        
         position: fixed;
         bottom: 0;
         left: 0;
@@ -1147,19 +1151,18 @@ body:has(.portfolio-container) .left-column-top {
         background-color: var(--background-color);
         box-sizing: border-box;
         
-        /* ADD: (v6.8) 強制高度和佈局 */
-        height: 60px;
-        flex-direction: row;
-        align-items: center;
+        height: 60px; /* 強制高度 */
+        flex-direction: row; /* 強制 row */
+        align-items: center; /* 垂直置中 */
         
-        border-top: 1px solid var(--divider-color);
+        border-top: 1px solid var(--divider-color); /* (v7.0) 恢復邊框 */
     }
     
     /* ADD: (v5.1) 
       - 手機版 .main-footer 連結可見性
       - 適用於 *所有* 頁面
     */
-    /* (v6.3) 此規則僅 portfolio.html 會使用 */
+    /* (v6.3) 此樣式僅 portfolio.html 會使用 */
     .main-footer #desktopContactLinks {
         display: none;
     }
@@ -1171,9 +1174,14 @@ body:has(.portfolio-container) .left-column-top {
       - portfolio.html 頁面的 .main-footer (連結)
       - 移除頂部 padding 和 border，因為它緊跟在 .mobile-footer (篩選器) 之後
     */
+    /* MOD: (v7.0) 
+       - .main-footer 已有 border
+       - .mobile-footer (Filter) 也有 border
+       - 移除 .main-footer 的 border-top (因為 .mobile-footer 已經有)
+    */
     body:has(.portfolio-container) .main-footer {
-         padding-top: 0;
-         border-top: none;
+         /* padding-top: 0; */ /* (v7.0) 移除此規則，讓 align-items 運作 */
+         border-top: none; /* 維持此規則 (v5.1) */
     }
     /* ADD: (v5.1) 
       - portfolio.html 頁面的 .main-footer 連結

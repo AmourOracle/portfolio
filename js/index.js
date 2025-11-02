@@ -3,16 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const projectListElement = document.getElementById('projectList');
     const previewTitleElement = document.getElementById('previewTitle');
     const previewBioElement = document.getElementById('previewBio');
-    // const previewImageElement = document.getElementById('previewImage'); // (v6.0) 移除靜態預覽
     const categoryNavElement = document.getElementById('categoryNav');
     
     // (Request v3.16) 獲取手機版 Footer
     const mobileFooterElement = document.querySelector('.mobile-footer');
     
-    // (Task 3) 獲取手機版懸浮視窗元素
-    // const mobilePreviewPopup = document.getElementById('mobilePreviewPopup'); // (v6.0) 移除
-    // const mobilePreviewImage = document.getElementById('mobilePreviewImage'); // (v6.0) 移除
-
     // (v6.0) 新增統一的隨機預覽元素
     const randomPreviewPopup = document.getElementById('randomPreviewPopup');
     const randomPreviewImage = document.getElementById('randomPreviewImage');
@@ -29,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 儲存預設的資訊
     const defaultTitle = previewTitleElement.textContent;
     const defaultBio = previewBioElement.textContent;
-    // const defaultImageSrc = previewImageElement.src; // (v6.0) 移除
     const previewInfoElement = document.getElementById('previewInfo');
     const defaultInfo = previewInfoElement ? previewInfoElement.textContent : '';
 
@@ -39,21 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 滾動與觸控變數
     let allProjectItems = [];
     
-    // (v6.0) 移除無縫迴圈變數
-    // let originalProjectCount = 0;
-    // const cloneCount = 3;
-    let currentActiveIndex = 0; // (v6.0) 索引從 0 開始
-
-    let isScrolling = false; 
+    let currentActiveIndex = 0; 
     let visibleItems = []; 
     
     // (FIX_v4.23) 將 centerColumn 移至頂層，以便 resize 函式存取
     const centerColumn = document.querySelector('.portfolio-container .center-column');
 
-    // (Request v3.10) 觸控相關變數
-    let touchStartY = 0;
-    let touchEndY = 0;
-    const touchThreshold = 50; 
+    // (MOD: v7.0) 滾動計時器
+    let scrollTimer = null;
 
     // (v6.0) 新增輔助函式
     /**
@@ -63,31 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.random() * (max - min) + min;
     }
     
-    // 響應式滾動監聽器
+    // (MOD: v7.0) 
     /**
-     * 根據當前視窗寬度，綁定滾輪 (Wheel) 或觸控 (Touch) 事件
+     * 綁定滾動監聽器 (移除 wheel/touch，改用 scroll)
      */
     function bindScrollListeners() {
         if (!centerColumn) return;
 
-        const isMobile = window.innerWidth <= 768;
-
-        // 1. 移除所有現有的監聽器，防止重複綁定
+        // 1. 移除所有舊的監聽器
         centerColumn.removeEventListener('wheel', handleWheelScroll, { passive: false });
         centerColumn.removeEventListener('touchstart', handleTouchStart, { passive: false });
         centerColumn.removeEventListener('touchmove', handleTouchMove, { passive: false });
         centerColumn.removeEventListener('touchend', handleTouchEnd, { passive: false });
 
-        // 2. 根據裝置類型綁定正確的監聽器
-        if (isMobile) {
-            // 綁定觸控事件
-            centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
-            centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
-            centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
-        } else {
-            // 綁定滾輪事件
-            centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
-        }
+        // 2. (v7.0) 新增: 綁定 'scroll' 事件
+        centerColumn.addEventListener('scroll', handleFreeScroll, { passive: false });
     }
 
 
@@ -104,27 +81,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!projects || projects.length === 0) {
                 throw new Error("No projects loaded from JSON.");
             }
-            // (v6.0) 移除複製體邏輯
-            // originalProjectCount = projects.length; 
-            // const safeCloneCount = Math.min(cloneCount, originalProjectCount);
-            // const clonesStart = projects.slice(0, safeCloneCount);
-            // const clonesEnd = projects.slice(-safeCloneCount);
-            // const fullProjectList = [...clonesEnd, ...projects, ...clonesStart];
 
             projectListElement.innerHTML = ''; // 清空現有列表
             
-            // (v6.0) 直接遍歷原始 projects 陣列
             projects.forEach((project, index) => { 
                 const listItem = document.createElement('li');
                 listItem.className = 'project-item';
-                listItem.setAttribute('data-index', index); // (v6.0) 索引現在是 0, 1, 2...
+                listItem.setAttribute('data-index', index); 
                 listItem.setAttribute('data-category', project.category);
                 listItem.setAttribute('data-title', project.title);
                 listItem.setAttribute('data-bio', project.bio);
                 listItem.setAttribute('data-cover-image', project.coverImage);
                 listItem.setAttribute('data-info', project.info); 
-                
-                // (v6.0) 移除 data-is-clone 標記
                 
                 listItem.innerHTML = `
                     <span class="project-category">${project.category}</span>
@@ -138,9 +106,12 @@ document.addEventListener('DOMContentLoaded', () => {
             visibleItems = [...allProjectItems]; 
             
             if (visibleItems.length > 0) {
-                // (v6.0) 初始位置是 0
                 currentActiveIndex = 0;
-                setActiveItem(currentActiveIndex, false); // 立即跳轉
+                // (MOD: v7.0) 
+                // 初始載入時，立即滾動到頂部 (auto)，然後手動觸發一次滾動檢查
+                // 這會高光第一個項目
+                setActiveItem(currentActiveIndex, 'auto'); 
+                handleFreeScroll();
             }
 
             // 綁定初始的滾動監聽器
@@ -160,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // 監聽視窗大小改變，重新綁定滾動
             window.addEventListener('resize', () => {
+                // (MOD: v7.0) 僅重新綁定
                 bindScrollListeners();
             });
             
@@ -175,6 +147,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     // (Request 3) 設置啟用項目
+    // (MOD: v7.0) 
+    // smoothScroll: 
+    //   true ('smooth') = 平滑滾動 (用於點擊)
+    //   'auto' = 立即跳轉 (用於篩選)
+    //   false = 僅更新 UI，不滾動 (用於 'scroll' 事件)
     function setActiveItem(index, smoothScroll = true) {
         
         if (visibleItems.length === 0) return; 
@@ -187,11 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
             index = visibleItems.length - 1;
         }
         
-        // (v6.0) 如果索引沒有實際變化，則不執行任何操作
-        // 這可以防止在滾動到列表末端時重複觸發動畫
-        if (index === currentActiveIndex && smoothScroll) {
-            // (v6.0) 如果是平滑滾動（用戶觸發）且索引未變，則釋放鎖
-            isScrolling = false; 
+        // (MOD: v7.0) 
+        // 僅當索引真正改變時才更新，
+        // 且 *不是* 來自 'scroll' 事件 (smoothScroll !== false) 時，才檢查
+        if (smoothScroll !== false && index === currentActiveIndex) {
             return;
         }
 
@@ -207,18 +183,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         targetItem.classList.add('is-active');
 
-        // 滾動視圖
-        if (smoothScroll) {
+        // (MOD: v7.0) 滾動視圖 (僅在 smoothScroll 為 true 或 'auto' 時觸發)
+        if (smoothScroll === true) { // 'smooth'
             targetItem.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             });
-        } else {
-            targetItem.scrollIntoView({
+        } else if (smoothScroll === 'auto') { // 'auto'
+             targetItem.scrollIntoView({
                 behavior: 'auto',
                 block: 'center'
             });
         }
+        // 若 smoothScroll === false (來自 scroll 事件)，則不執行任何滾動
 
         // 更新左側預覽文字
         const newTitle = targetItem.getAttribute('data-title');
@@ -229,7 +206,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (previewTitleElement) previewTitleElement.textContent = newTitle;
         if (previewBioElement) previewBioElement.textContent = newBio;
-        // if (previewImageElement && newImageSrc) previewImageElement.src = newImageSrc; // (v6.0) 移除
         if (previewInfoElement) previewInfoElement.innerHTML = newInfo; 
 
         // (v6.0) 更新隨機預覽視窗
@@ -278,7 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function resetPreview() {
         if (previewTitleElement) previewTitleElement.textContent = defaultTitle;
         if (previewBioElement) previewBioElement.textContent = defaultBio;
-        // if (previewImageElement) previewImageElement.src = defaultImageSrc; // (v6.0) 移除
         if (previewInfoElement) previewInfoElement.textContent = defaultInfo; 
 
         // (v6.0) 隱藏隨機預覽
@@ -303,86 +278,65 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // (v6.0) 移除 checkLoopJump() 函式
-    // function checkLoopJump() { ... }
+    // (MOD: v7.0) 移除 handleWheelScroll
+    // function handleWheelScroll(event) { ... }
 
+    // (MOD: v7.0) 移除 handleTouchStart
+    // function handleTouchStart(event) { ... }
 
-    // 滾輪事件處理
-    function handleWheelScroll(event) {
-        event.preventDefault(); 
-        if (isScrolling) return; 
-        isScrolling = true; // 鎖定
+    // (MOD: v7.0) 移除 handleTouchMove
+    // function handleTouchMove(event) { ... }
 
-        const direction = event.deltaY > 0 ? 1 : -1; 
-        let newIndex = currentActiveIndex + direction;
-        
-        // (v6.0) 移除 checkLoopJump
-        // if (newIndex !== currentActiveIndex) {
-        setActiveItem(newIndex, true); // 開始滾動, setActiveItem 內部會處理邊界
-        // }
-        
-        // (FIX_v5.2) 關鍵修復：
-        // 無論如何，都在一個很短的延遲後釋放鎖。
-        setTimeout(() => { isScrolling = false; }, 100);
-    }
+    // (MOD: v7.0) 移除 handleTouchEnd
+    // function handleTouchEnd(event) { ... }
 
-    // 觸控事件處理
-    function handleTouchStart(event) {
-        // (v6.0) 隱藏隨機預覽
-        /* MOD: (v6.8) 根據使用者請求，在手機觸控時不再隱藏預覽
-        if (randomPreviewPopup) {
-            randomPreviewPopup.classList.remove('is-visible');
-        }
-        */
-        
-        touchStartY = event.touches[0].clientY;
-        touchEndY = event.touches[0].clientY; 
-    }
+    // (ADD: v7.0) 新增: 自由滾動處理 (iOS 選擇器邏輯)
+    function handleFreeScroll() {
+        // 使用計時器來實現 "debounce" (防抖)
+        // 確保只在滾動停止時才觸發計算
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            if (!centerColumn || visibleItems.length === 0) return;
 
-    function handleTouchMove(event) {
-        event.preventDefault();
-        touchEndY = event.touches[0].clientY;
-    }
+            // 1. 獲取滾動容器的中心點 (相對於 viewport)
+            const containerRect = centerColumn.getBoundingClientRect();
+            const containerCenter = containerRect.top + (containerRect.height / 2);
 
-    function handleTouchEnd(event) {
-        if (isScrolling) return; 
+            let closestItem = null;
+            let minDistance = Infinity;
 
-        const deltaY = touchEndY - touchStartY;
+            // 2. 遍歷所有可見項目，找到距離中心點最近的
+            visibleItems.forEach(item => {
+                const itemRect = item.getBoundingClientRect();
+                const itemCenter = itemRect.top + (itemRect.height / 2);
+                const distance = Math.abs(containerCenter - itemCenter);
 
-        if (Math.abs(deltaY) > touchThreshold) {
-            event.preventDefault(); // 僅在有效滑動時阻止預設行為
-            isScrolling = true; // 鎖定
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+            });
 
-            const direction = deltaY > 0 ? -1 : 1; // 觸控方向與滾輪相反
-            let newIndex = currentActiveIndex + direction;
+            // 3. 獲取最近項目的索引
+            const newIndex = visibleItems.indexOf(closestItem);
 
-            // (v6.0) 移除 checkLoopJump
-            setActiveItem(newIndex, true);
-        }
-
-        // (FIX_v5.2) 關鍵修復：
-        // 如果觸發了鎖定，也在 100ms 後釋放，以保持流暢。
-        // (v6.0) 如果沒有觸發滾動 (isScrolling 仍為 false)，
-        // 則在觸控結束時重新顯示預覽
-        if (isScrolling) {
-            setTimeout(() => { 
-                isScrolling = false; 
-            }, 100);
-        } else {
-            // 如果未觸發滾動，重新顯示當前的預覽
-            const targetItem = visibleItems[currentActiveIndex];
-            if (targetItem) {
-                updateRandomPreview(targetItem.getAttribute('data-cover-image'));
+            // 4. 如果索引有效，且不是當前啟用的索引，則更新
+            if (newIndex !== -1 && newIndex !== currentActiveIndex) {
+                // 傳入 'false' (不觸發滾動)，僅更新 UI
+                setActiveItem(newIndex, false);
             }
-        }
+        }, 100); // 100ms 延遲
     }
 
     // 點擊事件處理
     function handleItemClick(event) {
+        // (MOD: v7.0) 移除 isScrolling 檢查
+        /*
         if (isScrolling) {
             event.preventDefault();
             return;
         }
+        */
 
         const clickedItem = event.target.closest('.project-item');
         if (!clickedItem) return;
@@ -394,9 +348,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // 2. 檢查是否點擊了當前已啟用的項目
         if (newIndex === currentActiveIndex) {
             // 情況 2：項目已啟用 -> 執行頁面轉場
-            
-            // (v6.0) 移除 data-is-clone 檢查
-            
             const link = clickedItem.querySelector('a');
             if (link) {
                 event.preventDefault(); // 阻止 <a> 標籤的預設跳轉
@@ -405,8 +356,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // 情況 1：點擊了未啟用的項目 -> 滾動到該項目
             event.preventDefault();
+            // (MOD: v7.0) 傳入 'true' (平滑滾動)
             setActiveItem(newIndex, true); 
-            // (v6.0) 移除 checkLoopJump
         }
     }
 
@@ -429,11 +380,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeLinks = document.querySelectorAll(`a[data-filter="${filter}"]`);
         activeLinks.forEach(a => a.classList.add('active'));
 
-        isScrolling = true; 
+        // (MOD: v7.0) 移除 isScrolling 鎖
         
-        // (v6.0) 移除複製體相關邏輯
-        // const realProjectItems = allProjectItems.filter(item => !item.hasAttribute('data-is-clone'));
-
         if (filter === 'all') {
             // 情況 A：切換回 "All"
             visibleItems = [...allProjectItems];
@@ -450,21 +398,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     return false;
                 }
             });
-            
-            // (v6.0) 移除隱藏複製體的邏輯
         }
         
-        // (v6.0) 滾動到新列表的頂部 (索引 0)
         if (visibleItems.length > 0) {
             let targetIndex = 0; 
             setTimeout(() => {
-                setActiveItem(targetIndex, true);
-                isScrolling = false;
+                // (MOD: v7.0) 傳入 'auto' (立即跳轉)
+                setActiveItem(targetIndex, 'auto');
+                // (MOD: v7.0) 手動觸發一次滾動檢查，確保 UI 更新
+                handleFreeScroll();
             }, 50);
 
         } else {
             resetPreview();
-            isScrolling = false;
         }
     }
 
