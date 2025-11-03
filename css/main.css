@@ -641,7 +641,7 @@ body:has(.portfolio-container) .left-column-top {
 
 /* (FEAT_v4.33) 確保 .contact-links 在 wrapper 中正確對齊 */
 /* MOD: (v5.0) 選擇器更新為 .main-footer */
-/* (v6.3) 此樣式僅 portfolio.html 會用到 */
+/* (v6.3) 此樣式僅 portfolio.html 的 .main-footer (手機版) 會用到 */
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;

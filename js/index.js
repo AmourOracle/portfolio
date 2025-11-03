@@ -36,11 +36,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentActiveIndex = 0; 
     let visibleItems = []; 
     
-    // (FIX_v4.23) 將 centerColumn 移至頂層，以便 resize 函式存取
+    // (FIX_v4.23) 將 centerColumn 移至頂層
     const centerColumn = document.querySelector('.portfolio-container .center-column');
 
-    // (MOD: v7.0) 滾動計時器
+    // (MOD: v7.0) 'scroll' 事件的計時器 (Debounce)
     let scrollTimer = null;
+    
+    // (ADD: v8.0) 'wheel' 事件的計時器 (Throttle)
+    let isWheeling = false;
 
     // (v6.0) 新增輔助函式
     /**
@@ -50,22 +53,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.random() * (max - min) + min;
     }
     
-    // (MOD: v7.1) 
+    // (MOD: v8.0) 
     /**
-     * 綁定滾動監聽器 (修復 v7.0 的 bug)
+     * 綁定滾動監聽器 (升級)
+     * 我們現在綁定 *兩種* 監聽器：
+     * 1. 'wheel' (主動): 用於接管滑鼠滾輪，必須 { passive: false }。
+     * 2. 'scroll' (被動): 用於同步由 'wheel' 以外事件 (如拖動) 觸發的滾動。
      */
     function bindScrollListeners() {
         if (!centerColumn) return;
 
-        // 1. (v7.1) 移除所有舊的監聽器 (Bug Fix: 移除對 'handleWheelScroll' 等不存在函式的引用)
-        // (v7.1) 假設 'handleFreeScroll' 是唯一的監聽器
+        // 1. 移除舊的監聽器 (確保安全)
         centerColumn.removeEventListener('scroll', handleFreeScroll);
+        centerColumn.removeEventListener('wheel', handleWheelScroll);
 
-        // 2. (MOD: v7.1) 
-        // - 新增: 綁定 'scroll' 事件
-        // - 將 { passive: false } 改為 { passive: true }
-        // - 理由: 我們只是監聽滾動，沒有要阻止它，
-        //   設為 true 可以大幅提升手機上的滾動效能。
+        // 2. [v8.0] 綁定 'wheel' 事件 (主動控制)
+        //    必須設為 'passive: false' 才能呼叫 event.preventDefault()
+        centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
+        
+        // 3. [v7.1] 綁定 'scroll' 事件 (被動同步)
+        //    保持 'passive: true' 以獲得最佳效能
         centerColumn.addEventListener('scroll', handleFreeScroll, { passive: true });
     }
 
@@ -110,28 +117,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (visibleItems.length > 0) {
                 currentActiveIndex = 0;
                 
-                // (MOD: v7.2) 
-                // 將初始的 setActiveItem 呼叫包裹在 setTimeout(0) 中。
-                // 這會將「滾動置中」的任務推遲到瀏覽器完成當前 DOM 繪製之後，
-                // 確保 .scrollIntoView() 能夠在元素準備就緒時正確執行。
+                // (MOD: v8.0) (Problem 1 Fix)
+                // 1. 立即滾動到定位並更新UI (無延遲)
+                //    這會立即將 'Kinetic Poster' 滾動到中央並更新左側面板。
+                setActiveItem(currentActiveIndex, 'auto'); 
+                
+                // 2. 透過 short delay 觸發CSS入場動畫
+                //    這讓DOM有足夠時間在 "is-loaded" class 添加前
+                //    處理 'auto' 滾動。
                 setTimeout(() => {
-                    // (Problem 1 Fix) 立即跳轉 ('auto') 到第一個項目
-                    setActiveItem(currentActiveIndex, 'auto'); 
-                    
-                    // (MOD: v7.3) (Problem 2 Fix)
-                    // 移除多餘的 handleFreeScroll() 呼叫。
-                    // 理由: setActiveItem 中的 .scrollIntoView() 會自動觸發
-                    // scroll 事件監聽器，從而安排自己的 handleFreeScroll。
-                    // 移除此處的呼叫可避免邏輯衝突。
-                    // handleFreeScroll(); 
-
-                    // (FEAT_v7.2) 觸發 CSS 入場動畫
-                    // 在第一個項目置中後，為容器添加 .is-loaded class
                     const mainContainer = document.querySelector('.portfolio-container');
                     if (mainContainer) {
                         mainContainer.classList.add('is-loaded');
                     }
-                }, 0); // 0ms 延遲，僅為推遲執行緒
+                }, 50); // 50ms 延遲以確保DOM準備就緒
             }
 
             // 綁定初始的滾動監聽器
@@ -167,16 +166,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     // (Request 3) 設置啟用項目
-    // (MOD: v7.0) 
+    // (MOD: v8.0) 
     // smoothScroll: 
-    //   true ('smooth') = 平滑滾動 (用於點擊)
-    //   'auto' = 立即跳轉 (用於篩選/載入)
-    //   false = 僅更新 UI，不滾動 (用於 'scroll' 事件)
+    //   true ('smooth') = 平滑滾動 (由 wheel/click 觸發)
+    //   'auto' = 立即跳轉 (由 load/filter 觸發)
+    //   false = 僅更新 UI (由 'scroll' 事件觸發)
     function setActiveItem(index, smoothScroll = true) {
         
         if (visibleItems.length === 0) return; 
 
-        // (v6.0) 關鍵：新增邊界檢查，防止索引超出範圍
+        // 邊界檢查
         if (index < 0) {
             index = 0;
         }
@@ -184,16 +183,20 @@ document.addEventListener('DOMContentLoaded', () => {
             index = visibleItems.length - 1;
         }
         
-        // (MOD: v7.0) 
-        // 僅當索引真正改變時才更新，
-        // 且 *不是* 來自 'scroll' 事件 (smoothScroll !== false) 時，才檢查
+        // (MOD: v8.0) 
+        // 只有當 *不是* 'scroll' 事件 (false) 觸發時
+        // 且索引相同時，才 'return'。
+        // 這確保了 'scroll' 事件 *總是* 能更新 'currentActiveIndex'
         if (smoothScroll !== false && index === currentActiveIndex) {
             return;
         }
 
+        // (MOD: v8.0) 
+        // 滾動事件 (false) 會進到這裡，但不會觸發 'scrollIntoView'
+        // 它只會更新 'currentActiveIndex' 和 UI
         currentActiveIndex = index;
 
-        // (FIX_v4.30) 還原 v4.26 的邏輯
+        // 更新列表高光
         allProjectItems.forEach(item => {
             item.classList.remove('is-active');
         });
@@ -203,20 +206,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         targetItem.classList.add('is-active');
 
-        // (MOD: v7.0) 滾動視圖 (僅在 smoothScroll 為 true 或 'auto' 時觸發)
+        // (MOD: v8.0) 
+        // 只有 'true' (smooth) 或 'auto' 會觸發滾動
+        // 'false' (來自 handleFreeScroll) 會跳過此區塊
         if (smoothScroll === true) { // 'smooth'
             targetItem.scrollIntoView({
                 behavior: 'smooth',
                 block: 'center'
             });
         } else if (smoothScroll === 'auto') { // 'auto'
+             // 'auto' 滾動在 v7.0 CSS 中已變為 'smooth'
              targetItem.scrollIntoView({
-                behavior: 'auto',
+                behavior: 'auto', // CSS 的 scroll-behavior: smooth 會接管
                 block: 'center'
             });
         }
-        // 若 smoothScroll === false (來自 scroll 事件)，則不執行任何滾動
-
+        
         // 更新左側預覽文字
         const newTitle = targetItem.getAttribute('data-title');
         const newBio = targetItem.getAttribute('data-bio');
@@ -256,7 +261,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const rotate = getRandomFloat(-15, 15); // 隨機旋轉
             
             // 定義安全區域 (避免遮擋左欄和列表)
-            // 我們將其限制在畫面的右側
             const top = getRandomFloat(10, 60); // 10vh 到 60vh
             const left = getRandomFloat(45, 70); // 45vw 到 70vw
 
@@ -298,29 +302,53 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // (MOD: v7.0) 移除 handleWheelScroll
-    // function handleWheelScroll(event) { ... }
+    // (ADD: v8.0) (Problem 2 Fix)
+    /**
+     * 接管 'wheel' (滑鼠滾輪) 事件
+     * 這是實現「iOS 選擇器」滾動的核心
+     */
+    function handleWheelScroll(event) {
+        // 阻止瀏覽器預設的滾動行為 (關鍵!)
+        event.preventDefault(); 
 
-    // (MOD: v7.0) 移除 handleTouchStart
-    // function handleTouchStart(event) { ... }
+        // 滾動節流 (Throttling)
+        // 如果 50ms 內已經觸發過一次，則忽略
+        if (isWheeling) {
+            return;
+        }
+        isWheeling = true;
+        
+        // 50ms 後解除鎖定
+        setTimeout(() => { isWheeling = false; }, 50);
 
-    // (MOD: v7.0) 移除 handleTouchMove
-    // function handleTouchMove(event) { ... }
+        // 判斷滾動方向
+        if (event.deltaY < 0) {
+            // 向上滾動 (索引減少)
+            if (currentActiveIndex > 0) {
+                setActiveItem(currentActiveIndex - 1, true); // 'true' = smooth scroll
+            }
+        } else if (event.deltaY > 0) {
+            // 向下滾動 (索引增加)
+            if (currentActiveIndex < visibleItems.length - 1) {
+                setActiveItem(currentActiveIndex + 1, true); // 'true' = smooth scroll
+            }
+        }
+    }
 
-    // (MOD: v7.0) 移除 handleTouchEnd
-    // function handleTouchEnd(event) { ... }
 
-    // (ADD: v7.0) 新增: 自由滾動處理 (iOS 選擇器邏輯)
+    // (MOD: v8.0) 'scroll' 事件處理 (Debounced)
+    /**
+     * 處理 'scroll' 事件 (被動)
+     * 職責: 僅在滾動 *停止* 後 (150ms)，
+     * 同步 UI 到離中心最近的項目。
+     * 這主要用於處理 "非 wheel" 事件 (如拖動滾動條, 觸控板)。
+     */
     function handleFreeScroll() {
         // 使用計時器來實現 "debounce" (防抖)
-        // 確保只在滾動停止時才觸發計算
         clearTimeout(scrollTimer);
 
-        // (MOD: v7.3) (Problem 3 Fix)
-        // 將延遲從 50ms 增加到 150ms。
-        // 理由: 這是為了等待 CSS 的 scroll-snap 動畫 (約 100ms) 
-        // 完全結束後，JS 再來讀取最終位置並更新 UI。
-        // 這能避免 JS 和 CSS 之間的動畫衝突，解決滾動卡頓問題。
+        // (MOD: v7.3) 
+        // 延遲 150ms，等待 'smooth' 或 'snap' 滾動動畫完成
         scrollTimer = setTimeout(() => {
             if (!centerColumn || visibleItems.length === 0) return;
 
@@ -346,24 +374,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // 3. 獲取最近項目的索引
             const newIndex = visibleItems.indexOf(closestItem);
 
-            // 4. 如果索引有效，且不是當前啟用的索引，則更新
+            // 4. (MOD: v8.0) 
+            // 僅在 JS 狀態 (currentActiveIndex) 與 
+            // 實際 DOM 狀態 (newIndex) 不同步時才更新
             if (newIndex !== -1 && newIndex !== currentActiveIndex) {
                 // 傳入 'false' (不觸發滾動)，僅更新 UI
                 setActiveItem(newIndex, false);
+            } else if (newIndex !== -1) {
+                // 如果索引相同，我們手動更新 currentActiveIndex
+                // (因為 setActiveItem 頂部的檢查會 'return')
+                currentActiveIndex = newIndex;
             }
-        }, 150); // MOD: 增加延遲以等待 CSS Snap 動畫完成
+        }, 150); // 150ms 延遲
     }
 
     // 點擊事件處理
     function handleItemClick(event) {
-        // (MOD: v7.0) 移除 isScrolling 檢查
-        /*
-        if (isScrolling) {
-            event.preventDefault();
-            return;
-        }
-        */
-
         const clickedItem = event.target.closest('.project-item');
         if (!clickedItem) return;
 
@@ -382,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // 情況 1：點擊了未啟用的項目 -> 滾動到該項目
             event.preventDefault();
-            // (MOD: v7.0) 傳入 'true' (平滑滾動)
+            // 'true' (smooth scroll) 會觸發 'scrollIntoView'
             setActiveItem(newIndex, true); 
         }
     }
@@ -406,7 +432,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeLinks = document.querySelectorAll(`a[data-filter="${filter}"]`);
         activeLinks.forEach(a => a.classList.add('active'));
 
-        // (MOD: v7.0) 移除 isScrolling 鎖
         
         if (filter === 'all') {
             // 情況 A：切換回 "All"
@@ -430,12 +455,9 @@ document.addEventListener('DOMContentLoaded', () => {
             let targetIndex = 0; 
             setTimeout(() => {
                 // (MOD: v7.0) 傳入 'auto' (立即跳轉)
-                // MOD: CSS (v7.0) 中已新增 scroll-behavior: smooth，
-                // 因此 'auto' 現在會觸發平滑滾動。
+                // CSS (v7.0) 中已新增 scroll-behavior: smooth，
+                // 因此 'auto' 會觸發平滑滾動。
                 setActiveItem(targetIndex, 'auto');
-                
-                // (MOD: v7.3) 移除多餘的 handleFreeScroll() 呼叫
-                // handleFreeScroll();
             }, 50);
 
         } else {
