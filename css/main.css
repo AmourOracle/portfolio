@@ -122,9 +122,8 @@ header {
     */
 
     /*
-      ADD: (v8.2) 
-      - 將 .left-column 放置在網格第 1 欄
-      - 設定為 UI 圖層 (z-index: 10)，並啟用 relative 定位
+      MOD: (v8.3) 
+      - .left-column 預設為 UI 圖層 (z-index: 10)
     */
     grid-column: 1;
     position: relative;
@@ -700,18 +699,30 @@ header {
     grid-template-rows: 1fr;
 }
 
-/* MOD: (v8.2) 
+/* MOD: (v8.3) 
   - .gallery-content-column (畫布)
-  - 將其放置在網格第 1 欄 (與 .left-column 重疊)
-  - 設定為畫布圖層 (z-index: 20)，並禁用 pointer-events
+  - z-index: 20 (中間圖層)
+  - pointer-events: none (讓點擊穿透)
 */
 .gallery-layout .gallery-content-column {
     padding: 0; /* MOD: 移除 padding */
     grid-row: 1;
     grid-column: 1; /* MOD: 放置在第 1 欄 */
-    z-index: 20; /* MOD: 置於上層 */
+    z-index: 20; /* MOD: 中間圖層 */
     pointer-events: none; /* MOD: 讓滑鼠點擊穿透到 UI 層 */
 }
+
+/*
+  ADD: (v8.3)
+  - .gallery-layout .left-column-bottom (Back 按鈕)
+  - z-index: 30 (最上層)
+  - 確保 Back 按鈕永遠在畫布之上
+*/
+.gallery-layout .left-column-bottom {
+    position: relative; /* 建立 z-index 堆疊上下文 */
+    z-index: 30; /* 提升到最上層 */
+}
+
 
 /* MOD: (v8.0) 
   - 桌面版：畫布容器 (Viewport)
@@ -930,6 +941,11 @@ header {
         grid-column: 2; /* 恢復第 2 欄 */
         z-index: auto; /* 恢復 z-index */
         pointer-events: auto; /* 恢復 pointer-events */
+    }
+
+    /* MOD: (v8.3) 恢復平板電腦的 .left-column-bottom z-index */
+    .gallery-layout .left-column-bottom {
+        z-index: auto;
     }
 
 
@@ -1187,6 +1203,12 @@ header {
         z-index: auto;
         pointer-events: auto;
     }
+
+    /* MOD: (v8.3) 恢復手機版的 .left-column-bottom z-index */
+    .gallery-layout .left-column-bottom {
+        z-index: auto;
+    }
+
 
     /* ADD: (v5.0) 手機版 .main-footer 樣式 */
     /* MOD: (v5.1) 此規則應為通用 (包含 portfolio.html) */
