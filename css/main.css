@@ -382,6 +382,9 @@ body:has(.portfolio-container) .left-column-top {
     /* ADD: (v7.2) 啟用 CSS 滾動吸附 (iOS 選擇器效果) - 桌面版 */
     scroll-snap-type: y mandatory;
     
+    /* ADD: (MOD_v7.0) 確保 JS 觸發的滾動 (如篩選器) 也是平滑的 */
+    scroll-behavior: smooth;
+
     /* * MOD: (v4.32) 根據使用者請求，加深遮罩範圍
      * 原始: 20% (v4.30)
      * 修改: 30%，讓淡出區域更大，過渡更平滑
@@ -440,6 +443,9 @@ body:has(.portfolio-container) .left-column-top {
 
     /* ADD: (v7.2) 啟用 CSS 滾動吸附 (iOS 選擇器效果) - 桌面版 */
     scroll-snap-align: center;
+    
+    /* ADD: (MOD_v7.0) 實現 "iOS 鬧鐘選擇器" 效果，強制在每個項目停止 */
+    scroll-snap-stop: always;
 
     /* MOD: (Req 4) 預設樣式 (非啟用) */
     opacity: 0.4;

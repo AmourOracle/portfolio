@@ -117,8 +117,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     // (Problem 1 Fix) 立即跳轉 ('auto') 到第一個項目
                     setActiveItem(currentActiveIndex, 'auto'); 
-                    // 手動觸發一次滾動檢查，確保 UI (左欄) 更新
-                    handleFreeScroll(); 
+                    
+                    // (MOD: v7.3) (Problem 2 Fix)
+                    // 移除多餘的 handleFreeScroll() 呼叫。
+                    // 理由: setActiveItem 中的 .scrollIntoView() 會自動觸發
+                    // scroll 事件監聽器，從而安排自己的 handleFreeScroll。
+                    // 移除此處的呼叫可避免邏輯衝突。
+                    // handleFreeScroll(); 
 
                     // (FEAT_v7.2) 觸發 CSS 入場動畫
                     // 在第一個項目置中後，為容器添加 .is-loaded class
@@ -311,9 +316,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // 確保只在滾動停止時才觸發計算
         clearTimeout(scrollTimer);
 
-        // (MOD: v7.2) (Problem 2 Fix)
-        // 將延遲從 100ms 降低到 50ms，
-        // 讓滾動停止後的 UI 更新響應更即時。
+        // (MOD: v7.3) (Problem 3 Fix)
+        // 將延遲從 50ms 增加到 150ms。
+        // 理由: 這是為了等待 CSS 的 scroll-snap 動畫 (約 100ms) 
+        // 完全結束後，JS 再來讀取最終位置並更新 UI。
+        // 這能避免 JS 和 CSS 之間的動畫衝突，解決滾動卡頓問題。
         scrollTimer = setTimeout(() => {
             if (!centerColumn || visibleItems.length === 0) return;
 
@@ -344,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 傳入 'false' (不觸發滾動)，僅更新 UI
                 setActiveItem(newIndex, false);
             }
-        }, 50); // MOD: 降低延遲
+        }, 150); // MOD: 增加延遲以等待 CSS Snap 動畫完成
     }
 
     // 點擊事件處理
@@ -423,9 +430,12 @@ document.addEventListener('DOMContentLoaded', () => {
             let targetIndex = 0; 
             setTimeout(() => {
                 // (MOD: v7.0) 傳入 'auto' (立即跳轉)
+                // MOD: CSS (v7.0) 中已新增 scroll-behavior: smooth，
+                // 因此 'auto' 現在會觸發平滑滾動。
                 setActiveItem(targetIndex, 'auto');
-                // (MOD: v7.0) 手動觸發一次滾動檢查，確保 UI 更新
-                handleFreeScroll();
+                
+                // (MOD: v7.3) 移除多餘的 handleFreeScroll() 呼叫
+                // handleFreeScroll();
             }, 50);
 
         } else {
