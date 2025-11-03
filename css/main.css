@@ -698,42 +698,59 @@ header {
     grid-row: 1;
 }
 
-/* 桌面版：隨機拼貼容器 */
+/* MOD: (v8.0) 
+  - 桌面版：畫布容器 (Viewport)
+  - 移除 padding, overflow-y: auto
+  - 新增 overflow: hidden, cursor: grab
+*/
 .gallery-content-column {
-    /* MOD: (FIX_v4.36) 
-     * 移除 min-height: 200vh; 和 overflow: hidden; (這是導致空白的 Bug)
-     * 改為與 .project-content-column 相同的滾動屬性
-     */
-    position: relative; /* 保持，為了 .gallery-item 的 absolute 定位 */
-    overflow-y: auto; /* MOD: 允許滾動 */
-    overflow-x: hidden; /* ADD: 隱藏水平滾動 */
-    min-height: auto; /* MOD: 移除 200vh */
-    height: 100%; /* ADD: 填滿 1fr 網格高度 */
-    
-
-    /* ADD: 隱藏滾動條 (同 .project-content-column) */
-    scrollbar-width: none; /* For Firefox */
+    position: relative;
+    overflow: hidden; /* MOD: 關鍵！移除滾動條 */
+    height: 100%;
+    cursor: grab; /* MOD: 新增拖曳游標 */
+    padding: 0; /* MOD: 移除 padding */
 }
-/* ADD: (FIX_v4.36) 隱藏滾動條 */
-.gallery-content-column::-webkit-scrollbar {
-    display: none;
+.gallery-content-column:active {
+    cursor: grabbing; /* MOD: 新增拖曳中游標 */
 }
 
+/* ADD: (v8.0) 畫布 (Pan/Zoom 容器) */
+#pan-container {
+    /* JS 會設定 width/height (e.g., 5000px) */
+    /* JS 會設定 transform (pan/zoom) */
+    transform-origin: 0 0; /* 縮放原點 (左上角) */
+    /* 讓圖片定位 */
+    position: relative;
+}
 
-/* 桌面版：隨機拼貼項目 */
+/* MOD: (v8.0) 桌面版：畫布項目 */
 .gallery-item {
     position: absolute;
     display: block;
     background-color: #222;
     border: 1px solid var(--divider-color);
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    
+    /* MOD: (v8.0) 
+      - JS 會設定 transform: rotate(var(--rotate-deg))
+      - transition 現在也包含 box-shadow
+    */
     transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+    
+    /* MOD: (v8.0) 讓 JS 設定 --rotate-deg 變數 */
+    transform: rotate(var(--rotate-deg, 0deg));
 }
+
+/* MOD: (v8.0) 
+  - 強化 Hover 效果 (建議 C)
+  - 結合 JS 設定的 --rotate-deg 和 hover 的 scale
+*/
 .gallery-item:hover {
-    transform: scale(1.05) !important; /* 覆蓋 inline-style 的 rotate */
+    transform: rotate(var(--rotate-deg, 0deg)) scale(1.1); /* 放大 10% */
     box-shadow: 0 15px 40px rgba(0,0,0,0.4);
     z-index: 999 !important; /* 確保 hover 時在最上層 */
 }
+
 .gallery-item img {
     width: 100%;
     height: 100%;
@@ -744,9 +761,9 @@ header {
 /* 手機版：網格容器 (當 .is-mobile-grid class 被 JS 加入時) */
 .gallery-content-column.is-mobile-grid {
     position: static;
-    overflow-y: auto; /* 允許右欄滾動 */
-    min-height: auto; /* 移除桌面版的高度 */
-    height: auto; /* 覆蓋 100% */
+    overflow-y: auto; /* 恢復手機版滾動 */
+    min-height: auto; 
+    height: auto; 
     
     /* 啟用簡單的 2 欄網格 */
     display: grid;
@@ -755,6 +772,10 @@ header {
     
     /* (與 project.html 右欄一致) */
     scrollbar-width: none; 
+    
+    /* MOD: (v8.0) 恢復手機版的 padding */
+    padding-top: 1.5rem; 
+    padding-right: 1rem; 
 }
 .gallery-content-column.is-mobile-grid::-webkit-scrollbar {
     display: none;
@@ -1100,6 +1121,11 @@ header {
         grid-row: 2;
     }
     
+    /* MOD: (v8.0) 
+      - gallery-layout 手機版使用 .gallery-content-column.is-mobile-grid
+      - 因此原始的 .gallery-layout .gallery-content-column 規則
+      - 會被 .is-mobile-grid 覆蓋，不需特別修改
+    */
     .gallery-layout .gallery-content-column {
         overflow-y: auto;
         padding-top: 0;
@@ -1221,4 +1247,3 @@ header {
         justify-content: space-between; /* MOD: 手機版維持左右分散 */
     }
 }
-

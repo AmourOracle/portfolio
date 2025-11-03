@@ -1,126 +1,129 @@
-Sywan Portfolio 專案進度總結 (v6.7)
+Portfolio 開發指南
 
-本文件概述了專案截至 v6.7 的當前狀態，主要集中在架構的統一和互動體驗的優化。
+這份文件說明了此作品集網站的專案結構、核心邏輯與資料流程。
 
-1. 核心理念：內容與結構分離
+專案結構
 
-專案嚴格遵守「內容與結構分離」的核心理念：
+本專案是一個基於 HTML, CSS 和 JavaScript 的靜態網站。它不依賴任何前端框架（如 React 或 Vue），而是透過 JavaScript 抓取 JSON 資料來動態填充頁面內容。
 
-網站結構 (Structure): 由 .html, main.css, 和 .js 檔案定義。
+檔案結構如下所示：
 
-網站內容 (Content): 所有作品資料（文字、圖片路徑）均儲存在 data/projects.json 中。
-
-JS 檔案（index.js, project.js, gallery.js）作為橋樑，動態讀取 JSON 內容並將其注入 HTML 結構中。
-
-2. 專案檔案結構 (v6.7)
-
-目前的檔案結構與開發指南一致。
-
-/sywan-portfolio/
-├─ index.html       // 載入動畫頁 (1.5s 跳轉)
-├─ portfolio.html   // 網站首頁 (作品索引)
-├─ project.html     // 專案內頁 (作品範本)
-├─ gallery.html     // 攝影作品展示頁
-├─ about.html       // 關於我頁面 (靜態內容)
-│
-├─ /data/
-│  └─ projects.json  // 唯一的作品資料庫 (Single Source of Truth)
-│
-├─ /css/
-│  └─ main.css       // 網站所有共用樣式表 (v6.7)
-│
-├─ /js/
-│  ├─ index.js       // 僅用於 portfolio.html (v6.1)
-│  ├─ project.js     // 僅用於 project.html (v5.0)
-│  └─ gallery.js     // 僅用於 gallery.html (v4.36)
-│
-└─ /assets/
-   └─ /images/       // (建議) 存放所有專案圖片
+/
+|-- index.html           (網站載入頁/啟動畫面)
+|-- portfolio.html       (主要的作品集列表頁，也是網站首頁)
+|-- project.html         (單一作品的詳情頁面)
+|-- about.html           (關於我/個人資訊頁面)
+|-- gallery.html         (攝影作品集錦頁面)
+|
+|-- data/
+|   |-- projects.json    (唯一的資料來源，存放所有專案內容)
+|
+|-- css/
+|   |-- main.css         (全站唯一的 CSS 樣式表)
+|
+|-- js/
+|   |-- index.js         (用於 portfolio.html 的主要邏輯)
+|   |-- project.js       (用於 project.html 的邏輯)
+|   |-- gallery.js       (用於 gallery.html 的邏輯)
+|
+|-- assets/
+    |-- images/
+        |-- favicon.ico         (網站圖示)
+        |-- apple-touch-icon.png (Apple 裝置圖示)
 
 
-3. 全局架構 (v6.7)
+核心邏輯與頁面流程
 
-v6.x 版本已統一了所有頁面（index.html 除外）的桌面版 HTML 佈局，移除了 v5.x 的全局 <footer>。
+本網站的核心概念是「資料分離」：所有專案內容都儲存在 data/projects.json 中，JavaScript 檔案負責讀取這些資料，並將其動態渲染到對應的 HTML 頁面中。
 
-<header> (頂部):
+1. projects.json (資料來源)
 
-高度 60px，固定於頂部。
+這是全站唯一的資料中心 (Single Source of Truth)。
 
-<main class="middle-container"> (中部):
+它是一個 JSON 陣列，每個物件代表一個專案。
 
-這是所有頁面的主內容容器。
+主要欄位包含：id, title, category, bio, info, coverImage (用於列表頁) 和 images (用於詳情頁)。
 
-高度 (Height): 統一為 calc(100vh - 60px)，僅減去頂部 header 的高度。
+2. 啟動流程 (index.html)
 
-安全區域 (Safe Area): 容器內部新增 padding-bottom: 60px;。這在視窗底部創造了一個 60px 的緩衝空間，確保所有放置在底部的導航按鈕不會被瀏覽器 UI（如 hover 狀態列）遮擋。
+index.html 是一個純粹的載入動畫頁面（Splash Screen）。
 
-4. 內容管理 (data/projects.json)
+它不包含任何 JS 邏輯，僅使用 <meta http-equiv="refresh"> 標籤，在 1.5 秒後自動將使用者重新導向到 portfolio.html。
 
-此部分邏輯不變。projects.json 是一個 JSON 陣列，陣列中的每個物件都代表一個作品。
+3. 作品集列表頁 (portfolio.html + index.js)
 
-{
-  "id": "kinetic-poster",
-  "number": "01",
-  "category": "Visual",
-  "title": "Kinetic Poster",
-  "bio": "專案的簡短介紹...",
-  "info": "專案的詳細資訊 (角色、年份等)...",
-  "coverImage": "[https://placehold.co/](https://placehold.co/)...",
-  "images": [
-    "[https://placehold.co/](https://placehold.co/)...",
-    "[https://placehold.co/](https://placehold.co/)..."
-  ]
-}
+這是使用者瀏覽的主要頁面，具有三欄式佈局（桌面版）。
 
+資料載入：index.js 會在頁面載入時 fetch data/projects.json。
 
-5. 頁面邏輯 (v6.7 現況)
+列表生成：index.js 根據抓取到的資料，動態生成中間欄 (.center-column) 的專案滾動列表 (.project-list)。
 
-index.html (載入動畫頁)
+核心互動 (Picker Wheel)：
 
-邏輯: 無變更。使用 <meta http-equiv="refresh"> 在 1.5 秒後自動跳轉到 portfolio.html。
+index.js 監聽中間欄的滾動事件 (wheel 和 scroll)。
 
-portfolio.html (首頁 / 作品索引)
+它會計算目前哪個專案 (.project-item) 位於滾動區域的正中央。
 
-結構: portfolio-container (三欄式 Grid 佈局)。
+當置中項目改變時，index.js 會讀取該項目的 data-* 屬性 (如 data-title, data-bio)。
 
-邏輯 (js/index.js):
+最後，將這些資料動態更新到左側欄位 (.left-column) 的預覽區域 (#previewTitle, #previewBio 等)。
 
-滾動列表: 已移除「無縫迴圈複製體」。列表現在有明確的起點和終點。
+篩選邏輯：
 
-置中高光: ul.project-list 已新增 padding: 40vh 0; 緩衝區，確保滾動時，scrollIntoView({ block: 'center' }) 能將第一個和最後一個項目都正確置於螢幕中央。
+index.js 同時監聽右側欄（桌面版）和底部 footer（手機版）的篩選按鈕點擊事件。
 
-預覽效果: 滾動高光時，#randomPreviewPopup 會以隨機位置、大小 (80%-120%) 和角度出現在畫面右側安全區域。
+根據 data-filter 屬性，它會為不符條件的 .project-item 添加 .hide class，實現篩選效果。
 
-導航: 外部連結 (#desktopContactLinks) 已固定放置在左欄底部的 .left-column-bottom 中。
+頁面跳轉：
 
-project.html (專案內頁)
+當使用者點擊已經置中的專案時，index.js 會觸發頁面轉場動畫 (.page-transition-overlay)。
 
-結構: project-layout (兩欄式 Grid 佈局)。
+動畫結束後，跳轉至 project.html?id={project-id}，並將該專案的 id 透過 URL 參數傳遞過去。
 
-邏輯 (js/project.js): 讀取 URL 中的 ?id= 參數，抓取 JSON 並填入對應欄位。
+4. 作品詳情頁 (project.html + project.js)
 
-導航: 導航按鈕位於 .left-column-bottom。
+這是一個兩欄式佈局的頁面，用於顯示單一專案的詳細資訊。
 
-CSS 使用 justify-content: space-between;（左右分散對齊）。
+讀取參數：project.js 啟動時，會使用 URLSearchParams 讀取瀏覽器 URL 上的 id 參數。
 
-Back 按鈕靠左，Next 按鈕靠右（對齊左欄寬度），符合 image_ee78e4.png 範圖。
+資料載入：project.js 同樣會 fetch data/projects.json。
 
-gallery.html (攝影作品展示頁)
+內容填充：
 
-結構: gallery-layout (兩欄式 Grid 佈局)。
+它會在 JSON 陣列中尋找與 URL id 相符的專案物件。
 
-邏輯 (js/gallery.js):
+找到後，將該物件的 title, bio, info 和 images 陣列內容，填入到頁面對應的 HTML 元素中（#projectTitle, #projectInfo, #projectImages）。
 
-抓取 JSON 並篩選 category === "Photography" 的項目。
+"Next Project" 邏輯：
 
-桌面版: renderDesktopCollage 函式會將所有圖片以隨機位置、大小和角度渲染在右欄，實現拼貼效果（如 image_ed90e2.jpg 範圖所示）。
+為了提供「下一個專案」按鈕，project.js 會從所有其他專案中隨機挑選一個，並將其連結填入 <a> 標籤中。
 
-手機版: renderMobileGrid 執行雙欄網格。
+5. 攝影作品頁 (gallery.html + gallery.js)
 
-導航: 左欄 .left-column-bottom 中包含 Back 按鈕（靠左對齊）。
+這是一個特殊的集合頁面，專門展示「攝影」類別的作品。
 
-about.html (關於我頁面)
+資料載入與篩選：gallery.js 抓取 data/projects.json，並篩選出所有 category === 'Photography' 的專案。
 
-結構: about-layout (兩欄式 Grid 佈局)。內容為靜態。
+圖片彙整：它會將所有符合條件的專案中的 images 陣列合併成一個單一的圖片 URL 列表。
 
-導航: 左欄 .left-column-bottom 中包含 Back 按鈕（靠左對齊）。
+佈局渲染：
+
+桌面版 (renderDesktopCollage)：gallery.js 會為每張圖片生成隨機的 width, top, left 和 rotate 樣式，並使用 position: absolute 創造出隨機拼貼的效果。
+
+手機版 (renderMobileGrid)：gallery.js 僅將圖片放入容器，並為容器添加 is-mobile-grid class，交由 main.css 中的 CSS Grid 進行排版。
+
+6. 關於我頁面 (about.html)
+
+這是一個純靜態頁面，所有內容都直接寫在 HTML 中。
+
+它不依賴任何 fetch 操作或特定的 JavaScript 檔案（除了全域的 main.css）。
+
+樣式 (css/main.css)
+
+全站所有頁面（包括 index.html 的載入動畫）共享同一份 main.css 檔案。
+
+使用 CSS 變數 (Variables) 來統一定義顏色和字體 (例如 --background-color, --font-en)。
+
+大量使用 CSS Grid (display: grid) 來定義主要的頁面佈局（例如 .portfolio-container 的三欄式佈局，.project-layout 的兩欄式佈局）。
+
+響應式設計主要透過 @media (max-width: 768px) 媒體查詢來實現，在手機版上會將多欄佈局改為單欄堆疊。
