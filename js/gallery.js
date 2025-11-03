@@ -7,6 +7,13 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Gallery container (#galleryContainer) or #pan-container not found.');
         return;
     }
+    
+    // --- (FIX v8.1) 將畫布常數移至頂層 ---
+    // 讓 renderDesktopCanvas 和 initPanZoom 都能存取
+    const CANVAS_WIDTH = 5000;
+    const CANVAS_HEIGHT = 5000;
+    // --- 結束 (FIX v8.1) ---
+
 
     // --- 1. 定義輔助函式 (Helper Functions) ---
     
@@ -85,9 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderDesktopCanvas(images) {
         const fragment = document.createDocumentFragment();
         
-        // 定義虛擬畫布的大小 (px)
-        const CANVAS_WIDTH = 5000;
-        const CANVAS_HEIGHT = 5000;
+        // (FIX v8.1) 變數已移至頂層
         
         panContainer.style.width = `${CANVAS_WIDTH}px`;
         panContainer.style.height = `${CANVAS_HEIGHT}px`;
@@ -157,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // (建議 A) 限制平移範圍 (避免畫布完全移出視窗)
             // (此處為簡易邊界，可依需求調整)
             const bounds = galleryContainer.getBoundingClientRect();
+            // (FIX v8.1) 變數已移至頂層
             const maxPanX = (CANVAS_WIDTH * scale - bounds.width) / 2;
             const maxPanY = (CANVAS_HEIGHT * scale - bounds.height) / 2;
             
@@ -277,8 +283,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 初始定位 (將畫布中心大致對準視窗中心)
         const initialBounds = galleryContainer.getBoundingClientRect();
+        // (FIX v8.1) 變數已移至頂層
         panX = (initialBounds.width - CANVAS_WIDTH * scale) / 2;
         panY = (initialBounds.height - CANVAS_HEIGHT * scale) / 2;
         updateTransform();
     }
 });
+
