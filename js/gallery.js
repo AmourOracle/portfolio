@@ -94,11 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
      * 渲染桌面版的隨機拼貼佈局
      */
     function renderDesktopCollage(images) {
-        // MOD: (FIX_v4.36) 
-        // 移除對 .style.minHeight 的直接操作
-        // CSS (v4.36) 已將容器設為 overflow-y: auto;
-        // 我們將改為在 fragment 中添加一個 spacer 元素來撐開滾動高度。
-        // galleryContainer.style.minHeight = `${images.length * 20}vh`;
 
         const fragment = document.createDocumentFragment();
 
