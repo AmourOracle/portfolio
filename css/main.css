@@ -120,6 +120,15 @@ header {
       - 這些規則已被移至 'INDEX 頁面專用' 區塊 (第 176 行)
       - 以防止動畫汙染 project.html 等其他頁面
     */
+
+    /*
+      ADD: (v8.2) 
+      - 將 .left-column 放置在網格第 1 欄
+      - 設定為 UI 圖層 (z-index: 10)，並啟用 relative 定位
+    */
+    grid-column: 1;
+    position: relative;
+    z-index: 10;
 }
 
 /* ADD: 左欄頂部 (標題區) */
@@ -682,20 +691,26 @@ header {
 
 
 /* --- Gallery Page 專用樣式 --- */
-/* MOD: (v6.3) 
-  - .gallery-layout 現在使用雙欄
-  - 規則與 .about-layout 合併
+/* MOD: (v8.2) 
+  - .gallery-layout 現在使用 *單欄* (1fr)
+  - .left-column 和 .gallery-content-column 將重疊
 */
 .middle-container.gallery-layout { 
-    grid-template-columns: 28.57% 1fr; 
+    grid-template-columns: 1fr; /* MOD: 改為單欄 */
     grid-template-rows: 1fr;
 }
 
-/* (v6.3) .gallery-content-column 現在是右欄，調整 padding */
+/* MOD: (v8.2) 
+  - .gallery-content-column (畫布)
+  - 將其放置在網格第 1 欄 (與 .left-column 重疊)
+  - 設定為畫布圖層 (z-index: 20)，並禁用 pointer-events
+*/
 .gallery-layout .gallery-content-column {
-    padding-top: 1.5rem; 
-    padding-right: 1rem; 
+    padding: 0; /* MOD: 移除 padding */
     grid-row: 1;
+    grid-column: 1; /* MOD: 放置在第 1 欄 */
+    z-index: 20; /* MOD: 置於上層 */
+    pointer-events: none; /* MOD: 讓滑鼠點擊穿透到 UI 層 */
 }
 
 /* MOD: (v8.0) 
@@ -715,15 +730,18 @@ header {
 }
 
 /* ADD: (v8.0) 畫布 (Pan/Zoom 容器) */
+/* ADD: (v8.2) 重新啟用 pointer-events，使其可以被拖曳 */
 #pan-container {
     /* JS 會設定 width/height (e.g., 5000px) */
     /* JS 會設定 transform (pan/zoom) */
     transform-origin: 0 0; /* 縮放原點 (左上角) */
     /* 讓圖片定位 */
     position: relative;
+    pointer-events: auto; /* 重新啟用畫布的滑鼠事件 */
 }
 
 /* MOD: (v8.0) 桌面版：畫布項目 */
+/* ADD: (v8.2) 重新啟用 pointer-events，使其可以被 hover */
 .gallery-item {
     position: absolute;
     display: block;
@@ -739,6 +757,8 @@ header {
     
     /* MOD: (v8.0) 讓 JS 設定 --rotate-deg 變數 */
     transform: rotate(var(--rotate-deg, 0deg));
+    
+    pointer-events: auto; /* 重新啟用圖片的滑鼠事件 */
 }
 
 /* MOD: (v8.0) 
@@ -776,6 +796,14 @@ header {
     /* MOD: (v8.0) 恢復手機版的 padding */
     padding-top: 1.5rem; 
     padding-right: 1rem; 
+
+    /* MOD: (v8.2) 
+      - 手機版恢復 z-index 和 pointer-events
+      - 覆蓋 (v8.2) 的 .gallery-layout .gallery-content-column 規則
+    */
+    z-index: auto;
+    pointer-events: auto;
+    cursor: default;
 }
 .gallery-content-column.is-mobile-grid::-webkit-scrollbar {
     display: none;
@@ -885,12 +913,26 @@ header {
     
     /* MOD: (v5.0) .project-container -> layout class */
     .middle-container.project-layout,
-    .middle-container.about-layout,
-    .middle-container.gallery-layout { /* (v6.3) 新增 gallery-layout */
+    .middle-container.about-layout { 
         grid-template-columns: 1fr 2fr; 
         /* MOD: (v5.0) 移除 grid-template-rows，繼承 1fr */
         grid-template-rows: 1fr;
     }
+
+    /* MOD: (v8.2) 平板電腦版 gallery layout 恢復 2 欄 */
+    .middle-container.gallery-layout { 
+        grid-template-columns: 1fr 2fr; 
+        grid-template-rows: 1fr;
+    }
+    /* MOD: (v8.2) 恢復平板電腦的 gallery 樣式 */
+    .gallery-layout .gallery-content-column {
+        padding: 0;
+        grid-column: 2; /* 恢復第 2 欄 */
+        z-index: auto; /* 恢復 z-index */
+        pointer-events: auto; /* 恢復 pointer-events */
+    }
+
+
     .right-column { display: none; }
     
     /* MOD: (v5.0) footer padding 調整 */
@@ -1097,7 +1139,12 @@ header {
        - 增加特異性，強制 Gird 變為 1 欄
     */
     .middle-container.project-layout,
-    .middle-container.about-layout,
+    .middle-container.about-layout {
+        grid-template-columns: 1fr; /* 覆蓋桌面版的 2 欄設定 */
+        grid-template-rows: auto 1fr; /* Info (auto), Images (1fr) */
+    }
+    
+    /* MOD: (v8.2) 手機版 gallery layout (單欄) */
     .middle-container.gallery-layout {
         grid-template-columns: 1fr; /* 覆蓋桌面版的 2 欄設定 */
         grid-template-rows: auto 1fr; /* Info (auto), Images (1fr) */
@@ -1111,6 +1158,9 @@ header {
         margin-bottom: 3rem; 
         gap: 2rem; 
         grid-row: 1;
+        
+        /* MOD: (v8.2) 恢復手機版的 z-index */
+        z-index: auto;
     }
     
     .middle-container .project-content-column {
@@ -1131,6 +1181,11 @@ header {
         padding-top: 0;
         mask-image: none;
         grid-row: 2; /* (v6.3) 改為 2 */
+        
+        /* MOD: (v8.2) 恢復手機版的 z-index 和 pointer-events */
+        grid-column: 1;
+        z-index: auto;
+        pointer-events: auto;
     }
 
     /* ADD: (v5.0) 手機版 .main-footer 樣式 */
@@ -1247,3 +1302,4 @@ header {
         justify-content: space-between; /* MOD: 手機版維持左右分散 */
     }
 }
+
