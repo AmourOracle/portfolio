@@ -137,10 +137,11 @@ body:has(.gallery-layout) .middle-container {
     /* MOD: (v5.0) .project-container -> .middle-container */
     grid-row: 1;
 
-    /* ADD: (FEAT_v7.2) 入場動畫 (初始狀態) */
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    /* MOD: (FIX_v7.1) 
+      - 移除通用的 'opacity: 0' 和 'transform'
+      - 這些規則已被移至 'INDEX 頁面專用' 區塊 (第 176 行)
+      - 以防止動畫汙染 project.html 等其他頁面
+    */
 }
 
 /* ADD: 左欄頂部 (標題區) */
@@ -269,7 +270,27 @@ body:has(.portfolio-container) .left-column-top {
     grid-template-rows: 1fr; /* (Task 2 Fix) 確保 portfolio-container 只有一行 */
 }
 
-/* ADD: (FEAT_v7.2) 入場動畫 (觸發狀態) */
+/* ADD: (FEAT_v7.2 / FIX_v7.1) 
+  - 入場動畫 (初始狀態)
+  - 這些規則被限定在 .portfolio-container 內部，
+  - 以避免汙染 project.html, about.html 等頁面。
+*/
+.portfolio-container .left-column,
+.portfolio-container .center-column,
+.portfolio-container .right-column {
+    opacity: 0;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+/* 初始 Y 軸偏移 */
+.portfolio-container .left-column,
+.portfolio-container .right-column {
+    transform: translateY(20px);
+}
+.portfolio-container .center-column {
+    transform: translateY(40px);
+}
+
+/* 入場動畫 (觸發狀態) */
 .portfolio-container.is-loaded .left-column,
 .portfolio-container.is-loaded .center-column,
 .portfolio-container.is-loaded .right-column {
@@ -277,7 +298,7 @@ body:has(.portfolio-container) .left-column-top {
     transform: translateY(0);
 }
 
-/* ADD: (FEAT_v7.2) 階層式 (Staggered) 動畫延遲 */
+/* 階層式 (Staggered) 動畫延遲 */
 .portfolio-container.is-loaded .left-column {
     transition-delay: 0.1s;
 }
@@ -400,10 +421,10 @@ body:has(.portfolio-container) .left-column-top {
     /* ADD: 隱藏滾動條 */
     scrollbar-width: none; /* For Firefox */
 
-    /* ADD: (FEAT_v7.2) 入場動畫 (初始狀態) */
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    /* MOD: (FIX_v7.1) 
+      - 移除通用的 'opacity: 0' 和 'transform'
+      - 這些規則已被移至 'INDEX 頁面專用' 區塊 (第 176 行)
+    */
 }
 
 /* ADD: 隱藏滾動條 for Chrome, Safari, Opera */
@@ -509,10 +530,10 @@ body:has(.portfolio-container) .left-column-top {
     /* MOD: 確保 .right-column 佔滿高度 */
     height: 100%;
 
-    /* ADD: (FEAT_v7.2) 入場動畫 (初始狀態) */
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    /* MOD: (FIX_v7.1) 
+      - 移除通用的 'opacity: 0' 和 'transform'
+      - 這些規則已被移至 'INDEX 頁面專用' 區塊 (第 176 行)
+    */
 }
 
 /* (v6.0) 移除 .right-column .contact-links 樣式 */
@@ -641,7 +662,7 @@ body:has(.portfolio-container) .left-column-top {
 
 /* (FEAT_v4.33) 確保 .contact-links 在 wrapper 中正確對齊 */
 /* MOD: (v5.0) 選擇器更新為 .main-footer */
-/* (v6.3) 此樣式僅 portfolio.html 的 .main-footer (手機版) 會用到 */
+/* (v6.3) 此樣式僅 portfolio.html 會用到 */
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;
