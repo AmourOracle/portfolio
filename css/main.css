@@ -84,7 +84,7 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: transparent; /* MOD: 透明背景 */
+    background-color: transparent; /* MOD: 透明 background */
     z-index: 1000;
     box-shadow: none; /* MOD: 移除陰影 */
 }
@@ -100,7 +100,6 @@ header {
 .portfolio-container, .middle-container {
     display: grid;
     gap: 2rem;
-    /* MOD: (v6.6) 統一所有頁面的高度，僅減去 header (60px) */
     /* MOD: (FIX_v9.4) 內頁 (middle-container) 高度改為 auto */
     height: auto; 
     
@@ -129,7 +128,6 @@ header {
 
 /* ADD: 左欄頂部 (標題區) */
 .left-column-top {
-    /* MOD: (v6.6) 統一所有頁面高度，僅減去 header (60px) */
     /* MOD: (FIX_v9.4) 內頁高度改為 auto */
     height: auto; 
     
@@ -311,6 +309,7 @@ header {
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
 
+    /* MOD: (FIX_v9.7) 恢復桌面版的遮罩 */
     mask-image: linear-gradient(
         to bottom,
         transparent 0%,
@@ -345,9 +344,9 @@ header {
     cursor: pointer; 
     scroll-snap-align: center;
     scroll-snap-stop: always;
-    /* MOD: (FIX_v9.5) 移除桌面版的預設淡出/縮放，統一由 RWD 控制 */
-    opacity: 1;
-    transform: none;
+    /* MOD: (FIX_v9.8) 恢復桌面版 (基礎樣式) 的視覺效果 */
+    opacity: 0.4;
+    transform: scale(0.85);
 }
 .project-item.hide {
     opacity: 0;
@@ -366,10 +365,10 @@ header {
     text-align: right; 
 }
 
+/* MOD: (FIX_v9.8) 恢復桌面版 (基礎樣式) 的視覺效果 */
 .project-item.is-active .project-category {
     color: var(--primary-color);
-    /* MOD: (FIX_v9.5) 移除桌面版的淡出，統一由 RWD 控制 */
-    opacity: 1; 
+    opacity: 0; 
 }
 
 .project-item a {
@@ -383,10 +382,10 @@ header {
     line-height: 1.1;
 }
 
-/* MOD: (FIX_v9.5) 移除桌面版的 .is-active 視覺效果，統一由 RWD 控制 */
+/* MOD: (FIX_v9.8) 恢復桌面版 (基礎樣式) 的視覺效果 */
 .project-item.is-active {
-    /* opacity: 1; */
-    /* transform: scale(1); */
+    opacity: 1;
+    transform: scale(1);
 }
 .project-item.is-active a {
     color: var(--primary-color);
@@ -780,19 +779,8 @@ header {
         width: 300px;
     }
 
-    /* --- (FIX_v9.5) 桌面版/平板 恢復 iOS 選擇器視覺效果 --- */
-    .project-item {
-        opacity: 0.4;
-        transform: scale(0.85);
-    }
-    .project-item.is-active {
-        opacity: 1;
-        transform: scale(1);
-    }
-    .project-item.is-active .project-category {
-        opacity: 0;
-    }
-    /* --- End of Fix --- */
+    /* --- (FIX_v9.7) 平板裝置 (<= 1024px) 保持桌面視覺效果 --- */
+    /* (此處規則繼承基礎樣式，不需額外添加) */
 }
 
 /* --- (Request v3.9) 手機版首頁 (portfolio.html) --- */
@@ -821,7 +809,7 @@ header {
     .portfolio-container .center-column {
         overflow-y: auto; /* 保持 list 滾動 */
         padding: 0; 
-        /* MOD: (FIX_v9.5) 移除手機版的 mask-image (除錯) */
+        /* MOD: (FIX_v9.7) 移除手機版的 mask-image (除錯) */
         mask-image: none;
         scroll-snap-type: y mandatory;
     }
@@ -915,7 +903,8 @@ header {
         scroll-snap-align: center;
     }
 
-    /* --- (FIX_v9.5) 移除手機版的 iOS 選擇器視覺效果 (除錯) --- */
+    /* --- (FIX_v9.7) 移除手機版的 iOS 選擇器視覺效果 (除錯) --- */
+    /* 覆蓋基礎樣式，確保手機版移除特效 */
     .portfolio-container .project-item {
         opacity: 1;
         transform: none;
@@ -1068,10 +1057,12 @@ header {
         left: 0.2rem;
     }
     
-    /* MOD: (FIX_v9.4) 
+    /* MOD: (FIX_v9.8) 
        - 修正手機版滾動衝突
-       - 此規則 (overflow-y: visible) 必須 *只* 套用在內頁
-       - :not(.portfolio-container) 確保此規則不會影響主頁
+       - 這是最關鍵的修復
+       - 舊規則是 .center-column { overflow-y: visible; }
+       - 舊規則會錯誤地覆蓋 .portfolio-container .center-column 的 'auto'
+       - 新規則使用 :not() 確保它 *只* 套用在內頁
     */
     .middle-container:not(.portfolio-container) .center-column {
         overflow-y: visible;
