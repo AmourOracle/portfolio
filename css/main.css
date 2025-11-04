@@ -35,11 +35,9 @@
 
 
 /* --- 基本設定 --- */
-/* ADD: (v6.8) 鎖定 HTML 高度並隱藏滾動條 */
 /* MOD: (FIX_v9.1) 移除全域 HTML 高度/滾動鎖定 */
 html {
-    /* height: 100vh; */
-    /* overflow: hidden; */
+    /* (v9.1) 保持預設，讓內頁可以滾動 */
 }
 
 body {
@@ -47,32 +45,30 @@ body {
     font-family: var(--font-main);
     background-color: var(--background-color);
     color: var(--text-color);
-    /* MOD: (v6.8) 鎖定 Body 高度並隱藏滾動條 */
     /* MOD: (FIX_v9.1) 移除全域 Body 高度/滾動鎖定 */
-    /* height: 100%; */
-    /* overflow: hidden; */ /* 防止 body 本身滾動 (主要用於 portfolio.html) */
     font-size: 16px;
     padding-top: 60px; /* MOD: 縮小 header 高度 */
     
-    /* MOD: (v6.6) 移除 60px 底部 padding，統一由 .middle-container 控制高度 */
     padding-bottom: 0; 
     
-    /* ADD: 提升中文字體渲染的清晰度 */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    box-sizing: border-box; /* ADD: (v6.8) 確保 padding-top 被正確計算 */
+    box-sizing: border-box; 
 }
 
-/* --- (FIX_v9.1) 鎖定 portfolio.html (主頁) 的滾動 --- */
-/* 這組規則確保只有主頁 (portfolio.html) 是全螢幕且無法滾動的 */
-html:has(body .portfolio-container) {
+/* --- (FIX_v9.4) 鎖定 portfolio.html (主頁) 的滾動 --- */
+/* JS (index.js) 會在主頁 body 加上 .portfolio-scroll-lock */
+/* 這個 class 取代了不相容的 :has() 選擇器 */
+html:has(body.portfolio-scroll-lock) {
+     /* (FIX_v9.4) 保留 :has() 給支援的瀏覽器，但不依賴它 */
     height: 100vh;
     overflow: hidden;
 }
-body:has(.portfolio-container) {
-    height: 100%; /* 繼承 100vh */
+body.portfolio-scroll-lock {
+    height: 100vh;
     overflow: hidden; /* 防止 body 本身滾動 */
+    box-sizing: border-box; /* 確保 padding-bottom 被計算 */
 }
 /* --- End of Fix --- */
 
@@ -101,19 +97,19 @@ header {
 }
 
 /* --- 主要容器 (通用) --- */
-/* MOD: (v5.0) .project-container 改為 .middle-container */
 .portfolio-container, .middle-container {
     display: grid;
     gap: 2rem;
     /* MOD: (v6.6) 統一所有頁面的高度，僅減去 header (60px) */
-    height: calc(100vh - 60px); 
+    /* MOD: (FIX_v9.4) 內頁 (middle-container) 高度改為 auto */
+    height: auto; 
     
-    /* MOD: (v6.7) 
-      - 新增 60px 底部 padding 作為「安全區域」
-      - 防止瀏覽器 UI 遮擋底部按鈕
-    */
     padding: 0 4rem 60px 4rem;
     box-sizing: border-box;
+}
+/* (FIX_v9.4) 僅 portfolio-container (主頁) 需要鎖定高度 */
+.portfolio-container {
+    height: calc(100vh - 60px);
 }
 
 
@@ -125,20 +121,7 @@ header {
     min-width: 0; /* 關鍵！防止 h1 內容撐開 fr 欄位 */
     height: 100%; /* 填滿 grid 區域高度 */
     
-    /* (Task 2 Fix) 確保在 .project-container 中位於第一行 */
-    /* MOD: (v5.0) .project-container -> .middle-container */
     grid-row: 1;
-
-    /* MOD: (FIX_v7.1) 
-      - 移除通用的 'opacity: 0' 和 'transform'
-      - 這些規則已被移至 'INDEX 頁面專用' 區塊 (第 176 行)
-      - 以防止動畫汙染 project.html 等其他頁面
-    */
-
-    /*
-      MOD: (v8.3) 
-      - .left-column 預設為 UI 圖層 (z-index: 10)
-    */
     grid-column: 1;
     position: relative;
     z-index: 10;
@@ -147,7 +130,8 @@ header {
 /* ADD: 左欄頂部 (標題區) */
 .left-column-top {
     /* MOD: (v6.6) 統一所有頁面高度，僅減去 header (60px) */
-    height: calc(50vh - 60px); 
+    /* MOD: (FIX_v9.4) 內頁高度改為 auto */
+    height: auto; 
     
     box-sizing: border-box; /* 確保 padding 不會增加高度 */
     padding-top: 2rem; /* MOD: 與 .center-column 對齊 */
@@ -155,6 +139,10 @@ header {
     flex-direction: column;
     justify-content: flex-start; /* 標題置頂 */
     flex-shrink: 0;
+}
+/* (FIX_v9.4) 僅主頁的 left-column-top 需要 50vh 高度 */
+.portfolio-container .left-column-top {
+    height: calc(50vh - 60px);
 }
 
 
@@ -173,21 +161,13 @@ header {
     padding-bottom: 0.5rem; /* 匹配間距 */
     flex-shrink: 0;
     
-    /* MOD: (v6.4) 
-      - 統一樣式，使其與 portfolio.html 的 .contact-links (flex-start) 對齊
-      - Back/Next 按鈕將並排顯示在左側
-    */
     display: flex;
     justify-content: flex-start; /* MOD: 從 space-between 改為 flex-start */
     align-items: flex-end;
     gap: 2rem; /* ADD: 增加按鈕間距 */
 }
 
-/* ADD: (FIX_v6.5) 
-  - 修正 project.html 頁面的底部按鈕對齊
-  - 覆蓋 .left-column-bottom 的 flex-start
-  - 讓 "Next" 按鈕靠右 (與左欄同寬)
-*/
+/* ADD: (FIX_v6.5) */
 .project-layout .left-column-bottom {
     justify-content: space-between; /* 恢復左右分散對齊 */
     gap: 0; /* 移除 gap，由 space-between 控制 */
@@ -200,23 +180,20 @@ header {
     font-size: 0.8rem; 
     color: var(--secondary-color); 
     position: absolute; 
-    top: 0.5rem; /* MOD: 配合 2rem padding (2rem - 1.5rem) */ 
+    top: 0.5rem; 
     left: 0.2rem; 
-    transition: opacity 0.3s ease-in-out; /* ADD: 為 hover 效果增加過渡 */
-    /* ADD: (Request 3.2) 確保標籤切換時不錯位 */
+    transition: opacity 0.3s ease-in-out; 
     width: 100px; 
     display: inline-block; 
     text-align: left;
 }
 .name-block h1 {
-    /* MOD: 縮小字級以適應 30vw 欄寬 */
     font-size: clamp(3rem, 10vw, 7rem);
     font-weight: 700;
     margin: 0;
     color: var(--primary-color);
-    line-height: 1.1; /* MOD: 修正 'g' 'y' 裁切問題 */
+    line-height: 1.1; 
     transition: opacity 0.3s ease-in-out;
-    /* ADD: 強制長單字換行，防止溢出 */
     word-break: break-word;
 }
 .info-divider-block { 
@@ -225,11 +202,10 @@ header {
     margin-top: 1.5rem; 
     display: flex; 
     gap: 1.5rem; 
-    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-out, transform 0.3s ease-out; /* MOD: (Request 3.2) 增加過渡 */
+    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-out, transform 0.3s ease-out; 
     max-height: 500px; /* 預設高度 */
     overflow: hidden;
 }
-/* ADD: (Request 3.2) 隱藏 BIO 區塊的樣式 */
 .info-divider-block.hide-section {
     opacity: 0;
     max-height: 0;
@@ -243,36 +219,27 @@ header {
     font-size: 0.8rem; 
     color: var(--secondary-color); 
     min-width: 100px; 
-    transition: opacity 0.3s ease-in-out; /* ADD: 為 hover 效果增加過渡 */
-    
-    /* ADD: (Request 3.2) 確保標籤切換時不錯位 */
+    transition: opacity 0.3s ease-in-out; 
     width: 100px; 
     display: inline-block; 
     text-align: left;
-    flex-shrink: 0; /* 防止標籤被壓縮 */
+    flex-shrink: 0; 
 }
 .info-divider-block p { font-size: 0.9rem; line-height: 1.6; color: var(--text-color); margin: 0; transition: opacity 0.3s ease-in-out; }
 
 /* --- INDEX 頁面專用 --- */
 .portfolio-container {
-    /* MOD: (Request v3.12) 統一左欄寬度，改用 28.57% (1.2 / 4.2) */
-    /* MOD: (FIX_v4.34) 將右欄寬度從 5vw 增加到 10vw，以防止 .contact-links 溢出並與 .center-column 重疊 */
     grid-template-columns: 28.57% 1fr 10vw;
-    grid-template-rows: 1fr; /* (Task 2 Fix) 確保 portfolio-container 只有一行 */
+    grid-template-rows: 1fr; 
 }
 
-/* ADD: (FEAT_v7.2 / FIX_v7.1) 
-  - 入場動畫 (初始狀態)
-  - 這些規則被限定在 .portfolio-container 內部，
-  - 以避免汙染 project.html, about.html 等頁面。
-*/
+/* (FEAT_v7.2) 入場動畫 */
 .portfolio-container .left-column,
 .portfolio-container .center-column,
 .portfolio-container .right-column {
     opacity: 0;
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
-/* 初始 Y 軸偏移 */
 .portfolio-container .left-column,
 .portfolio-container .right-column {
     transform: translateY(20px);
@@ -280,16 +247,12 @@ header {
 .portfolio-container .center-column {
     transform: translateY(40px);
 }
-
-/* 入場動畫 (觸發狀態) */
 .portfolio-container.is-loaded .left-column,
 .portfolio-container.is-loaded .center-column,
 .portfolio-container.is-loaded .right-column {
     opacity: 1;
     transform: translateY(0);
 }
-
-/* 階層式 (Staggered) 動畫延遲 */
 .portfolio-container.is-loaded .left-column {
     transition-delay: 0.1s;
 }
@@ -301,27 +264,15 @@ header {
 }
 
 
-
-
-/* MOD: FEAT_projectsFilter_v2.0 (Request 2)
-  - 移除 margin-top: auto; 解決與 .category-nav 的置中衝突
-  - 改為 1rem，讓它與 .category-nav 保有間距
-*/
 .contact-links {
     margin-top: 1rem; 
-    padding-bottom: 0.5rem; /* 增加底部間距 */
+    padding-bottom: 0.5rem; 
 }
-
-/* ADD: (v6.0) portfolio 頁面中，位於左欄底部的連結樣式 */
-/* ADD: (v6.0) 覆蓋 .contact-links ul 的預設 'flex-end' */
 .left-column .contact-links ul {
-    justify-content: flex-start; /* 靠左對齊 */
-    gap: clamp(0.5rem, 1.2vw, 1.2rem); /* 調整間距 */
+    justify-content: flex-start; 
+    gap: clamp(0.5rem, 1.2vw, 1.2rem); 
 }
 
-
-/* MOD: (v5.0) main-footer 中的 contact-links 應移除邊距 */
-/* (v6.3) 此樣式僅 portfolio.html 的 .main-footer (手機版) 會用到 */
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;
@@ -331,56 +282,35 @@ header {
     padding: 0;
     margin: 0;
     display: flex;
-    /* MOD: 響應式 gap */
     gap: clamp(0.5rem, 1.5vw, 1.5rem);
-    /* MOD: 靠右對齊 (預設) */
     justify-content: flex-end;
 }
 .contact-links li {
-    margin-bottom: 0; /* MOD: 移除垂直 margin */
+    margin-bottom: 0; 
 }
 .contact-links a {
     color: var(--secondary-color);
     text-decoration: none;
     font-family: var(--font-mono);
-    /* MOD: 響應式字體，確保能塞進 10vw */
     font-size: clamp(0.6rem, 1.3vw, 0.9rem);
     transition: color 0.3s ease;
-    /* MOD: 確保連結不換行 */
     white-space: nowrap;
 }
 .contact-links a:hover { color: var(--primary-color); }
 
-/* ADD: (v5.1) 
-  - 預設隱藏手機版連結 (桌面版 .main-footer 應顯示 #desktopContactLinks)
-  - 預設顯示桌面版連結
-*/
-/* (v6.3) 此樣式僅 portfolio.html 會用到 */
-/* MOD: (v6.6) 
-  - #mobileContactLinks 預設隱藏
-  - #desktopContactLinks 規則移除 (因為 .contact-links 已在左欄)
-*/
 .main-footer #mobileContactLinks {
     display: none;
 }
 
 
 .center-column {
-    /* MOD: (Req 1) 移除 padding-top, 僅保留左右 padding */
     padding: 0 1rem 0 2rem;
     overflow-y: auto;
-    box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
+    box-sizing: border-box; 
     
-    /* ADD: (v7.2) 啟用 CSS 滾動吸附 (iOS 選擇器效果) - 桌面版 */
     scroll-snap-type: y mandatory;
-    
-    /* ADD: (MOD_v7.0) 確保 JS 觸發的滾動 (如篩選器) 也是平滑的 */
     scroll-behavior: smooth;
 
-    /* * MOD: (v4.32) 根據使用者請求，加深遮罩範圍
-     * 原始: 20% (v4.30)
-     * 修改: 30%，讓淡出區域更大，過渡更平滑
-    */
     mask-image: linear-gradient(
         to bottom,
         transparent 0%,
@@ -389,16 +319,9 @@ header {
         transparent 100%
     );
     
-    /* ADD: 隱藏滾動條 */
-    scrollbar-width: none; /* For Firefox */
-
-    /* MOD: (FIX_v7.1) 
-      - 移除通用的 'opacity: 0' 和 'transform'
-      - 這些規則已被移至 'INDEX 頁面專用' 區塊 (第 176 行)
-    */
+    scrollbar-width: none; 
 }
 
-/* ADD: 隱藏滾動條 for Chrome, Safari, Opera */
 .center-column::-webkit-scrollbar {
     display: none;
 }
@@ -406,39 +329,22 @@ header {
 .project-list {
     list-style: none;
     margin: 0;
-    
-    /* ADD: (FIX_v6.1) 
-     * 新增垂直 padding，為滾動置中 (scroll-into-view) 提供緩衝空間。
-     * 40vh 是一個估算值，約為 (容器高度 / 2) - (項目高度 / 2)。
-     * 這允許第一個和最後一個項目也能被滾動到螢幕中央。
-    */
     padding: 40vh 0;
-    box-sizing: border-box; /* 確保 padding 正確計算 */
+    box-sizing: border-box; 
 }
 
-/* MOD: FIX_pickerWheel_v3.4
-  - (Req 1 & 2) 預設狀態為縮小且淡出
-*/
 .project-item {
     display: flex;
     align-items: center;
     gap: 0.75rem; 
-    /* MOD: (Req 4) 增加 scale 和 opacity 的 過渡效果 */
     transition: opacity 0.4s ease-out, max-height 0.4s ease-out, transform 0.4s ease-out, padding 0.4s ease-out;
-    max-height: 15rem; /* 設定一個足夠大的預設高度 */
+    max-height: 15rem; 
     overflow: hidden;
-    padding: 0.5rem 0; /* 移到 project-item 層級 */
-    /* MOD: (Req 1) 變更 transform-origin 為 center center 修正對稱 */
+    padding: 0.5rem 0; 
     transform-origin: center center;
-    cursor: pointer; /* ADD: 增加點擊指標 */
-
-    /* ADD: (v7.2) 啟用 CSS 滾動吸附 (iOS 選擇器效果) - 桌面版 */
+    cursor: pointer; 
     scroll-snap-align: center;
-    
-    /* ADD: (MOD_v7.0) 實現 "iOS 鬧鐘選擇器" 效果，強制在每個項目停止 */
     scroll-snap-stop: always;
-
-    /* MOD: (Req 4) 預設樣式 (非啟用) */
     opacity: 0.4;
     transform: scale(0.85);
 }
@@ -447,41 +353,34 @@ header {
     max-height: 0;
     padding-top: 0;
     padding-bottom: 0;
-    margin-top: -1px; /* 輔助折疊 */
+    margin-top: -1px; 
 }
 
 .project-category {
     font-family: var(--font-mono);
     font-size: 0.8rem;
-    /* MOD: (Request 1) 顏色跟隨 .project-item a 的 #999 */
     color: #999;
     min-width: 100px;
-    transition: color 0.4s ease, opacity 0.4s ease; /* MOD: 新增 opacity 過渡 */
-    text-align: right; /* MOD: (Request 1) 文字置右 */
+    transition: color 0.4s ease, opacity 0.4s ease; 
+    text-align: right; 
 }
 
-/* MOD: REFACTOR_scrollInteraction_v3.0
-  - (Request 2) 移除 :hover，改用 .is-active
-*/
 .project-item.is-active .project-category {
     color: var(--primary-color);
-    opacity: 0; /* MOD: (Request 2) hover 時隱藏 */
+    opacity: 0; 
 }
 
 .project-item a {
     display: block;
     font-size: clamp(2rem, 6vw, 4.5rem);
     font-weight: 700;
-    color: #999; /* MOD: (Request 2) 預設顏色調亮 */
+    color: #999; 
     text-decoration: none;
-    padding: 0; /* padding 移至 .project-item */
-    transition: color 0.4s ease; /* transform 已移至 .project-item */
+    padding: 0; 
+    transition: color 0.4s ease; 
     line-height: 1.1;
 }
 
-/* MOD: FIX_pickerWheel_v3.4
-  - (Req 2) 啟用狀態 (放大、不透明，移除 translateX)
-*/
 .project-item.is-active {
     opacity: 1;
     transform: scale(1);
@@ -497,25 +396,15 @@ header {
     text-align: right;
     display: flex;
     flex-direction: column;
-    /* MOD: 確保 .right-column 佔滿高度 */
     height: 100%;
-
-    /* MOD: (FIX_v7.1) 
-      - 移除通用的 'opacity: 0' 和 'transform'
-      - 這些規則已被移至 'INDEX 頁面專用' 區塊 (第 176 行)
-    */
 }
 
 
 .category-nav {
-    /* MOD: FEAT_projectsFilter_v2.0 (Request 2)
-      - 確保垂直置中
-    */
     margin-top: auto;
     margin-bottom: auto;
 }
 .category-nav h3 {
-    /* MOD: 隱藏 Expertise 標題 */
     display: none;
 }
 .category-nav ul { list-style: none; padding: 0; margin: 0; }
@@ -523,16 +412,12 @@ header {
 .category-nav a {
     color: var(--secondary-color);
     text-decoration: none;
-    /* MOD: 使用 clamp 實現響應式字體 */
     font-size: clamp(0.7rem, 1.2vw, 1rem);
     transition: color 0.3s ease;
-    cursor: pointer; /* ADD: 增加指標 */
+    cursor: pointer; 
 }
 .category-nav a:hover { color: var(--primary-color); }
 
-/* ADD: FEAT_projectsFilter_v2.0 (Request 3)
-  - 篩選器啟用狀態的樣式
-*/
 .category-nav a.active {
     color: var(--primary-color);
     font-weight: 700;
@@ -540,17 +425,13 @@ header {
 
 
 /* --- PROJECT 頁面專用 --- */
-/* MOD: (v5.0) .project-container -> .middle-container.project-layout */
 .middle-container.project-layout,
 .middle-container.about-layout { 
-    /* MOD: (Request v3.12) 統一左欄寬度，改用 28.57% (1.2 / 4.2) */
     grid-template-columns: 28.57% 1fr; 
-    /* MOD: (v5.0) 移除 grid-template-rows，繼承 .middle-container 的 1fr */
     grid-template-rows: 1fr;
 }
 
 
-/* MOD: (Request 1) 將 .back-button-block 改為 <a> 標籤 */
 .back-button-block { 
     display: inline-flex; 
     align-items: baseline; 
@@ -563,23 +444,20 @@ header {
 }
 .back-button-block:hover { color: var(--primary-color); }
 
-/* --- MOD: (Request 10) 補上 Back 按鈕的 hover 動畫 --- */
 .back-button-block .arrow { 
     font-size: 1.5rem; 
-    transition: transform 0.3s ease; /* ADD: 增加 transform 過渡 */
+    transition: transform 0.3s ease; 
 }
 .back-button-block:hover .arrow {
-    transform: translateX(-5px); /* ADD: hover 時向左移動 */
+    transform: translateX(-5px); 
 }
-/* --- End of Fix --- */
 
 
-/* MOD: (Request 2) "Next Project" 按鈕重構 */
 .next-project-block {
-    display: flex; /* 改為 flex-row */
+    display: flex; 
     flex-direction: row;
-    align-items: flex-end; /* MOD: (Request 9) 修正對齊 */
-    gap: 0.5rem; /* 文字區塊與箭頭的間距 */
+    align-items: flex-end; 
+    gap: 0.5rem; 
     text-decoration: none;
     color: var(--secondary-color);
     transition: color 0.3s ease;
@@ -588,43 +466,36 @@ header {
     color: var(--primary-color);
 }
 
-/* ADD: (Request 2) 新增文字區塊 */
 .next-project-text-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* 文字靠右對齊 */
+    align-items: flex-end; 
     text-align: right;
 }
 
 .next-project-block .label {
     font-family: var(--font-mono); 
-    font-size: 0.7rem; /* MOD: (Request 1) 縮小字級 */
+    font-size: 0.7rem; 
     color: var(--secondary-color); 
     text-align: right;
 }
 
-/* ADD: (Request 2) 直接設定標題樣式 */
 #nextProjectTitle {
     font-family: var(--font-mono); 
-    font-size: 0.9rem; /* 與 Back 按鈕一致 */
-    color: currentColor; /* 繼承 <a> 的顏色 */
-    margin-top: 0.25rem; /* 增加一點間距 */
+    font-size: 0.9rem; 
+    color: currentColor; 
+    margin-top: 0.25rem; 
 }
 
-/* MOD: (Request 2) 箭頭樣式調整 */
 .next-project-block .arrow {
-    font-size: 1.2rem; /* 箭頭大小 */
-    line-height: 1; /* 確保對齊 */
+    font-size: 1.2rem; 
+    line-height: 1; 
     transition: transform 0.3s ease;
-     /* MOD: (Request 9) 修正對齊，移除 padding-bottom */
 }
 .next-project-block:hover .arrow {
-    transform: translateX(5px); /* Hover 時箭頭右移 */
+    transform: translateX(5px); 
 }
 
-/* (FEAT_v4.33) 確保 .contact-links 在 wrapper 中正確對齊 */
-/* MOD: (v5.0) 選擇器更新為 .main-footer */
-/* (v6.3) 此樣式僅 portfolio.html 會用到 */
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;
@@ -635,15 +506,9 @@ header {
     padding-top: 1.5rem; 
     overflow-y: auto; 
     padding-right: 1rem; 
-    
-    /* (Task 2 Fix) 確保在 .project-container 中位於第一行 */
-    /* MOD: (v5.0) .project-container -> .middle-container */
     grid-row: 1;
-    
-    /* ADD: (Request 2) 隱藏滾動條 */
-    scrollbar-width: none; /* For Firefox */
+    scrollbar-width: none; 
 }
-/* ADD: (Request 2) 隱藏滾動條 for Chrome, Safari, Opera */
 .project-content-column::-webkit-scrollbar {
     display: none;
 }
@@ -656,19 +521,19 @@ header {
     margin-bottom: 4rem;
 }
 .about-intro-text p {
-    font-size: clamp(1.8rem, 4vw, 3rem); /* 截圖中的大字體 */
-    font-family: var(--font-mono); /* 使用 mono 字體以匹配圖風格 */
+    font-size: clamp(1.8rem, 4vw, 3rem); 
+    font-family: var(--font-mono); 
     font-weight: 700;
     line-height: 1.3;
     color: var(--primary-color);
-    text-transform: uppercase; /* 截圖中為大寫 */
+    text-transform: uppercase; 
     margin: 0;
 }
 
 .about-details-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* 兩欄網格 */
-    gap: 3rem 2rem; /* 垂直 3rem, 水平 2rem 間距 */
+    grid-template-columns: 1fr 1fr; 
+    gap: 3rem 2rem; 
 }
 
 .about-details-grid .grid-item {
@@ -682,7 +547,7 @@ header {
     font-size: 0.8rem;
     color: var(--secondary-color);
     margin-bottom: 1rem;
-    text-transform: uppercase; /* 截圖中為大寫 */
+    text-transform: uppercase; 
 }
 
 .about-details-grid .grid-item p {
@@ -690,7 +555,7 @@ header {
     line-height: 1.6;
     color: var(--text-color);
     margin: 0;
-    margin-bottom: 1rem; /* 每個 P 段落之間的間距 */
+    margin-bottom: 1rem; 
 }
 .about-details-grid .grid-item p:last-child {
     margin-bottom: 0;
@@ -704,96 +569,57 @@ header {
 
 
 /* --- Gallery Page 專用樣式 --- */
-/* MOD: (v8.2) 
-  - .gallery-layout 現在使用 *單欄* (1fr)
-  - .left-column 和 .gallery-content-column 將重疊
-*/
 .middle-container.gallery-layout { 
-    grid-template-columns: 1fr; /* MOD: 改為單欄 */
+    grid-template-columns: 1fr; 
     grid-template-rows: 1fr;
 }
 
-/* MOD: (v8.3) 
-  - .gallery-content-column (畫布)
-  - z-index: 20 (中間圖層)
-  - pointer-events: none (讓點擊穿透)
-*/
 .gallery-layout .gallery-content-column {
-    padding: 0; /* MOD: 移除 padding */
+    padding: 0; 
     grid-row: 1;
-    grid-column: 1; /* MOD: 放置在第 1 欄 */
-    z-index: 20; /* MOD: 中間圖層 */
-    pointer-events: none; /* MOD: 讓滑鼠點擊穿透到 UI 層 */
+    grid-column: 1; 
+    z-index: 20; 
+    pointer-events: none; 
 }
 
-/*
-  ADD: (v8.3)
-  - .gallery-layout .left-column-bottom (Back 按鈕)
-  - z-index: 30 (最上層)
-  - 確保 Back 按鈕永遠在畫布之上
-*/
 .gallery-layout .left-column-bottom {
-    position: relative; /* 建立 z-index 堆疊上下文 */
-    z-index: 30; /* 提升到最上層 */
+    position: relative; 
+    z-index: 30; 
 }
 
 
-/* MOD: (v8.0) 
-  - 桌面版：畫布容器 (Viewport)
-  - 移除 padding, overflow-y: auto
-  - 新增 overflow: hidden, cursor: grab
-*/
 .gallery-content-column {
     position: relative;
-    overflow: hidden; /* MOD: 關鍵！移除滾動條 */
+    overflow: hidden; 
     height: 100%;
-    cursor: grab; /* MOD: 新增拖曳游標 */
-    padding: 0; /* MOD: 移除 padding */
+    cursor: grab; 
+    padding: 0; 
 }
 .gallery-content-column:active {
-    cursor: grabbing; /* MOD: 新增拖曳中游標 */
+    cursor: grabbing; 
 }
 
-/* ADD: (v8.0) 畫布 (Pan/Zoom 容器) */
-/* ADD: (v8.2) 重新啟用 pointer-events，使其可以被拖曳 */
 #pan-container {
-    /* JS 會設定 width/height (e.g., 5000px) */
-    /* JS 會設定 transform (pan/zoom) */
-    transform-origin: 0 0; /* 縮放原點 (左上角) */
-    /* 讓圖片定位 */
+    transform-origin: 0 0; 
     position: relative;
-    pointer-events: auto; /* 重新啟用畫布的滑鼠事件 */
+    pointer-events: auto; 
 }
 
-/* MOD: (v8.0) 桌面版：畫布項目 */
-/* ADD: (v8.2) 重新啟用 pointer-events，使其可以被 hover */
 .gallery-item {
     position: absolute;
     display: block;
     background-color: #222;
     border: 1px solid var(--divider-color);
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    
-    /* MOD: (v8.0) 
-      - JS 會設定 transform: rotate(var(--rotate-deg))
-      - transition 現在也包含 box-shadow
-    */
     transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-    
-    /* MOD: (v8.0) 讓 JS 設定 --rotate-deg 變數 */
     transform: rotate(var(--rotate-deg, 0deg));
-    
-    pointer-events: auto; /* 重新啟用圖片的滑鼠事件 */
+    pointer-events: auto; 
 }
 
-/* MOD: (v8.0) 
-  - 強化 Hover 效果 (建議 C)
-  - 結合 JS 設定的 --rotate-deg 和 hover 的 scale
-*/
 .gallery-item:hover {
-    transform: rotate(var(--rotate-deg, 0deg)) scale(1.1); /* 放大 10% */
+    transform: rotate(var(--rotate-deg, 0deg)) scale(1.1); 
     box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    z-index: 999 !important; /* 確保 hover 時在最上層 */
+    z-index: 999 !important; 
 }
 
 .gallery-item img {
@@ -806,26 +632,19 @@ header {
 /* 手機版：網格容器 (當 .is-mobile-grid class 被 JS 加入時) */
 .gallery-content-column.is-mobile-grid {
     position: static;
-    overflow-y: auto; /* 恢復手機版滾動 */
+    overflow-y: auto; 
     min-height: auto; 
     height: auto; 
     
-    /* 啟用簡單的 2 欄網格 */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     
-    /* (與 project.html 右欄一致) */
     scrollbar-width: none; 
     
-    /* MOD: (v8.0) 恢復手機版的 padding */
     padding-top: 1.5rem; 
     padding-right: 1rem; 
 
-    /* MOD: (v8.2) 
-      - 手機版恢復 z-index 和 pointer-events
-      - 覆蓋 (v8.2) 的 .gallery-layout .gallery-content-column 規則
-    */
     z-index: auto;
     pointer-events: auto;
     cursor: default;
@@ -839,22 +658,20 @@ header {
     width: 100%;
     height: auto;
     object-fit: cover;
-    aspect-ratio: 1 / 1.25; /* 統一下圖片比例 */
+    aspect-ratio: 1 / 1.25; 
 }
 /* --- End of Gallery Page Styles --- */
 
 
 /* --- ADD: (v5.0) 全站 Footer --- */
-/* (v6.3) 此 footer 僅 portfolio.html 會使用 */
-/* MOD: (v6.6) 預設隱藏 .main-footer (僅在手機版啟用) */
 .main-footer {
     display: none; 
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 60px; /* 匹配 header */
-    padding: 0 4rem; /* 匹配 container padding */
+    height: 60px; 
+    padding: 0 4rem; 
     box-sizing: border-box;
     justify-content: space-between;
     align-items: center;
@@ -865,7 +682,7 @@ header {
 .footer-left, .footer-right {
     display: flex;
     align-items: center;
-    gap: 2rem; /* 匹配舊的 .project-nav-right-wrapper gap */
+    gap: 2rem; 
 }
 
 .footer-right {
@@ -875,7 +692,6 @@ header {
 
 
 /* --- ADD: (Request v3.13) 預設隱藏手機版 Footer --- */
-/* (v6.3) 此 footer 僅 portfolio.html 會使用 */
 .mobile-footer {
     display: none; /* 預設在桌面版隱藏 */
 }
@@ -885,24 +701,20 @@ header {
 /* --- (v6.0) 新增 Random Preview Popup --- */
 .random-preview-popup {
     position: fixed;
-    /* MOD: (v6.2) 基礎寬度放大一倍 (220px -> 440px) */
     width: 440px; 
     aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
-    z-index: 2000; /* 應高於 header/footer (1000) */
+    z-index: 2000; 
     pointer-events: none;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     overflow: hidden;
     
-    /* 預設隱藏 */
     opacity: 0;
     transform-origin: center center;
     
-    /* 過渡效果 */
     transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     
-    /* 初始位置 (將被 JS 覆蓋) */
     top: 0; 
     left: 0;
     transform: translate(50vw, 50vh) scale(0.5);
@@ -925,39 +737,31 @@ header {
 
 /* --- 響應式設計 --- */
 @media (max-width: 1024px) {
-    /* MOD: (v5.0) .container padding 調整 */
     .portfolio-container, .middle-container {
-        /* MOD: (v6.7) 新增 60px 底部 padding */
         padding: 0 2rem 60px 2rem;
     }
     
     .portfolio-container {
-        /* MOD: 調整為兩欄 fr 比例 */
         grid-template-columns: 1.5fr 1fr;
     }
     
-    /* MOD: (v5.0) .project-container -> layout class */
     .middle-container.project-layout,
     .middle-container.about-layout { 
         grid-template-columns: 1fr 2fr; 
-        /* MOD: (v5.0) 移除 grid-template-rows，繼承 1fr */
         grid-template-rows: 1fr;
     }
 
-    /* MOD: (v8.2) 平板電腦版 gallery layout 恢復 2 欄 */
     .middle-container.gallery-layout { 
         grid-template-columns: 1fr 2fr; 
         grid-template-rows: 1fr;
     }
-    /* MOD: (v8.2) 恢復平板電腦的 gallery 樣式 */
     .gallery-layout .gallery-content-column {
         padding: 0;
-        grid-column: 2; /* 恢復第 2 欄 */
-        z-index: auto; /* 恢復 z-index */
-        pointer-events: auto; /* 恢復 pointer-events */
+        grid-column: 2; 
+        z-index: auto; 
+        pointer-events: auto; 
     }
 
-    /* MOD: (v8.3) 恢復平板電腦的 .left-column-bottom z-index */
     .gallery-layout .left-column-bottom {
         z-index: auto;
     }
@@ -965,52 +769,41 @@ header {
 
     .right-column { display: none; }
     
-    /* MOD: (v5.0) footer padding 調整 */
-    /* (v6.6) .main-footer 在平板電腦版預設隱藏 */
     .main-footer {
         padding: 0 2rem;
     }
 
-    /* MOD: (v6.2) 平板電腦版縮小預覽圖 (440px -> 300px) */
     .random-preview-popup {
         width: 300px;
     }
 }
 
 /* --- (Request v3.9) 手機版首頁 (portfolio.html) --- */
-/* 使用 :has() 選擇器來鎖定首頁的 body */
 @media (max-width: 768px) {
-    body:has(.portfolio-container) {
-        overflow: hidden; /* 鎖定 body 滾動 */
-        /* ADD: (v5.1) 移除 body padding-bottom，因為 footer 是 static */
-        /* MOD: (v6.8) 恢復 padding-bottom，為 fixed footers 騰出空間 (61px + 60px) */
+    /* (FIX_v9.4) 
+       - .portfolio-scroll-lock 取代 :has()
+       - 確保主頁的 body 被鎖定
+    */
+    body.portfolio-scroll-lock {
+        overflow: hidden; 
         padding-bottom: 121px;
-        /* MOD: (FIX_v9.1) 確保手機版主頁 body 高度正確 */
         height: 100%;
     }
 
     .portfolio-container { 
-        /* MOD: (v3.9) 改為 2 欄 grid，List (1fr) + Footer (auto) */
-        /* MOD: (v6.9) 改回單欄，讓 .center-column 繼承 */
         grid-template-columns: 1fr;
-        /* MOD: (v5.1) .mobile-footer 已移至 <main> 外，<main> 應只有 1fr */
         grid-template-rows: 1fr; 
-        /* MOD: (v6.7) 新增 60px 底部 padding */
-        /* MOD: (v6.8) 移除底部 padding，因為 body 已有 padding */
         padding: 2rem 0 0 0; 
-        /* MOD: (v6.6) 統一高度，僅減去 header */
-        /* MOD: (v6.8) 統一高度，減去 header 和 fixed footers (60 + 61 + 60) */
+        /* (FIX_v9.4) 
+           - .portfolio-scroll-lock 取代 :has()
+           - 確保主頁的 .portfolio-container 高度被設定
+        */
         height: calc(100vh - 181px); 
     }
     
     .portfolio-container .center-column {
         overflow-y: auto; /* 保持 list 滾動 */
-        padding: 0; /* MOD: 移除左右 padding */
-        
-        /* * MOD: (v4.32) 根據使用者請求，加深遮罩範圍
-         * 原始: 20% (v4.30)
-         * 修改: 30%，讓淡出區域更大，過渡更平滑
-        */
+        padding: 0; 
         mask-image: linear-gradient(
             to bottom,
             transparent 0%,
@@ -1018,28 +811,17 @@ header {
             black 70%,
             transparent 100%
         );
-        
-        /* ADD: (v7.0) 啟用 CSS 滾動吸附 (iOS 選擇器效果) */
         scroll-snap-type: y mandatory;
     }
 
-    /* (v3.9) 隱藏桌面版的左右欄 */
-    /* MOD: (v6.9) 
-       - 新增 !important 
-       - 這是為了修復 IMG_2465.PNG 中 .left-column 內容殘留的 BUG
-    */
     .portfolio-container .left-column,
     .portfolio-container .right-column {
         display: none !important;
     }
     
-    /* (v3.9) 顯示手機版 Footer */
-    /* MOD: (v3.16) 改為 flex 佈局 */
-    /* (v6.3) 此 footer 僅 portfolio.html 會使用 */
-    /* MOD: (v7.0) 修復 Filter 佈局 */
     .mobile-footer {
         display: flex;
-        align-items: center; /* 水平置中 */
+        align-items: center; 
         border-top: 1px solid var(--divider-color);
         position: fixed;
         bottom: 60px;
@@ -1048,39 +830,33 @@ header {
         z-index: 1000;
         background-color: var(--background-color);
         box-sizing: border-box;
-        height: 61px; /* 60px + 1px border */
-        padding: 0; /* MOD: (v7.0) 移除 padding，讓 nav 填滿 */
+        height: 61px; 
+        padding: 0; 
     }
     
-    /* 手機版篩選器連結樣式 */
-    /* (Task 1 Fix) 修正 Filter Bar 換行問題 */
-    /* MOD: (v7.2) 修復 Filter 樣式 (Problem 2) */
     .mobile-filter-nav {
-        width: 100%; /* 佔滿寬度 */
-        overflow-x: auto; /* 允許水平滾動 */
-        -webkit-overflow-scrolling: touch; /* iOS 滾動優化 */
-        scrollbar-width: none; /* 隱藏滾動條 (Firefox) */
+        width: 100%; 
+        overflow-x: auto; 
+        -webkit-overflow-scrolling: touch; 
+        scrollbar-width: none; 
         
-        /* MOD: (v7.2) 新增 flex 屬性，使其橫向排列 */
         display: flex;
         justify-content: center; 
-        gap: 1.5rem; /* 增加項目間距 */
+        gap: 1.5rem; 
         
-        padding: 0 2rem; /* 左右保留間距 */
+        padding: 0 2rem; 
         box-sizing: border-box;
         
-        /* MOD: (v7.2) 移除項目符號 */
         list-style: none;
         margin: 0;
     }
     .mobile-filter-nav::-webkit-scrollbar {
-        display: none; /* 隱藏滾動條 (Chrome, Safari) */
+        display: none; 
     }
     .mobile-filter-nav li {
-        flex-shrink: 0; /* 防止項目被壓縮 */
-        margin-bottom: 0; /* MOD: (v7.2) 移除 display:flex 造成的 margin */
+        flex-shrink: 0; 
+        margin-bottom: 0; 
     }
-    /* (End Task 1 Fix) */
 
     .mobile-filter-nav a {
         color: var(--secondary-color);
@@ -1097,18 +873,16 @@ header {
         font-weight: 700;
     }
 
-    /* (v3.16) 手機版聯絡連結樣式 */
     .mobile-contact-links {
-        padding: 0 2rem; /* (Task 1 Fix) 保持聯絡連結的 padding 和換行 */
+        padding: 0 2rem; 
         box-sizing: border-box;
-        /* ADD: (v5.1) 確保 ul 樣式被套用 */
         list-style: none;
         padding: 0;
         margin: 0;
         display: flex;
-        justify-content: center; /* 置中 */
-        flex-wrap: wrap; /* 換行 */
-        gap: 1.5rem; /* 增加間距 */
+        justify-content: center; 
+        flex-wrap: wrap; 
+        gap: 1.5rem; 
     }
     .mobile-contact-links a {
         color: var(--secondary-color);
@@ -1121,22 +895,15 @@ header {
         color: var(--primary-color);
     }
 
-    /* MOD: (v6.1) 手機版 project-list 應移除緩衝 padding */
-    /* MOD: (v6.9) 
-       - 恢復 40vh padding
-       - 這是修復「滾動置中」失效 (Request 2) 的關鍵
-    */
     .portfolio-container .project-list {
         padding: 40vh 0;
     }
     
-    /* ADD: (v7.0) 啟用 CSS 滾動吸附 (iOS 選擇器效果) */
     .portfolio-container .project-item {
         scroll-snap-align: center;
     }
 
 
-    /* MOD: (v6.2) 手機版縮小預覽圖 (440px -> 200px) */
     .random-preview-popup {
         width: 200px;
     }
@@ -1144,46 +911,31 @@ header {
 
 /* 手機版內頁 (project.html, about.html, gallery.html) */
 @media (max-width: 768px) {
-    /* MOD: (v5.0) .project-container -> .middle-container */
-    /* MOD: (v6.3) 新增 .gallery-layout */
-    /* MOD: (FIX_v9.1) 修正選擇器：
-       - 確保此規則 *不會* 套用到 .portfolio-container
-       - :not() 選擇器確保只有內頁 (project, about, gallery) 會恢復滾動
+    /* (FIX_v9.4) 
+       - .portfolio-scroll-lock 取代 :has()
+       - 確保 *非* 主頁的 body 可以滾動
     */
-    body:has(.middle-container):not(:has(.portfolio-container)) {
+    body:not(.portfolio-scroll-lock) {
         overflow: auto; /* 恢復 body 滾動 */
-        /* ADD: (v5.1) 移除 body padding-bottom，因為 footer 是 static */
-        /* (v6.3) 此規則現在適用於 project, about, gallery */
         padding-bottom: 0;
-        /* MOD: (v6.8) 確保內頁的 body 高度是自動的 */
         height: auto;
     }
 
-    /* MOD: (v5.0) .project-container -> .middle-container */
     .middle-container { 
-        grid-template-columns: 1fr; /* MOD: (v3.9) 單欄佈局 */
-        /* MOD: (v6.7) 新增 60px 底部 padding */
+        grid-template-columns: 1fr; 
         padding: 2rem 2rem 60px 2rem; 
         height: auto; 
-        /* MOD: (v5.0) 移除 grid-template-rows，改用 layout class */
     }
     
-    /* MOD: (v5.0) 新增 layout class 響應式 */
-    /* MOD: (v6.3) 新增 .gallery-layout */
-    /* MOD: (v7.0) 
-       - 修復問題 4 (project.html 佈局)
-       - 增加特異性，強制 Gird 變為 1 欄
-    */
     .middle-container.project-layout,
     .middle-container.about-layout {
-        grid-template-columns: 1fr; /* 覆蓋桌面版的 2 欄設定 */
-        grid-template-rows: auto 1fr; /* Info (auto), Images (1fr) */
+        grid-template-columns: 1fr; 
+        grid-template-rows: auto 1fr; 
     }
     
-    /* MOD: (v8.2) 手機版 gallery layout (單欄) */
     .middle-container.gallery-layout {
-        grid-template-columns: 1fr; /* 覆蓋桌面版的 2 欄設定 */
-        grid-template-rows: auto 1fr; /* Info (auto), Images (1fr) */
+        grid-template-columns: 1fr; 
+        grid-template-rows: auto 1fr; 
     }
 
 
@@ -1194,8 +946,6 @@ header {
         margin-bottom: 3rem; 
         gap: 2rem; 
         grid-row: 1;
-        
-        /* MOD: (v8.2) 恢復手機版的 z-index */
         z-index: auto;
     }
     
@@ -1207,38 +957,28 @@ header {
         grid-row: 2;
     }
     
-    /* MOD: (v8.0) 
-      - gallery-layout 手機版使用 .gallery-content-column.is-mobile-grid
-      - 因此原始的 .gallery-layout .gallery-content-column 規則
-      - 會被 .is-mobile-grid 覆蓋，不需特別修改
-    */
     .gallery-layout .gallery-content-column {
         overflow-y: auto;
         padding-top: 0;
         mask-image: none;
-        grid-row: 2; /* (v6.3) 改為 2 */
-        
-        /* MOD: (v8.2) 恢復手機版的 z-index 和 pointer-events */
+        grid-row: 2; 
         grid-column: 1;
         z-index: auto;
         pointer-events: auto;
     }
 
-    /* MOD: (v8.3) 恢復手機版的 .left-column-bottom z-index */
     .gallery-layout .left-column-bottom {
         z-index: auto;
     }
 
 
-    /* ADD: (v5.0) 手機版 .main-footer 樣式 */
-    /* MOD: (v5.1) 此規則應為通用 (包含 portfolio.html) */
-    /* MOD: (v6.3) 此規則僅 portfolio.html 會使用 */
-    /* MOD: (v6.6) 啟用 .main-footer */
-    /* MOD: (v7.0) 修復 Links 垂直置中與邊框 */
-    body:has(.portfolio-container) .main-footer {
-        display: flex; /* ADD: (v6.6) 啟用 flex */
-        /* MOD: (FIX_v9.2) 移除 padding，改由子層控制 */
-        padding: 0; /* 匹配 container padding */
+    /* (FIX_v9.4) 
+       - .portfolio-scroll-lock 取代 :has()
+       - 確保主頁的 .main-footer (連結列) 顯示
+    */
+    body.portfolio-scroll-lock .main-footer {
+        display: flex; 
+        padding: 0; 
         
         position: fixed;
         bottom: 0;
@@ -1248,59 +988,46 @@ header {
         background-color: var(--background-color);
         box-sizing: border-box;
         
-        height: 60px; /* 強制高度 */
-        flex-direction: row; /* 強制 row */
-        align-items: center; /* 垂直置中 */
+        height: 60px; 
+        flex-direction: row; 
+        align-items: center; 
         
-        border-top: 1px solid var(--divider-color); /* (v7.0) 恢復邊框 */
+        border-top: 1px solid var(--divider-color); 
     }
     
-    /* ADD: (v5.1) 
-      - 手機版 .main-footer 連結可見性
-      - 適用於 *所有* 頁面
-    */
-    /* (v6.3) 此樣式僅 portfolio.html 會使用 */
     .main-footer #desktopContactLinks {
         display: none;
     }
     .main-footer #mobileContactLinks {
-        display: flex; /* 使用 flex 以匹配 ul 樣S式 */
+        display: flex; 
     }
     
-    /* ADD: (v5.1) 
-      - portfolio.html 頁面的 .main-footer (連結)
-      - 移除頂部 padding 和 border，因為它緊跟在 .mobile-footer (篩選器) 之後
+    /* (FIX_v9.4) 
+       - .portfolio-scroll-lock 取代 :has()
+       - 確保主頁的 .main-footer 無頂部邊框
     */
-    /* MOD: (v7.0) 
-       - .main-footer 已有 border
-       - .mobile-footer (Filter) 也有 border
-       - 移除 .main-footer 的 border-top (因為 .mobile-footer 已經有)
-    */
-    body:has(.portfolio-container) .main-footer {
+    body.portfolio-scroll-lock .main-footer {
         border-top: none;
     }
-    /* ADD: (v5.1) 
-      - portfolio.html 頁面的 .main-footer 連結
-      - 必須覆蓋 .mobile-contact-links 的 padding: 0 2rem
-      - 因為 .main-footer 已經有 padding
+    /* (FIX_v9.4) 
+       - .portfolio-scroll-lock 取代 :has()
+       - 確保主頁的 .main-footer 連結置中
     */
-    body:has(.portfolio-container) .main-footer .mobile-contact-links {
-        /* MOD: (FIX_v9.2) 恢復 padding，使其與 filter bar 一致 */
-        padding: 0 2rem; /* 移除繼承的 padding */
-        /* ADD: (v6.8) 確保其在 fixed footer 中水平置中 */
+    body.portfolio-scroll-lock .main-footer .mobile-contact-links {
+        padding: 0 2rem; 
         width: 100%;
         justify-content: center;
     }
 
-    /* --- (FIX_v9.3) 修正手機版 .main-footer 佈局 --- */
-    body:has(.portfolio-container) .main-footer .footer-left {
-        display: none; /* 隱藏左側空 div */
+    /* (FIX_v9.3) 修正手機版 .main-footer 佈局 */
+    /* (FIX_v9.4) .portfolio-scroll-lock 取代 :has() */
+    body.portfolio-scroll-lock .main-footer .footer-left {
+        display: none; 
     }
-    body:has(.portfolio-container) .main-footer .footer-right {
-        width: 100%; /* 讓右側 (連結) 佔滿 100% */
-        justify-content: center; /* 再次確保置中 (雖然 ul 已經做了) */
+    body.portfolio-scroll-lock .main-footer .footer-right {
+        width: 100%; 
+        justify-content: center; 
     }
-    /* --- End of Fix --- */
 
 
 
@@ -1316,24 +1043,18 @@ header {
         left: 0.2rem;
     }
     
-    /* MOD: (FIX_v9.3) 
+    /* MOD: (FIX_v9.4) 
        - 修正手機版滾動衝突
        - 此規則 (overflow-y: visible) 必須 *只* 套用在內頁
-       - 因此從 .center-column 改為更精確的選擇器
+       - :not(.portfolio-container) 確保此規則不會影響主頁
     */
     .middle-container:not(.portfolio-container) .center-column {
         overflow-y: visible;
         padding-right: 0; 
         padding: 0;
-        mask-image: none; /* ADD: 移除遮罩效果 */
+        mask-image: none; 
     }
     
-    /* MOD: (v6.1) 手機版 project-list 應移除緩衝 padding */
-    /* (v6.2) 再次確認移除 */
-    /* MOD: (v6.9) 
-       - 此規則是針對內頁的，保持 padding: 0
-       - 僅 portfolio.html 頁面的 .project-list 需要 40vh padding
-    */
     .middle-container .project-list {
         padding-top: 0;
         padding-bottom: 0;
@@ -1350,15 +1071,10 @@ header {
         gap: 2rem; 
     }
     
-    /* ADD: (v6.3) 手機版 .left-column-bottom 導航按鈕樣式 */
-    /* MOD: (v6.4) 
-      - .left-column-bottom 採用 flex-start
-      - .next-project-block 單獨推到右側
-    */
     .left-column-bottom {
-        flex-direction: row; /* MOD: 恢復 row */
+        flex-direction: row; 
         align-items: flex-end;
-        justify-content: space-between; /* MOD: 手機版維持左右分散 */
+        justify-content: space-between; 
     }
 }
 

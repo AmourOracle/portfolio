@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // (FIX_v9.4) 新增一個 class 到 body，用於 CSS 鎖定主頁滾動
+    // 這比 :has() 選擇器更可靠
+    document.body.classList.add('portfolio-scroll-lock');
+
     // 獲取 DOM 元素
     const projectListElement = document.getElementById('projectList');
     const previewTitleElement = document.getElementById('previewTitle');
@@ -513,3 +517,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
