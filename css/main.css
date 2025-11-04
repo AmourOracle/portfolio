@@ -345,8 +345,9 @@ header {
     cursor: pointer; 
     scroll-snap-align: center;
     scroll-snap-stop: always;
-    opacity: 0.4;
-    transform: scale(0.85);
+    /* MOD: (FIX_v9.5) 移除桌面版的預設淡出/縮放，統一由 RWD 控制 */
+    opacity: 1;
+    transform: none;
 }
 .project-item.hide {
     opacity: 0;
@@ -367,7 +368,8 @@ header {
 
 .project-item.is-active .project-category {
     color: var(--primary-color);
-    opacity: 0; 
+    /* MOD: (FIX_v9.5) 移除桌面版的淡出，統一由 RWD 控制 */
+    opacity: 1; 
 }
 
 .project-item a {
@@ -381,9 +383,10 @@ header {
     line-height: 1.1;
 }
 
+/* MOD: (FIX_v9.5) 移除桌面版的 .is-active 視覺效果，統一由 RWD 控制 */
 .project-item.is-active {
-    opacity: 1;
-    transform: scale(1);
+    /* opacity: 1; */
+    /* transform: scale(1); */
 }
 .project-item.is-active a {
     color: var(--primary-color);
@@ -776,6 +779,20 @@ header {
     .random-preview-popup {
         width: 300px;
     }
+
+    /* --- (FIX_v9.5) 桌面版/平板 恢復 iOS 選擇器視覺效果 --- */
+    .project-item {
+        opacity: 0.4;
+        transform: scale(0.85);
+    }
+    .project-item.is-active {
+        opacity: 1;
+        transform: scale(1);
+    }
+    .project-item.is-active .project-category {
+        opacity: 0;
+    }
+    /* --- End of Fix --- */
 }
 
 /* --- (Request v3.9) 手機版首頁 (portfolio.html) --- */
@@ -804,13 +821,8 @@ header {
     .portfolio-container .center-column {
         overflow-y: auto; /* 保持 list 滾動 */
         padding: 0; 
-        mask-image: linear-gradient(
-            to bottom,
-            transparent 0%,
-            black 30%,
-            black 70%,
-            transparent 100%
-        );
+        /* MOD: (FIX_v9.5) 移除手機版的 mask-image (除錯) */
+        mask-image: none;
         scroll-snap-type: y mandatory;
     }
 
@@ -902,6 +914,19 @@ header {
     .portfolio-container .project-item {
         scroll-snap-align: center;
     }
+
+    /* --- (FIX_v9.5) 移除手機版的 iOS 選擇器視覺效果 (除錯) --- */
+    .portfolio-container .project-item {
+        opacity: 1;
+        transform: none;
+    }
+    .portfolio-container .project-item.is-active {
+        /* .is-active 仍然有 .project-item a 的顏色變化 */
+    }
+    .portfolio-container .project-item.is-active .project-category {
+        opacity: 1; /* 保持可見 */
+    }
+    /* --- End of Fix --- */
 
 
     .random-preview-popup {
