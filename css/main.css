@@ -1264,7 +1264,7 @@ header {
         display: none;
     }
     .main-footer #mobileContactLinks {
-        display: flex; /* 使用 flex 以匹配 ul 樣式 */
+        display: flex; /* 使用 flex 以匹配 ul 樣S式 */
     }
     
     /* ADD: (v5.1) 
@@ -1292,6 +1292,15 @@ header {
         justify-content: center;
     }
 
+    /* --- (FIX_v9.3) 修正手機版 .main-footer 佈局 --- */
+    body:has(.portfolio-container) .main-footer .footer-left {
+        display: none; /* 隱藏左側空 div */
+    }
+    body:has(.portfolio-container) .main-footer .footer-right {
+        width: 100%; /* 讓右側 (連結) 佔滿 100% */
+        justify-content: center; /* 再次確保置中 (雖然 ul 已經做了) */
+    }
+    /* --- End of Fix --- */
 
 
 
@@ -1306,7 +1315,13 @@ header {
         top: -1.5rem;
         left: 0.2rem;
     }
-    .center-column {
+    
+    /* MOD: (FIX_v9.3) 
+       - 修正手機版滾動衝突
+       - 此規則 (overflow-y: visible) 必須 *只* 套用在內頁
+       - 因此從 .center-column 改為更精確的選擇器
+    */
+    .middle-container:not(.portfolio-container) .center-column {
         overflow-y: visible;
         padding-right: 0; 
         padding: 0;
