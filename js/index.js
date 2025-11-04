@@ -256,7 +256,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewInfoElement) previewInfoElement.innerHTML = newInfo; 
 
         // (v6.0) 更新隨機預覽視窗
-        updateRandomPreview(newImageSrc);
+        // (FIX_v9.6) 關鍵修正：
+        // 只有在 *非* 手機版時才顯示隨機預覽圖。
+        // 這個預覽圖 (randomPreviewPopup) 在某些手機瀏覽器上
+        // 即使有 'pointer-events: none;' 
+        // 也會錯誤地遮擋並「吃掉」觸控事件，導致列表無法滑動。
+        if (!isMobile()) {
+            updateRandomPreview(newImageSrc);
+        }
 
         // (Request 3.2) 更新左側欄位標籤
         if (previewLabelNo && previewLabelCategory && previewLabelInfo_Default && previewLabelDocs_Project && previewBlockBio) {
@@ -290,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
             randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;
             randomPreviewPopup.classList.add('is-visible');
         } else {
-            // 如果沒有圖片，隱藏視窗
+            // 如果沒有圖片，隱藏視Window
             randomPreviewPopup.classList.remove('is-visible');
         }
     }
