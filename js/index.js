@@ -53,12 +53,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.random() * (max - min) + min;
     }
     
+    // (ADD: v9.2) 新增裝置偵測
+    /** 檢查是否為手機版 */
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
     // (MOD: v8.0) 
     /**
      * 綁定滾動監聽器 (升級)
+     * (MOD: v9.2) 根據裝置類型綁定不同監聽器
+     *
      * 我們現在綁定 *兩種* 監聽器：
-     * 1. 'wheel' (主動): 用於接管滑鼠滾輪，必須 { passive: false }。
-     * 2. 'scroll' (被動): 用於同步由 'wheel' 以外事件 (如拖動) 觸發的滾動。
+     * 1. 'wheel' (主動): 用於接管滑鼠滾輪，必須 { passive: false }。(僅桌面版)
+     * 2. 'scroll' (被動): 用於同步由 'wheel' 以外事件 (如拖動、觸控) 觸發的滾動。
      */
     function bindScrollListeners() {
         if (!centerColumn) return;
@@ -67,13 +75,21 @@ document.addEventListener('DOMContentLoaded', () => {
         centerColumn.removeEventListener('scroll', handleFreeScroll);
         centerColumn.removeEventListener('wheel', handleWheelScroll);
 
-        // 2. [v8.0] 綁定 'wheel' 事件 (主動控制)
-        //    必須設為 'passive: false' 才能呼叫 event.preventDefault()
-        centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
-        
-        // 3. [v7.1] 綁定 'scroll' 事件 (被動同步)
-        //    保持 'passive: true' 以獲得最佳效能
-        centerColumn.addEventListener('scroll', handleFreeScroll, { passive: true });
+        if (isMobile()) {
+            // --- 手機版 ---
+            // 僅綁定被動的 'scroll' 事件。
+            // 滾動由 CSS scroll-snap 處理，JS 僅在滾動停止後同步 UI。
+            centerColumn.addEventListener('scroll', handleFreeScroll, { passive: true });
+        } else {
+            // --- 桌面版 ---
+            // 2. [v8.0] 綁定 'wheel' 事件 (主動控制)
+            //    必須設為 'passive: false' 才能呼叫 event.preventDefault()
+            centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
+            
+            // 3. [v7.1] 綁定 'scroll' 事件 (被動同步)
+            //    保持 'passive: true' 以獲得最佳效能
+            centerColumn.addEventListener('scroll', handleFreeScroll, { passive: true });
+        }
     }
 
 
@@ -120,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // (MOD: v8.0) (Problem 1 Fix)
                 // 1. 立即滾動到定位並更新UI (無延遲)
                 //    這會立即將 'Kinetic Poster' 滾動到中央並更新左側面板。
+                // (MOD: v9.2) 手機版現在會正確執行此 'auto' 滾動並觸發高光
                 setActiveItem(currentActiveIndex, 'auto'); 
                 
                 // 2. 透過 short delay 觸發CSS入場動畫
@@ -151,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 監聽視窗大小改變，重新綁定滾動
             window.addEventListener('resize', () => {
                 // (MOD: v7.0) 僅重新綁定
+                // (MOD: v9.2) 裝置類型可能改變 (例如旋轉平板)，所以要重新綁定
                 bindScrollListeners();
             });
             
@@ -495,4 +513,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
