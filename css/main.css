@@ -1237,7 +1237,8 @@ header {
     /* MOD: (v7.0) 修復 Links 垂直置中與邊框 */
     body:has(.portfolio-container) .main-footer {
         display: flex; /* ADD: (v6.6) 啟用 flex */
-        padding: 0 2rem; /* 匹配 container padding */
+        /* MOD: (FIX_v9.2) 移除 padding，改由子層控制 */
+        padding: 0; /* 匹配 container padding */
         
         position: fixed;
         bottom: 0;
@@ -1284,7 +1285,8 @@ header {
       - 因為 .main-footer 已經有 padding
     */
     body:has(.portfolio-container) .main-footer .mobile-contact-links {
-        padding: 0; /* 移除繼承的 padding */
+        /* MOD: (FIX_v9.2) 恢復 padding，使其與 filter bar 一致 */
+        padding: 0 2rem; /* 移除繼承的 padding */
         /* ADD: (v6.8) 確保其在 fixed footer 中水平置中 */
         width: 100%;
         justify-content: center;
@@ -1344,3 +1346,4 @@ header {
         justify-content: space-between; /* MOD: 手機版維持左右分散 */
     }
 }
+
