@@ -32,6 +32,7 @@ Portfolio 開發指南
         |-- apple-touch-icon.png (Apple 裝置圖示)
 
 
+
 核心邏輯與頁面流程
 
 本網站的核心概念是「資料分離」：所有專案內容都儲存在 data/projects.json 中，JavaScript 檔案負責讀取這些資料，並將其動態渲染到對應的 HTML 頁面中。
@@ -100,17 +101,31 @@ index.js 同時監聽右側欄（桌面版）和底部 footer（手機版）的�
 
 5. 攝影作品頁 (gallery.html + gallery.js)
 
-這是一個特殊的集合頁面，專門展示「攝影」類別的作品。
+這是一個互動式的「無限畫布」頁面，用於探索所有專案的圖片。
 
-資料載入與篩選：gallery.js 抓取 data/projects.json，並篩選出所有 category === 'Photography' 的專案。
+資料載入（變更）：gallery.js 抓取 data/projects.json，不過濾類別。
 
-圖片彙整：它會將所有符合條件的專案中的 images 陣列合併成一個單一的圖片 URL 列表。
+圖片彙整（變更）：它會彙整所有專案的 images 和 coverImage，建立一個大型圖片池。
 
-佈局渲染：
+佈局渲染與圖層（桌面版）：
 
-桌面版 (renderDesktopCollage)：gallery.js 會為每張圖片生成隨機的 width, top, left 和 rotate 樣式，並使用 position: absolute 創造出隨機拼貼的效果。
+此頁面採用 CSS Grid 堆疊佈局，分為三層：
 
-手機版 (renderMobileGrid)：gallery.js 僅將圖片放入容器，並為容器添加 is-mobile-grid class，交由 main.css 中的 CSS Grid 進行排版。
+下層 (z=10)：左側欄位 (.left-column)，包含 "Gallery" 標題。
+
+中層 (z=20)：可互動的畫布 (.gallery-content-column / #pan-container)，gallery.js 會在此建立一個 5000x5000 像素的畫布，所有圖片使用 position: absolute 隨機散佈於此。
+
+上層 (z=30)：Back 按鈕 (.left-column-bottom)，此按鈕被特意提升至最上層，確保恆定可點擊。
+
+核心互動（桌面版）：
+
+拖曳平移 (Pan)：使用者可按住滑鼠左鍵拖曳，gallery.js 會透過 transform: translate(x, y) 移動 pan-container。
+
+慣性滑動 (Inertia)：拖曳結束後，畫布會帶有慣性繼續滑動並減速。
+
+滾輪縮放 (Zoom)：使用者可使用滑鼠滾輪進行縮放，gallery.js 會透過 transform: scale(s) 實現。
+
+手機版 (isMobile)：在手機上，此互動功能被禁用，並降級回 renderMobileGrid 函式，顯示為一個簡單的、可垂直滾動的 CSS 網格。
 
 6. 關於我頁面 (about.html)
 

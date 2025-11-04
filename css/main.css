@@ -36,9 +36,10 @@
 
 /* --- 基本設定 --- */
 /* ADD: (v6.8) 鎖定 HTML 高度並隱藏滾動條 */
+/* MOD: (FIX_v9.1) 移除全域 HTML 高度/滾動鎖定 */
 html {
-    height: 100vh;
-    overflow: hidden;
+    /* height: 100vh; */
+    /* overflow: hidden; */
 }
 
 body {
@@ -47,8 +48,9 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     /* MOD: (v6.8) 鎖定 Body 高度並隱藏滾動條 */
-    height: 100%;
-    overflow: hidden; /* 防止 body 本身滾動 (主要用於 portfolio.html) */
+    /* MOD: (FIX_v9.1) 移除全域 Body 高度/滾動鎖定 */
+    /* height: 100%; */
+    /* overflow: hidden; */ /* 防止 body 本身滾動 (主要用於 portfolio.html) */
     font-size: 16px;
     padding-top: 60px; /* MOD: 縮小 header 高度 */
     
@@ -61,6 +63,18 @@ body {
     text-rendering: optimizeLegibility;
     box-sizing: border-box; /* ADD: (v6.8) 確保 padding-top 被正確計算 */
 }
+
+/* --- (FIX_v9.1) 鎖定 portfolio.html (主頁) 的滾動 --- */
+/* 這組規則確保只有主頁 (portfolio.html) 是全螢幕且無法滾動的 */
+html:has(body .portfolio-container) {
+    height: 100vh;
+    overflow: hidden;
+}
+body:has(.portfolio-container) {
+    height: 100%; /* 繼承 100vh */
+    overflow: hidden; /* 防止 body 本身滾動 */
+}
+/* --- End of Fix --- */
 
 
 
@@ -971,6 +985,8 @@ header {
         /* ADD: (v5.1) 移除 body padding-bottom，因為 footer 是 static */
         /* MOD: (v6.8) 恢復 padding-bottom，為 fixed footers 騰出空間 (61px + 60px) */
         padding-bottom: 121px;
+        /* MOD: (FIX_v9.1) 確保手機版主頁 body 高度正確 */
+        height: 100%;
     }
 
     .portfolio-container { 
@@ -1130,7 +1146,11 @@ header {
 @media (max-width: 768px) {
     /* MOD: (v5.0) .project-container -> .middle-container */
     /* MOD: (v6.3) 新增 .gallery-layout */
-    body:has(.middle-container) {
+    /* MOD: (FIX_v9.1) 修正選擇器：
+       - 確保此規則 *不會* 套用到 .portfolio-container
+       - :not() 選擇器確保只有內頁 (project, about, gallery) 會恢復滾動
+    */
+    body:has(.middle-container):not(:has(.portfolio-container)) {
         overflow: auto; /* 恢復 body 滾動 */
         /* ADD: (v5.1) 移除 body padding-bottom，因為 footer 是 static */
         /* (v6.3) 此規則現在適用於 project, about, gallery */
@@ -1324,4 +1344,3 @@ header {
         justify-content: space-between; /* MOD: 手機版維持左右分散 */
     }
 }
-
