@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const mobileFooterElement = document.querySelector('.mobile-footer');
     
+    // (MOD_v11.0) 恢復 .random-preview-popup 的 JS 邏輯 (Req 1.2)
     const randomPreviewPopup = document.getElementById('randomPreviewPopup');
     const randomPreviewImage = document.getElementById('randomPreviewImage');
 
@@ -231,7 +232,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewBioElement) previewBioElement.textContent = newBio;
         if (previewInfoElement) previewInfoElement.innerHTML = newInfo; 
 
-        // (FIX_v9.6) 僅在非手機版時顯示隨機預覽圖
+        // (FIX_v9.6 & MOD_v11.0) 
+        // 恢復懸浮視窗 (Req 1.2)
+        // 僅在非手機版時顯示隨機預覽圖
         if (!isMobile()) {
             updateRandomPreview(newImageSrc);
         }
@@ -249,7 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     
-    // (v6.0) 更新隨機預覽視窗
+    // (MOD_v11.0) 恢復懸浮視窗 (Req 1.2)
     function updateRandomPreview(imageSrc) {
         if (!randomPreviewPopup || !randomPreviewImage) return;
 
@@ -273,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewBioElement) previewBioElement.textContent = defaultBio;
         if (previewInfoElement) previewInfoElement.textContent = defaultInfo; 
 
+        // (MOD_v11.0) 恢復懸浮視窗 (Req 1.2)
         if (randomPreviewPopup) {
             randomPreviewPopup.classList.remove('is-visible');
         }
@@ -520,11 +524,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function bindTransitionLinks() {
+        // (MOD_v11.0) 恢復 v9.x 的連結綁定邏輯 (Req 1.1)
         const desktopLinks = Array.from(document.querySelectorAll('#desktopContactLinks a'));
         const mobileLinks = Array.from(document.querySelectorAll('#mobileContactLinks a'));
-        const allLinks = Array.from(new Set([...desktopLinks, ...mobileLinks]));
+        // (MOD_v11.0) 也綁定內頁的 Back/Next 按鈕
+        const subpageLinks = Array.from(document.querySelectorAll('.back-button-block, .next-project-block'));
+        
+        const allLinks = Array.from(new Set([...desktopLinks, ...mobileLinks, ...subpageLinks]));
 
         allLinks.forEach(link => {
+            // (MOD_v11.0) 確保連結 (<a>) 存在
+            if (!link) return;
+
             link.addEventListener('click', (event) => {
                 // 檢查是否為內部連結、非 mailto 且非新開視窗
                 if (link.hostname === window.location.hostname && !link.href.startsWith('mailto:') && !link.target) {

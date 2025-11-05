@@ -5,14 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sywan - About</title>
     
-    <!-- FIX: (v1.2) 移除 href 開頭的 "/" 改為相對路徑 -->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" sizes="any">
     <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" sizes="180x180">
 
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;0,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -27,19 +26,18 @@
     </script>
     
     <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
-    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <header>
-        <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
         <a href="portfolio.html" class="logo">SYWAN</a>
     </header>
 
-    <!-- MOD: (Request 9) 
-      - 重新加入 about-page-layout class 來修正頂部對齊
+    <!-- (MOD_v11.0) 
+      - HTML 結構重構，`main` 標籤使用 `middle-container` 和 `about-layout`
+      - 這與 v9.x 的 project.html 和 portfolio.html 保持一致
     -->
-    <main class="project-container about-page-layout">
+    <main class="middle-container about-layout">
         
         <!-- 左欄：靜態資訊 -->
         <aside class="left-column">
@@ -47,7 +45,6 @@
             <!-- 標題 (頂部) -->
             <div class="left-column-top">
                 <div class="name-block">
-                    <!-- MOD: 移除動態 ID，改為靜態文字 -->
                     <span class="label">ABOUT</span>
                     <h1>Sywan</h1>
                 </div>
@@ -55,17 +52,14 @@
             
             <!-- 資訊 (中部) -->
             <div class="left-column-middle">
-                <!-- MOD: 移除動態 ID，改為靜態 BIO -->
                 <div class="info-divider-block">
                     <span class="label">BIO</span>
                     <p>A visual designer based in Taiwan, focusing on creating compelling brand identities and digital experiences.</p>
                 </div>
                 
-                <!-- MOD: 移除動態 ID，改為靜態聯絡資訊 -->
                 <div class="info-divider-block">
                     <span class="label">CONTACT</span>
                     <p style="word-break: break-all;">
-                        <!-- 範例連結 -->
                         <a href="mailto:email@example.com" style="color: var(--text-color); text-decoration: none;">email@example.com</a>
                         <br><br>
                         <a href="#" target="_blank" style="color: var(--text-color); text-decoration: none;">Instagram</a>
@@ -75,28 +69,32 @@
                 </div>
             </div>
 
-            <!-- 底部返回按鈕 -->
-            <div class="project-nav-bottom">
-                <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
+            <!-- (MOD_v11.0) 
+              - 導航按鈕區塊 (`.left-column-bottom`) 
+              - 已移至 `<aside class="left-column">` 內部
+              - 並且 class 已從 `.project-nav-bottom` 統一為 `.left-column-bottom`
+            -->
+            <div class="left-column-bottom">
                 <a href="portfolio.html" class="back-button-block">
                     <span class="arrow">&larr;</span> Back
                 </a>
+                
+                <!-- (MOD_v11.0) 
+                  - About 頁面不需要 Next 按鈕
+                  - CSS 將在 .about-layout 中自動隱藏此按鈕的空間
+                -->
             </div>
         </aside>
 
         <!-- 右欄：靜態 About 內容 -->
-        <!-- MOD: 移除 center-column 和 projectList，改為靜態內容容器 -->
         <section class="project-content-column about-content">
             
-            <!-- 頂部大面積文字 (參考截圖) -->
             <div class="about-intro-text">
                 <p>GUIDED BY A DEEP UNDERSTANDING OF PEOPLE, DEVELOPING EFFECTIVE COMMUNICATION STRATEGIES THAT TURN IDEAS INTO SUCCESS STORIES</p>
             </div>
             
-            <!-- 下方 Grid 框架 (參考截圖) -->
             <div class="about-details-grid">
                 
-                <!-- 區塊 1: EXPERIENCE -->
                 <div class="grid-item">
                     <span class="grid-label">EXPERIENCE</span>
                     <p>
@@ -109,7 +107,6 @@
                     </p>
                 </div>
 
-                <!-- 區塊 2: EDUCATION -->
                 <div class="grid-item">
                     <span class="grid-label">EDUCATION</span>
                     <p>
@@ -122,7 +119,6 @@
                     </p>
                 </div>
 
-                <!-- 區塊 3: EXPERTISE -->
                 <div class="grid-item">
                     <span class="grid-label">EXPERTISE</span>
                     <p>
@@ -133,7 +129,6 @@
                     </p>
                 </div>
 
-                <!-- 區塊 4: AWARDS -->
                 <div class="grid-item">
                     <span class="grid-label">AWARDS</span>
                     <p>
@@ -151,7 +146,10 @@
         </section>
     </main>
 
-    <!-- MOD: 移除 index.js 的載入 -->
-    <!-- <script src="js/index.js"></script> -->
+    <!-- (MOD_v11.0) 
+      - 移除了 v9.9 錯誤引入的 fixed footer
+      - 導航按鈕現在位於 .left-column 中
+    -->
+
 </body>
 </html>

@@ -27,18 +27,14 @@
 </head>
 <body>
     <header>
-        <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
         <a href="portfolio.html" class="logo">SYWAN</a>
     </header>
 
-    <!-- MOD: (FEAT_v4.14) 新增 ID "projectMainContainer" 用於載入轉場 -->
-    <main class="project-container" id="projectMainContainer">
-        <!-- 
-          MOD: (Request 1 & 2) 
-          - 重構 <aside> 結構，使其與 index.html 一致
-          - 使用 left-column-top 和 left-column-middle
-          - 將 .back-button-block 移至 <aside> 的最底層
-        -->
+    <!-- (MOD_v11.0) 
+      - HTML 結構重構，`main` 標籤使用 `middle-container` 和 `project-layout`
+      - 這與 v9.x 的 about.html 和 portfolio.html 保持一致
+    -->
+    <main class="middle-container project-layout">
         <aside class="left-column">
             
             <!-- 專案標題 (頂部) -->
@@ -51,55 +47,49 @@
             
             <!-- 專案資訊 (中部) -->
             <div class="left-column-middle">
-                <!-- MOD: (Request 1) 新增 hide-section class 來隱藏 BIO -->
+                <!-- (v9.x) BIO 區塊預設隱藏 -->
                 <div class="info-divider-block hide-section">
                     <span class="label">BIO</span>
                     <p id="projectBio">Loading project description...</p>
                 </div>
                 
                 <div class="info-divider-block">
-                    <!-- MOD: (Request 1) 標籤從 INFO 改為 DOCS -->
                     <span class="label">DOCS</span>
                     <p id="projectInfo">Loading project details...</p>
                 </div>
             </div>
 
-            <!-- 
-              (Task 2 Fix) 
-              - .project-nav-bottom 區塊已從此處移至 <main> 的末端
+            <!-- (MOD_v11.0) 
+              - 導航按鈕區塊 (`.left-column-bottom`) 
+              - 已移至 `<aside class="left-column">` 內部
+              - 這修復了 v9.9 引入的桌面版佈局錯誤
             -->
+            <div class="left-column-bottom">
+                <a href="portfolio.html" class="back-button-block">
+                    <span class="arrow">&larr;</span> Back
+                </a>
+                
+                <a href="#" id="nextProjectLink" class="next-project-block">
+                    <div class="next-project-text-wrapper">
+                        <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
+                        <span id="nextProjectTitle">Loading...</span>
+                    </div>
+                    <span class="arrow">&rarr;</span>
+                </a>
+            </div>
+
         </aside>
 
-        <!-- 右欄：專案圖片展示 (將由 JS 動態生成) -->
+        <!-- 右欄：專案圖片展示 -->
         <section id="projectImages" class="project-content-column">
             <!-- 圖片將由 js/project.js 填入 -->
         </section>
-
-        <!-- 
-          (Task 2 Fix) 
-          - .project-nav-bottom 移至此處，作為 <main> 的直接子元素
-          - 確保它顯示在 <aside> 和 <section> 之後
-        -->
-        <div class="project-nav-bottom">
-            
-            <!-- MOD: (Request 1) 將 <div> 改為 <a> 標籤 -->
-            <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
-            <a href="portfolio.html" class="back-button-block">
-                <span class="arrow">&larr;</span> Back
-            </a>
-
-            <!-- MOD: (Request 2) 重構 "Next Project" 按鈕結構 -->
-            <a href="#" id="nextProjectLink" class="next-project-block">
-                <!-- (Request 2) 靠右對齊的文字區塊 -->
-                <div class="next-project-text-wrapper">
-                    <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
-                    <span id="nextProjectTitle">Loading...</span>
-                </div>
-                <!-- (Request 2) 獨立的箭頭 -->
-                <span class="arrow">&rarr;</span>
-            </a>
-        </div>
     </main>
+
+    <!-- (MOD_v11.0) 
+      - 移除了 v9.9 錯誤引入的 fixed footer
+      - 導航按鈕現在位於 .left-column 中
+    -->
 
     <!-- 連結外部 JavaScript 檔案 -->
     <script src="js/project.js"></script>

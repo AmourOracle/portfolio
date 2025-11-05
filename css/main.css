@@ -154,21 +154,33 @@ header {
 }
 
 /* ADD: (v6.3) 左欄底部 (Nav 區) */
+/* (MOD_v11.0) 恢復 v9.x 桌面版佈局 (Req 1.1, Req 2) */
 .left-column-bottom {
     margin-top: auto; /* 關鍵：推到底部 */
     padding-bottom: 0.5rem; /* 匹配間距 */
     flex-shrink: 0;
     
     display: flex;
-    justify-content: flex-start; /* MOD: 從 space-between 改為 flex-start */
+    justify-content: flex-start; /* 預設靠左 (for portfolio links) */
     align-items: flex-end;
-    gap: 2rem; /* ADD: 增加按鈕間距 */
+    gap: 2rem; 
 }
 
-/* ADD: (FIX_v6.5) */
+/* (MOD_v11.0) 
+  - 恢復 .project-layout (project.html) 的按鈕佈局 (Req 2)
+  - 讓 Back/Next 分散對齊
+*/
 .project-layout .left-column-bottom {
-    justify-content: space-between; /* 恢復左右分散對齊 */
-    gap: 0; /* 移除 gap，由 space-between 控制 */
+    justify-content: space-between; 
+    gap: 0; 
+}
+
+/* (MOD_v11.0) 
+  - 恢復 .about-layout (about.html) 的按鈕佈局 (Req 2)
+  - Next 按鈕將在 HTML 中被移除，此規則確保 Back 按鈕靠左
+*/
+.about-layout .left-column-bottom {
+    justify-content: flex-start;
 }
 
 
@@ -226,6 +238,7 @@ header {
 .info-divider-block p { font-size: 0.9rem; line-height: 1.6; color: var(--text-color); margin: 0; transition: opacity 0.3s ease-in-out; }
 
 /* --- INDEX 頁面專用 --- */
+/* (MOD_v11.0) 恢復 v9.x 桌面版 3 欄佈局 (Req 1) */
 .portfolio-container {
     grid-template-columns: 28.57% 1fr 10vw;
     grid-template-rows: 1fr; 
@@ -266,11 +279,13 @@ header {
     margin-top: 1rem; 
     padding-bottom: 0.5rem; 
 }
+/* (MOD_v11.0) 恢復 v9.x 桌面版左下角連結樣式 (Req 1.1) */
 .left-column .contact-links ul {
     justify-content: flex-start; 
     gap: clamp(0.5rem, 1.2vw, 1.2rem); 
 }
 
+/* (MOD_v11.0) 此規則現在僅用於手機版 footer */
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;
@@ -281,6 +296,7 @@ header {
     margin: 0;
     display: flex;
     gap: clamp(0.5rem, 1.5vw, 1.5rem);
+    /* (MOD_v11.0) 恢復 v9.x 預設 (用於 .right-column) */
     justify-content: flex-end;
 }
 .contact-links li {
@@ -296,6 +312,7 @@ header {
 }
 .contact-links a:hover { color: var(--primary-color); }
 
+/* (MOD_v11.0) 恢復 v9.x 邏輯，手機連結預設隱藏 */
 .main-footer #mobileContactLinks {
     display: none;
 }
@@ -430,6 +447,7 @@ header {
 
 
 /* --- PROJECT 頁面專用 --- */
+/* (MOD_v11.0) 恢復 v9.x 桌面版 2 欄佈局 (Req 2) */
 .middle-container.project-layout,
 .middle-container.about-layout { 
     grid-template-columns: 28.57% 1fr; 
@@ -501,6 +519,7 @@ header {
     transform: translateX(5px); 
 }
 
+/* (MOD_v11.0) 此規則現在僅用於手機版 footer */
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;
@@ -574,22 +593,25 @@ header {
 
 
 /* --- Gallery Page 專用樣式 --- */
+/* (MOD_v11.0) 恢復 v9.x 桌面版佈局 */
 .middle-container.gallery-layout { 
-    grid-template-columns: 1fr; 
+    grid-template-columns: 28.57% 1fr; /* 恢復 2 欄 */
     grid-template-rows: 1fr;
 }
 
+/* (MOD_v11.0) 恢復 v9.x 桌面版佈局 */
 .gallery-layout .gallery-content-column {
     padding: 0; 
     grid-row: 1;
-    grid-column: 1; 
-    z-index: 20; 
-    pointer-events: none; 
+    grid-column: 2; /* 恢復第 2 欄 */
+    z-index: auto; 
+    pointer-events: auto; /* 恢復 pointer-events */
 }
 
+/* (MOD_v11.0) 恢復 v9.x 桌面版佈局 */
 .gallery-layout .left-column-bottom {
-    position: relative; 
-    z-index: 30; 
+    position: static; /* 恢復靜態 */
+    z-index: auto; 
 }
 
 
@@ -634,37 +656,7 @@ header {
     display: block;
 }
 
-/* 手機版：網格容器 (當 .is-mobile-grid class 被 JS 加入時) */
-.gallery-content-column.is-mobile-grid {
-    position: static;
-    overflow-y: auto; 
-    min-height: auto; 
-    height: auto; 
-    
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    
-    scrollbar-width: none; 
-    
-    padding-top: 1.5rem; 
-    padding-right: 1rem; 
-
-    z-index: auto;
-    pointer-events: auto;
-    cursor: default;
-}
-.gallery-content-column.is-mobile-grid::-webkit-scrollbar {
-    display: none;
-}
-
-/* 手機版：網格項目 (img) */
-.gallery-content-column.is-mobile-grid img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    aspect-ratio: 1 / 1.25; 
-}
+/* MOD: (MOD_v10.2) 移除 .is-mobile-grid 相關規則 */
 /* --- End of Gallery Page Styles --- */
 
 
@@ -704,6 +696,7 @@ header {
 
 
 /* --- (v6.0) 新增 Random Preview Popup --- */
+/* (MOD_v11.0) 恢復 v9.x 懸浮視窗 (Req 1.2) */
 .random-preview-popup {
     position: fixed;
     width: 440px; 
@@ -750,12 +743,14 @@ header {
         grid-template-columns: 1.5fr 1fr;
     }
     
+    /* (MOD_v11.0) 恢復 v9.x 平板電腦 2 欄佈局 (Req 2) */
     .middle-container.project-layout,
     .middle-container.about-layout { 
         grid-template-columns: 1fr 2fr; 
         grid-template-rows: 1fr;
     }
 
+    /* (MOD_v11.0) 恢復 v10.1 平板電腦 2 欄佈局 */
     .middle-container.gallery-layout { 
         grid-template-columns: 1fr 2fr; 
         grid-template-rows: 1fr;
@@ -769,6 +764,7 @@ header {
 
     .gallery-layout .left-column-bottom {
         z-index: auto;
+        position: static;
     }
 
 
@@ -782,7 +778,7 @@ header {
         width: 300px;
     }
 
-    /* --- (FIX_v9.7) 平板裝置 (<= 1024px) 保持桌面視覺效果 --- */
+    /* (FIX_v9.7) 平板裝置 (<= 1024px) 保持桌面視覺效果 */
     /* (此處規則繼承基礎樣式，不需額外添加) */
 }
 
@@ -802,10 +798,6 @@ header {
         grid-template-columns: 1fr;
         grid-template-rows: 1fr; 
         padding: 2rem 0 0 0; 
-        /* (FIX_v9.4) 
-           - .portfolio-scroll-lock 取代 :has()
-           - 確保主頁的 .portfolio-container 高度被設定
-        */
         height: calc(100vh - 181px); 
     }
     
@@ -813,12 +805,11 @@ header {
     /* - 關鍵修復：還原 JS 驅動邏輯 (v4.13)
       - JS (v10.0) 現在會劫持 'touch' 事件並手動呼叫 'scrollIntoView'
       - CSS *不能* 再使用 'overflow: auto' 或 'scroll-snap-type'
-      - 否則 JS 的 'preventDefault' 會與 CSS 的 'overflow' 衝突
     */
     .portfolio-container .center-column {
         overflow-y: visible; /* 關鍵：改回 visible (v4.13 邏輯) */
         padding: 0; 
-        mask-image: none; /* (v9.7) 保持移除遮罩 */
+        mask-image: none; 
         scroll-snap-type: none; /* 關鍵：移除滾動吸附 */
     }
     /* --- 結束 (REFACTOR_v10.1) --- */
@@ -952,12 +943,14 @@ header {
         height: auto; 
     }
     
+    /* (MOD_v11.0) 恢復 v9.x 手機版單欄佈局 (Req 2) */
     .middle-container.project-layout,
     .middle-container.about-layout {
         grid-template-columns: 1fr; 
         grid-template-rows: auto 1fr; 
     }
     
+    /* (MOD_v11.0) 恢復 v10.1 手機版畫布佈局 */
     .middle-container.gallery-layout {
         grid-template-columns: 1fr; 
         grid-template-rows: auto 1fr; 
@@ -966,13 +959,21 @@ header {
 
     .middle-container .left-column {
         display: flex;
-        flex-direction: column; /* (FIX_v9.9) 確保為 column */
+        flex-direction: column; 
         position: static; 
         height: auto; 
         margin-bottom: 3rem; 
-        gap: 2rem; /* (FIX_v9.9) 保持 top 和 middle 之間的 gap */
+        gap: 2rem; 
         grid-row: 1;
         z-index: auto;
+    }
+    
+    /* (MOD_v11.0) 
+      - 在手機版，隱藏 .left-column-bottom
+      - 因為 v9.9 已經將它移至 fixed footer
+    */
+    .middle-container .left-column-bottom {
+        display: none;
     }
     
     .middle-container .project-content-column {
@@ -983,10 +984,8 @@ header {
         grid-row: 2;
     }
     
+    /* (MOD_v11.0) 恢復 v10.1 手機版畫布佈局 */
     .gallery-layout .gallery-content-column {
-        overflow-y: auto;
-        padding-top: 0;
-        mask-image: none;
         grid-row: 2; 
         grid-column: 1;
         z-index: auto;
@@ -995,6 +994,7 @@ header {
 
     .gallery-layout .left-column-bottom {
         z-index: auto;
+        display: none; /* (MOD_v11.0) 同上，隱藏 */
     }
 
 
@@ -1022,6 +1022,7 @@ header {
     }
     
     /* (FIX_v9.9) 顯示 *內頁* (subpage) 的 fixed footer */
+    /* (MOD_v11.0) 恢復 v9.9 的手機版 fixed footer 邏輯 */
     body:not(.portfolio-scroll-lock) .main-footer.subpage-footer {
         display: flex;
         position: fixed;
@@ -1038,7 +1039,6 @@ header {
         border-top: 1px solid var(--divider-color);
     }
     
-    /* (FIX_v9.9) 確保 Back/Next 按鈕在 footer 中正確顯示 */
     .subpage-footer .footer-right {
         display: flex; 
     }
@@ -1046,8 +1046,6 @@ header {
         display: flex; 
     }
 
-    /* (FIX_v9.9) 隱藏 about/gallery 頁面不需要的 Next 按鈕 */
-    /* (使用 ~ sibling combinator) */
     .about-layout ~ .subpage-footer .footer-right,
     .gallery-layout ~ .subpage-footer .footer-right {
         display: none;
@@ -1104,10 +1102,7 @@ header {
     
     /* MOD: (FIX_v9.8) 
        - 修正手機版滾動衝突
-       - 這是最關鍵的修復
-       - 舊規則是 .center-column { overflow-y: visible; }
-       - 舊規則會錯誤地覆蓋 .portfolio-container .center-column 的 'auto'
-       - 新規則使用 :not() 確保它 *只* 套用在內頁
+       - :not() 確保此規則 *只* 套用在內頁
     */
     .middle-container:not(.portfolio-container) .center-column {
         overflow-y: visible;
@@ -1133,11 +1128,4 @@ header {
     }
     
     /* (FIX_v9.9) 此規則不再需要，因為 .left-column-bottom 已被移至 footer */
-    /*
-    .left-column-bottom {
-        flex-direction: row; 
-        align-items: flex-end;
-        justify-content: space-between; 
-    }
-    */
 }
