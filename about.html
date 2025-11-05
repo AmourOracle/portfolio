@@ -12,7 +12,7 @@
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;0,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -39,12 +39,7 @@
     <!-- MOD: (Request 9) 
       - 重新加入 about-page-layout class 來修正頂部對齊
     -->
-    <!-- MOD: (v5.0) 
-      - 重構佈局，使用新的 middle-container
-      - 移除 project-container class
-      - 移除內部的 .project-nav-bottom (移至 footer)
-    -->
-    <main class="middle-container about-layout">
+    <main class="project-container about-page-layout">
         
         <!-- 左欄：靜態資訊 -->
         <aside class="left-column">
@@ -80,22 +75,20 @@
                 </div>
             </div>
 
-            <!-- 
-              ADD: (v6.3) 
-              - 新增 left-column-bottom 容器
-              - 將 Back 按鈕從 footer 移至此處
-            -->
-            <div class="left-column-bottom">
+            <!-- 底部返回按鈕 -->
+            <div class="project-nav-bottom">
+                <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
                 <a href="portfolio.html" class="back-button-block">
                     <span class="arrow">&larr;</span> Back
                 </a>
             </div>
-
         </aside>
 
+        <!-- 右欄：靜態 About 內容 -->
+        <!-- MOD: 移除 center-column 和 projectList，改為靜態內容容器 -->
         <section class="project-content-column about-content">
             
-            <!-- 頂部大面積文字 -->
+            <!-- 頂部大面積文字 (參考截圖) -->
             <div class="about-intro-text">
                 <p>GUIDED BY A DEEP UNDERSTANDING OF PEOPLE, DEVELOPING EFFECTIVE COMMUNICATION STRATEGIES THAT TURN IDEAS INTO SUCCESS STORIES</p>
             </div>
@@ -158,6 +151,7 @@
         </section>
     </main>
 
+    <!-- MOD: 移除 index.js 的載入 -->
+    <!-- <script src="js/index.js"></script> -->
 </body>
 </html>
-
