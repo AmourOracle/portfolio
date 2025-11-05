@@ -55,14 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // 4. 根據裝置類型渲染畫布
-            if (isMobile()) {
-                // --- 手機版：簡單的網格 (舊邏輯) ---
-                renderMobileGrid(allImages);
-            } else {
-                // --- 桌面版：無限畫布 (新邏輯) ---
-                renderDesktopCanvas(allImages);
-            }
+            // 4. (MOD_v10.1) 根據裝置類型渲染畫布
+            // 移除 isMobile() 判斷，強制所有裝置都使用無限畫布
+            renderDesktopCanvas(allImages);
         })
         .catch(error => {
             console.error('Error fetching gallery data:', error);
@@ -70,21 +65,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     /**
-     * 渲染手機版的網格佈局 (Fallback)
+     * (MOD_v10.1) 移除 renderMobileGrid 函式
+     * (此函式已不再需要)
      */
-    function renderMobileGrid(images) {
-        galleryContainer.classList.add('is-mobile-grid');
-        // MOD: (v8.0) 手機版不再需要 pan-container
-        panContainer.style.display = 'none'; 
-        
-        images.forEach(imgData => {
-            const img = document.createElement('img');
-            img.src = imgData.url;
-            img.alt = imgData.title || 'Gallery Image';
-            img.loading = 'lazy';
-            galleryContainer.appendChild(img);
-        });
-    }
 
     /**
      * 渲染桌面版的無限畫布 (Pan & Zoom)
@@ -274,12 +257,75 @@ document.addEventListener('DOMContentLoaded', () => {
             inertiaLoop();
         }
 
+        // --- (ADD_v10.1) 新增觸控事件處理 ---
+        
+        /** 處理觸控開始 (僅限單指) */
+        function onTouchStart(e) {
+            // 僅處理單指觸控 (用於平移)
+            if (e.touches.length !== 1) return;
+            
+            // 阻止頁面滾動等預設行為
+            e.preventDefault();
+            isDragging = true;
+            
+            // 停止慣性
+            cancelAnimationFrame(animationFrameId);
+            
+            startX = e.touches[0].pageX - panX;
+            startY = e.touches[0].pageY - panY;
+            
+            lastX = e.touches[0].pageX;
+            lastY = e.touches[0].pageY;
+            velocityX = 0;
+            velocityY = 0;
+        }
+        
+        /** 處理觸控移動 (僅限單指) */
+        function onTouchMove(e) {
+            if (!isDragging || e.touches.length !== 1) return;
+            
+            // 阻止頁面滾動
+            e.preventDefault();
+
+            const currentX = e.touches[0].pageX;
+            const currentY = e.touches[0].pageY;
+            
+            panX = currentX - startX;
+            panY = currentY - startY;
+            
+            // 計算即時速度 (用於慣性)
+            velocityX = currentX - lastX;
+            velocityY = currentY - lastY;
+            
+            lastX = currentX;
+            lastY = currentY;
+
+            updateTransform();
+        }
+        
+        /** 處理觸控結束/取消 */
+        function onTouchEnd(e) {
+            // onDragEnd 函式會處理 isDragging 狀態和慣性
+            onDragEnd(e); 
+        }
+
+        // --- 結束 (ADD_v10.1) ---
+
+
         // 綁定所有事件
         galleryContainer.addEventListener('wheel', onWheel, { passive: false });
+        
+        // 桌面滑鼠事件
         galleryContainer.addEventListener('mousedown', onDragStart);
         galleryContainer.addEventListener('mousemove', onDragMove);
         galleryContainer.addEventListener('mouseup', onDragEnd);
         galleryContainer.addEventListener('mouseleave', onDragEnd); // 如果滑鼠移出視窗也停止
+        
+        // (ADD_v10.1) 手機/平板觸控事件
+        galleryContainer.addEventListener('touchstart', onTouchStart, { passive: false });
+        galleryContainer.addEventListener('touchmove', onTouchMove, { passive: false });
+        galleryContainer.addEventListener('touchend', onTouchEnd);
+        galleryContainer.addEventListener('touchcancel', onTouchEnd);
         
         // 初始定位 (將畫布中心大致對準視窗中心)
         const initialBounds = galleryContainer.getBoundingClientRect();
@@ -289,4 +335,3 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTransform();
     }
 });
-
