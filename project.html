@@ -5,14 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project</title> <!-- 標題將由 JS 更新 -->
     
-    <!-- FIX: (v1.2) 移除 href 開頭的 "/" 改為相對路徑 -->
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" sizes="any">
-    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" sizes="180x180">
-
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;0,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -27,7 +23,6 @@
     </script>
     
     <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
-    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -36,8 +31,8 @@
         <a href="portfolio.html" class="logo">SYWAN</a>
     </header>
 
-    <!-- MOD: (v4.33) 移除 id="projectMainContainer" 以停用載入動畫 -->
-    <main class="project-container">
+    <!-- MOD: (FEAT_v4.14) 新增 ID "projectMainContainer" 用於載入轉場 -->
+    <main class="project-container" id="projectMainContainer">
         <!-- 
           MOD: (Request 1 & 2) 
           - 重構 <aside> 結構，使其與 index.html 一致
@@ -81,9 +76,9 @@
         </section>
 
         <!-- 
-          (Task 2 Fix / MOD v4.33) 
-          - .project-nav-bottom 移至此處
-          - MOD: (v4.33) 此容器現在只包含 "Back" 按鈕
+          (Task 2 Fix) 
+          - .project-nav-bottom 移至此處，作為 <main> 的直接子元素
+          - 確保它顯示在 <aside> 和 <section> 之後
         -->
         <div class="project-nav-bottom">
             
@@ -92,39 +87,21 @@
             <a href="portfolio.html" class="back-button-block">
                 <span class="arrow">&larr;</span> Back
             </a>
-            
-            <!-- 
-              MOD: (v4.33)
-              - "Next Project" 按鈕已移至下方的 .project-nav-right-wrapper 
-            -->
-        </div>
 
-        <!-- ADD: (FEAT_v4.33) 內頁右下角容器 (Links + Next) -->
-        <div class="project-nav-right-wrapper">
-            
-            <!-- (FEAT_v4.33) 外部連結 (與 portfolio.html 同步) -->
-            <!-- 注意：此區塊在手機版 (<= 768px) 將被 CSS 隱藏以節省空間 -->
-            <div class="contact-links" id="projectContactLinks">
-                <ul>
-                    <li><a href="mailto:email@example.com">Email</a></li>
-                    <li><a href="#" target="_blank">Instagram</a></li>
-                    <li><a href="about.html">Me</a></li>
-                </ul>
-            </div>
-
-            <!-- "Next Project" 按鈕 (從 .project-nav-bottom 移至此處) -->
+            <!-- MOD: (Request 2) 重構 "Next Project" 按鈕結構 -->
             <a href="#" id="nextProjectLink" class="next-project-block">
+                <!-- (Request 2) 靠右對齊的文字區塊 -->
                 <div class="next-project-text-wrapper">
                     <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
                     <span id="nextProjectTitle">Loading...</span>
                 </div>
+                <!-- (Request 2) 獨立的箭頭 -->
                 <span class="arrow">&rarr;</span>
             </a>
         </div>
     </main>
 
     <!-- 連結外部 JavaScript 檔案 -->
-    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <script src="js/project.js"></script>
 </body>
 </html>

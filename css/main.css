@@ -268,12 +268,12 @@ header {
     overflow-y: auto;
     box-sizing: border-box; /* ADD: 確保 padding 正確計算 */
     
-    /* MOD: (FEAT_v4.30) 收緊 Mask 範圍 (25% -> 20%) */
+    /* MOD: (Request 2) 加強遮罩效果，使其更像插槽 */
     mask-image: linear-gradient(
         to bottom,
         transparent 0%,
-        black 20%,
-        black 80%,
+        black 25%,
+        black 75%,
         transparent 100%
     );
     
@@ -290,10 +290,10 @@ header {
     list-style: none;
     margin: 0;
     padding: 0;
-    /* --- (FEAT_v4.31) 移除 Padding --- */
-    /* padding-top: calc(50vh - 10rem); */
-    /* padding-bottom: calc(50vh - 10rem); */
-    /* --- (FEAT_v4.31) 結束 --- */
+    /* MOD: (Req 1) 增加巨大的上下 padding，確保列表頭尾能滾動到螢幕中央 */
+    /* 50vh = 視窗高度一半, 10rem = 約 3 個 item 高度的一半，用於校正 */
+    padding-top: calc(50vh - 10rem);
+    padding-bottom: calc(50vh - 10rem);
 }
 
 /* MOD: FIX_pickerWheel_v3.4
@@ -363,22 +363,6 @@ header {
 .project-item.is-active a {
     color: var(--primary-color);
 }
-
-
-/* --- (FIX_v4.30) 移除 v4.27 的鄰近狀態樣式 --- */
-/*
-.project-item.is-active-adjacent {
-    opacity: 0.7;
-    transform: scale(0.95);
-}
-.project-item.is-active-adjacent .project-category {
-    opacity: 0;
-}
-.project-item.is-active-adjacent a {
-    color: #999;
-}
-*/
-/* --- (FIX_v4.30) 結束 --- */
 
 
 .right-column {
@@ -693,14 +677,7 @@ header {
     .portfolio-container .center-column {
         overflow-y: auto; /* 保持 list 滾動 */
         padding: 0; /* MOD: 移除左右 padding */
-        /* MOD: (FEAT_v4.30) 收緊 Mask 範圍 (25% -> 20%) */
-        mask-image: linear-gradient(
-            to bottom,
-            transparent 0%,
-            black 20%,
-            black 80%,
-            transparent 100%
-        );
+        mask-image: linear-gradient( to bottom, transparent 0%, black 25%, black 75%, transparent 100% ); /* 恢復遮罩 */
     }
 
     /* (v3.9) 隱藏桌面版的左右欄 */
@@ -792,7 +769,6 @@ header {
          * (containerHeight / 2) - (itemHeight / 2)
          * 來確保項目在 1fr 容器中置中
         */
-        /* (FEAT_v4.31) 移除 Padding 後，此處應為 0 */
         padding-top: 0;
         padding-bottom: 0;
     }
@@ -870,25 +846,29 @@ header {
     
     /* MOD: (Request v3.13) 僅重設內頁的 project-list padding */
     .project-container .project-list {
-        /* (FEAT_v4.31) 移除 Padding 後，此處應為 0 */
         padding-top: 0;
         padding-bottom: 0;
     }
-    
-    /* --- (FIX_v4.26) 啟用手機版選擇器視覺 --- */
     /* (v3.9) 保持手機版插槽樣式 */
-    /* 註解已被移除，手機版現在會繼承桌面的 .project-item 樣式 */
     .project-item {
-        /* (繼承) opacity: 0.4, transform: scale(0.85) */
+        /*
+        flex-direction: column; 
+        align-items: flex-start;
+        gap: 0.5rem;
+        opacity: 1;
+        transform: scale(1);
+        */
     }
     .project-item.is-active {
-        /* (繼承) opacity: 1, transform: scale(1) */
+        /* transform: none; */
     }
     .project-category {
-        /* (繼承) opacity: 0 (當 .is-active) */
+        /*
+        min-width: auto; 
+        opacity: 1 !important; 
+        text-align: left; 
+        */
     }
-    /* --- (FIX_v4.26) 結束 --- */
-
 
     /* (v3.9) 手機版底部按鈕 (project.html) */
     /* (Task 2 Fix) 移除舊的 flex-direction: column 樣式 */
