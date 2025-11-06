@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sywan - Gallery</title>
     
-    <!-- FIX: (v1.2) 移除 href 開頭的 "/" 改為相對路徑 -->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" sizes="any">
     <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" sizes="180x180">
 
@@ -27,23 +26,19 @@
     </script>
     
     <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
-    <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
     <header>
-        <!-- MOD: (Request 6) 連結更新為 portfolio.html -->
         <a href="portfolio.html" class="logo">SYWAN</a>
     </header>
 
-    <!-- 
-      MOD: (v6.3) 
-      - 重構佈局，從 gallery-layout (單欄) 改為 about-layout (雙欄)
-      - 新增 <aside class="left-column">
+    <!-- (MOD_v11.0) 
+      - HTML 結構重構，`main` 標籤使用 `middle-container` 和 `gallery-layout`
+      - 這與 v11.0 的 project.html 和 about.html 保持一致
     -->
-    <main class="middle-container gallery-layout"> <!-- CSS 中 .gallery-layout 已被修改 -->
+    <main class="middle-container gallery-layout">
         
-        <!-- ADD: (v6.3) 新增左側欄位 -->
         <aside class="left-column">
             
             <!-- 標題 (頂部) -->
@@ -53,7 +48,12 @@
                     <h1>Gallery</h1>
                 </div>
             </div>
-            
+
+            <!-- (MOD_v11.0) 
+              - 導航按鈕區塊 (`.left-column-bottom`) 
+              - 已移至 `<aside class="left-column">` 內部
+              - 這修復了 v9.9 引入的桌面版佈局錯誤
+            -->
             <div class="left-column-bottom">
                 <a href="portfolio.html" class="back-button-block">
                     <span class="arrow">&larr;</span> Back
@@ -74,6 +74,10 @@
         </section>
     </main>
 
+    <!-- (MOD_v11.0) 
+      - 移除了 v9.9 錯誤引入的 fixed footer
+      - 導航按鈕現在位於 .left-column 中
+    -->
 
     <script src="js/gallery.js"></script>
 </body>
