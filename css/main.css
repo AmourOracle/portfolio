@@ -125,8 +125,12 @@ header {
     justify-content: flex-start; /* 標題置頂 */
     flex-shrink: 0;
 }
-/* (FIX_v9.4) 僅主頁的 left-column-top 需要 50vh 高度 */
-.portfolio-container .left-column-top {
+/* (FIX_v9.4 / MOD_v11.3) 
+   - 僅主頁和 About 頁的 left-column-top 需要 50vh 高度
+   - (Req 2) 
+*/
+.portfolio-container .left-column-top,
+.about-layout .left-column-top {
     height: calc(50vh - 60px);
 }
 
