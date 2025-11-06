@@ -11,8 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextProjectCategory = document.getElementById('nextProjectCategory');
     const nextProjectTitle = document.getElementById('nextProjectTitle');
     
-    // (FEAT_v4.14) 獲取主容器，用於載入轉場
-    const projectMainContainer = document.getElementById('projectMainContainer');
+    // (MOD_v11.1) 移除頁面轉場相關的元素獲取
+    // const projectMainContainer = document.getElementById('projectMainContainer');
 
 
     // 1. 從 URL 取得作品 id
@@ -78,10 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
                 }
 
-                // (FEAT_v4.14) 內容已填入，觸發淡入動畫
+                // (MOD_v11.1) 移除頁面轉場相關的 classList 操作
+                /*
                 if (projectMainContainer) {
                     projectMainContainer.classList.add('is-loaded');
                 }
+                */
             })
             .catch(error => {
                 console.error('Error fetching project data:', error);
@@ -89,10 +91,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 projectBioElement.textContent = 'Could not load project data.';
                 if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
 
-                // (FEAT_v4.14) 即使出錯，也要顯示錯誤訊息
+                // (MOD_v11.1) 移除頁面轉場相關的 classList 操作
+                /*
                 if (projectMainContainer) {
                     projectMainContainer.classList.add('is-loaded');
                 }
+                */
             });
     } else {
         // 如果 URL 中沒有 id
@@ -100,9 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
         projectBioElement.textContent = 'Please select a project from the main page.';
         if (nextProjectLink) nextProjectLink.style.display = 'none'; // 隱藏按鈕
 
-        // (FEAT_v4.14) 顯示 "No Project Selected" 訊息
+        // (MOD_v11.1) 移除頁面轉場相關的 classList 操作
+        /*
         if (projectMainContainer) {
             projectMainContainer.classList.add('is-loaded');
         }
+        */
     }
 });

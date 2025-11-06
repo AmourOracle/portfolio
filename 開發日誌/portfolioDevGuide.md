@@ -1,144 +1,115 @@
-Portfolio 開發指南
+專案開發指南與進度記錄 (v11.0)
 
-這份文件說明了此作品集網站的專案結構、核心邏輯與資料流程。
+這份文件旨在統整目前 (v11.0) 專案的最終架構、遇到的核心問題以及對應的修復策略。
 
-專案結構
+1. 專案目前狀態 (v11.0)
 
-本專案是一個基於 HTML, CSS 和 JavaScript 的靜態網站。它不依賴任何前端框架（如 React 或 Vue），而是透過 JavaScript 抓取 JSON 資料來動態填充頁面內容。
+經過 v8.x 以來的多次重構，專案目前達到一個桌面版與手機版邏輯分離的穩定狀態。
 
-檔案結構如下所示：
+portfolio.html (主頁):
+
+桌面版 (v11.0): 恢復 v9.x 的三欄式佈局。滾動採用「JS 滾輪劫持」 (wheel) 和「CSS 被動吸附」 (scroll-snap for Trackpad) 的混合模式。懸浮預覽視窗 (.random-preview-popup) 正常運作。
+
+手機版 (v10.0): 滾動採用 v4.13 的「JS 觸控劫持」 (touchstart, preventDefault())。此方法繞過了行動裝置上 overflow: auto + grid 的渲染錯誤，確保列表可被滑動。懸浮預覽視窗在此模式下被 js/index.js 禁用，以防止觸控遮擋。
+
+project.html / about.html (內頁):
+
+桌面版 (v11.0): 恢復 v9.x 的二欄式佈局。Back/Next 按鈕已還原至 <aside class="left-column"> 的 .left-column-bottom 區塊中，佈局正常。
+
+手機版 (v9.9): 採用原生 body 滾動。導航按鈕 (Back/Next) 被放置在一個固定的 <footer> (.subpage-footer) 中，懸浮於頁面底部。
+
+gallery.html (畫廊頁):
+
+桌面版 (v10.1): 顯示「無限畫布」，支援滑鼠拖曳 (mousedown) 和滾輪縮放 (wheel)。
+
+手機版 (v10.1): 同樣顯示「無限畫布」，並支援「觸控拖曳」 (touchstart)。
+
+佈局 (v11.0): HTML 結構已更新，Back 按鈕與 project.html 同步，放置於 .left-column-bottom 中，以修復桌面版佈局。
+
+2. 核心檔案結構
+
+專案的結構目前如下，js 和 css 分離，所有頁面共用 main.css。
 
 /
-|-- index.html           (網站載入頁/啟動畫面)
-|-- portfolio.html       (主要的作品集列表頁，也是網站首頁)
-|-- project.html         (單一作品的詳情頁面)
-|-- about.html           (關於我/個人資訊頁面)
-|-- gallery.html         (攝影作品集錦頁面)
-|
-|-- data/
-|   |-- projects.json    (唯一的資料來源，存放所有專案內容)
-|
-|-- css/
-|   |-- main.css         (全站唯一的 CSS 樣式表)
-|
-|-- js/
-|   |-- index.js         (用於 portfolio.html 的主要邏輯)
-|   |-- project.js       (用於 project.html 的邏輯)
-|   |-- gallery.js       (用於 gallery.html 的邏輯)
-|
-|-- assets/
-    |-- images/
-        |-- favicon.ico         (網站圖示)
-        |-- apple-touch-icon.png (Apple 裝置圖示)
+├── index.html (載入頁面, 轉導至 portfolio.html)
+├── portfolio.html (主頁/專案列表)
+├── project.html (專案詳細頁模板)
+├── about.html (關於我頁面)
+├── gallery.html (畫廊/無限畫布頁面)
+├── data/
+│   └── projects.json (核心專案資料庫)
+├── css/
+│   └── main.css (全站主要樣式表 v11.0)
+└── js/
+    ├── index.js (portfolio.html 邏輯 v10.0)
+    ├── project.js (project.html 邏輯 v1.x)
+    └── gallery.js (gallery.html 邏輯 v10.1)
 
 
+3. 主要問題與修復歷程 (v8.x - v11.0)
 
-核心邏輯與頁面流程
+我們近期除錯的核心集中在兩個衝突點：
 
-本網站的核心概念是「資料分離」：所有專案內容都儲存在 data/projects.json 中，JavaScript 檔案負責讀取這些資料，並將其動態渲染到對應的 HTML 頁面中。
+A. portfolio.html 手機版滾動失效
 
-1. projects.json (資料來源)
+問題: 從 v8.x 開始，我們嘗試將 portfolio.html 的滾動從「JS 驅動」 (v4.13) 重構為「CSS 驅動」 (overflow: auto + scroll-snap)。
 
-這是全站唯一的資料中心 (Single Source of Truth)。
+症狀: 此變更在桌面版有效，但在手機版 (iOS) 上，列表完全無法滾動。
 
-它是一個 JSON 陣列，每個物件代表一個專案。
+除錯歷程:
 
-主要欄位包含：id, title, category, bio, info, coverImage (用於列表頁) 和 images (用於詳情頁)。
+v9.5: 懷疑 mask-image 或 transform 導致渲染錯誤。移除後，桌面版佈局跑版，手機版依舊無效。
 
-2. 啟動流程 (index.html)
+v9.6: 懷疑 .random-preview-popup 的 pointer-events: none 在手機上失效，遮擋了觸控。在 JS 中禁用，問題依舊。
 
-index.html 是一個純粹的載入動畫頁面（Splash Screen）。
+v9.8: 發現 css/main.css 中存在 overflow-y 規則衝突 (auto vs visible)。修正後，問題依舊。
 
-它不包含任何 JS 邏輯，僅使用 <meta http-equiv="refresh"> 標籤，在 1.5 秒後自動將使用者重新導向到 portfolio.html。
+最終修復 (v10.0 + v10.1):
 
-3. 作品集列表頁 (portfolio.html + index.js)
+結論: 手機瀏覽器 (iOS) 對 grid 佈局下的 overflow: auto 和 scroll-snap 組合存在渲染 Bug。
 
-這是使用者瀏覽的主要頁面，具有三欄式佈局（桌面版）。
+js/index.js (v10.0): 還原 v4.13 的 JS 驅動邏輯。在 isMobile() 判斷下，重新綁定 touchstart, touchmove, touchend 事件，並使用 event.preventDefault() 劫持原生觸控。
 
-資料載入：index.js 會在頁面載入時 fetch data/projects.json。
+css/main.css (v10.1): 配合 JS，在手機 RWD 規則中，將 .portfolio-container .center-column 的 overflow-y 改回 visible，並移除 scroll-snap-type，將滾動控制權完全交還給 JavaScript。
 
-列表生成：index.js 根據抓取到的資料，動態生成中間欄 (.center-column) 的專案滾動列表 (.project-list)。
+B. project.html / about.html 桌面版佈局跑版
 
-核心互動 (Picker Wheel)：
+問題: 在 v9.9 版本中，為了修復內頁在手機版的 Back 按鈕佈局，我們錯誤地修改了 project.html 等檔案的 HTML 結構，將 .left-column-bottom (導航區) 從 <aside class="left-column"> 移出，放入了一個全域 <footer>。
 
-index.js 監聽中間欄的滾動事件 (wheel 和 scroll)。
+症狀: 這導致桌面版的 grid 佈局失效。左側欄位的 margin-top: auto 壓縮了中間的 BIO/INFO 區塊，導致其消失；Back/Next 按鈕也因此錯位。
 
-它會計算目前哪個專案 (.project-item) 位於滾動區域的正中央。
+最終修復 (v11.0):
 
-當置中項目改變時，index.js 會讀取該項目的 data-* 屬性 (如 data-title, data-bio)。
+project.html / about.html / gallery.html (v11.0): 還原 HTML 結構。刪除 v9.9 引入的 <footer>，將 .left-column-bottom 區塊移回 <aside class="left-column"> 內部。
 
-最後，將這些資料動態更新到左側欄位 (.left-column) 的預覽區域 (#previewTitle, #previewBio 等)。
+css/main.css (v11.0): 恢復 v9.x 的桌面版佈局。grid-template-columns (2 欄) 和 margin-top: auto (推底) 的 CSS 規則現在可以正確套用到統一的 HTML 結構上。
 
-篩選邏輯：
+css/main.css (v11.0): 保留 v9.9 的手機版 fixed footer 邏輯。手機 RWD 規則現在會隱藏 .left-column-bottom (在 aside 內)，並顯示獨立的 .subpage-footer (在 body 層級)。
 
-index.js 同時監聽右側欄（桌面版）和底部 footer（手機版）的篩選按鈕點擊事件。
+4. 關鍵架構決策 (v11.0)
 
-根據 data-filter 屬性，它會為不符條件的 .project-item 添加 .hide class，實現篩選效果。
+目前專案採用了混合滾動模型 (Hybrid Scrolling Model)：
 
-頁面跳轉：
+portfolio.html (主頁):
 
-當使用者點擊已經置中的專案時，index.js 會觸發頁面轉場動畫 (.page-transition-overlay)。
+桌面版: JS (wheel) + CSS (scroll-snap)。
 
-動畫結束後，跳轉至 project.html?id={project-id}，並將該專案的 id 透過 URL 參數傳遞過去。
+手機版: JS (touchstart + preventDefault)。
 
-4. 作品詳情頁 (project.html + project.js)
+原因: 解決行動裝置上的 CSS 渲染 Bug。
 
-這是一個兩欄式佈局的頁面，用於顯示單一專案的詳細資訊。
+gallery.html (畫廊):
 
-讀取參數：project.js 啟動時，會使用 URLSearchParams 讀取瀏覽器 URL 上的 id 參數。
+桌面版: JS (mousedown + wheel)。
 
-資料載入：project.js 同樣會 fetch data/projects.json。
+手機版: JS (touchstart + touchmove)。
 
-內容填充：
+原因: 統一所有裝置的「無限畫布」體驗。
 
-它會在 JSON 陣列中尋找與 URL id 相符的專案物件。
+project.html / about.html (內頁):
 
-找到後，將該物件的 title, bio, info 和 images 陣列內容，填入到頁面對應的 HTML 元素中（#projectTitle, #projectInfo, #projectImages）。
+桌面版: CSS (overflow: auto on .project-content-column)。
 
-"Next Project" 邏輯：
+手機版: CSS (overflow: auto on <body>)。
 
-為了提供「下一個專案」按鈕，project.js 會從所有其他專案中隨機挑選一個，並將其連結填入 <a> 標籤中。
-
-5. 攝影作品頁 (gallery.html + gallery.js)
-
-這是一個互動式的「無限畫布」頁面，用於探索所有專案的圖片。
-
-資料載入（變更）：gallery.js 抓取 data/projects.json，不過濾類別。
-
-圖片彙整（變更）：它會彙整所有專案的 images 和 coverImage，建立一個大型圖片池。
-
-佈局渲染與圖層（桌面版）：
-
-此頁面採用 CSS Grid 堆疊佈局，分為三層：
-
-下層 (z=10)：左側欄位 (.left-column)，包含 "Gallery" 標題。
-
-中層 (z=20)：可互動的畫布 (.gallery-content-column / #pan-container)，gallery.js 會在此建立一個 5000x5000 像素的畫布，所有圖片使用 position: absolute 隨機散佈於此。
-
-上層 (z=30)：Back 按鈕 (.left-column-bottom)，此按鈕被特意提升至最上層，確保恆定可點擊。
-
-核心互動（桌面版）：
-
-拖曳平移 (Pan)：使用者可按住滑鼠左鍵拖曳，gallery.js 會透過 transform: translate(x, y) 移動 pan-container。
-
-慣性滑動 (Inertia)：拖曳結束後，畫布會帶有慣性繼續滑動並減速。
-
-滾輪縮放 (Zoom)：使用者可使用滑鼠滾輪進行縮放，gallery.js 會透過 transform: scale(s) 實現。
-
-手機版 (isMobile)：在手機上，此互動功能被禁用，並降級回 renderMobileGrid 函式，顯示為一個簡單的、可垂直滾動的 CSS 網格。
-
-6. 關於我頁面 (about.html)
-
-這是一個純靜態頁面，所有內容都直接寫在 HTML 中。
-
-它不依賴任何 fetch 操作或特定的 JavaScript 檔案（除了全域的 main.css）。
-
-樣式 (css/main.css)
-
-全站所有頁面（包括 index.html 的載入動畫）共享同一份 main.css 檔案。
-
-使用 CSS 變數 (Variables) 來統一定義顏色和字體 (例如 --background-color, --font-en)。
-
-大量使用 CSS Grid (display: grid) 來定義主要的頁面佈局（例如 .portfolio-container 的三欄式佈局，.project-layout 的兩欄式佈局）。
-
-響應式設計主要透過 @media (max-width: 768px) 媒體查詢來實現，在手機版上會將多欄佈局改為單欄堆疊。
+原因: 內容最單純，使用原生 (Native) 滾動最穩定。

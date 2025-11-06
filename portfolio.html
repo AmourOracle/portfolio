@@ -12,7 +12,7 @@
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;0,500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
@@ -102,7 +102,6 @@
                 <ul>
                     <li><a href="#" data-filter="all" class="active">Projects</a></li>
                     <li><a href="#" data-filter="Visual">Visual</a></li>
-                    <li><a href="#" data-filter="Photography">Comm. Photo</a></li>
                     <li><a href="#" data-filter="Identity">Branding</a></li>
                 </ul>
             </div>
@@ -124,7 +123,6 @@
             <ul class="mobile-filter-nav">
                 <li><a href="#" data-filter="all" class="active">Projects</a></li>
                 <li><a href="#" data-filter="Visual">Visual</a></li>
-                <li><a href="#" data-filter="Photography">Comm. Photo</a></li>
                 <li><a href="#" data-filter="Identity">Branding</a></li>
             </ul>
             
@@ -144,10 +142,8 @@
         </div>
     </main>
     
-    <!-- (FEAT_v4.13) 頁面轉場遮罩 -->
-    <!-- 注意：此元素必須放置在 <main> 之外，以確保 z-index 正常運作 -->
-    <!-- (FIX_v4.20) 將 'class_name' 修正為 'class' -->
-    <div class="page-transition-overlay" id="pageTransitionOverlay"></div>
+    <!-- (MOD_v11.1) 移除頁面轉場遮罩 HTML -->
+    <!-- <div class="page-transition-overlay" id="pageTransitionOverlay"></div> -->
 
     <!-- 連結外部 JavaScript 檔案 -->
     <!-- FIX: (v1.2) 修正 CSS 和 JS 路徑為相對路徑 -->

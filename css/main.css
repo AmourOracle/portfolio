@@ -13,24 +13,9 @@
     --font-mono: var(--font-en), var(--font-zh);
 }
 
-/* --- (FEAT_v4.13) Page Transition Overlay --- */
-.page-transition-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: var(--background-color);
-    z-index: 9999;
-    opacity: 0; /* 預設隱藏 */
-    pointer-events: none; /* 預設穿透 */
-    transition: opacity 0.4s ease-in-out;
-}
-/* 遮罩啟用狀態 (淡入) */
-.page-transition-overlay.is-active {
-    opacity: 1;
-    pointer-events: auto; /* 啟用時攔截點擊 */
-}
+/* --- (MOD_v11.1) 移除 Page Transition Overlay --- */
+/* .page-transition-overlay { ... } */
+/* .page-transition-overlay.is-active { ... } */
 /* --- End of Page Transition --- */
 
 
@@ -1068,7 +1053,7 @@ header {
     }
     /* (FIX_v9.4) 
        - .portfolio-scroll-lock 取代 :has()
-       - 確保主頁的 .main-footer 連結置中
+       - K確保主頁的 .main-footer 連結置中
     */
     body.portfolio-scroll-lock .main-footer .mobile-contact-links {
         padding: 0 2rem; 

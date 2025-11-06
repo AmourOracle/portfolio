@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const previewInfoElement = document.getElementById('previewInfo');
     const defaultInfo = previewInfoElement ? previewInfoElement.textContent : '';
 
-    const pageTransitionOverlay = document.getElementById('pageTransitionOverlay');
+    // (MOD_v11.1) 移除頁面轉場遮罩元素
+    // const pageTransitionOverlay = document.getElementById('pageTransitionOverlay');
     
     // --- (REFACTOR_v10.0) 滾動邏輯變數 ---
     let allProjectItems = [];
@@ -163,8 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 bindScrollListeners();
             });
             
-            // 綁定轉場事件
-            bindTransitionLinks();
+            // (MOD_v11.1) 移除轉場事件綁定
+            // bindTransitionLinks();
         })
         .catch(error => {
             console.error('Error fetching projects:', error);
@@ -316,7 +317,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 邊界檢查 (v9.x 邏輯)
         if (newIndex < 0) newIndex = 0;
-        if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+        if (newIndex >= visibleItems.length) newIndex = newIndex;
 
         if (newIndex !== currentActiveIndex) {
             // 桌面版滾輪使用 'auto' 立即跳轉 (v4.13 邏輯)
@@ -430,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 150); // 150ms 延遲
     }
 
-    // (v9.x) 點擊事件處理 (保持不變)
+    // (MOD_v11.1) 簡化點擊事件處理
     function handleItemClick(event) {
         // 如果正在滾動，阻止點擊
         if (isManualScrolling) {
@@ -445,16 +446,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newIndex === -1) return; 
 
         if (newIndex === currentActiveIndex) {
-            // 情況 2：項目已啟用 -> 執行頁面轉場
-            const link = clickedItem.querySelector('a');
-            if (link) {
-                event.preventDefault(); 
-                handlePageTransition(link.href);
-            }
+            // 情況 2：項目已啟用 -> 允許預設的連結點擊行為
+            // (不執行 event.preventDefault()，點擊事件將自然傳遞到 <a> 標籤)
         } else {
             // 情況 1：點擊了未啟用的項目 -> 滾動到該項目
-            event.preventDefault();
-            // 點擊使用 'smooth' 滾動
+            event.preventDefault(); // 阻止 <a> 標籤跳轉
             setActiveItem(newIndex, true); 
         }
     }
@@ -509,40 +505,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // (v9.x) 頁面轉場 (保持不變)
-    const TRANSITION_DURATION = 400;
-
-    function handlePageTransition(destination) {
-        if (pageTransitionOverlay) {
-            pageTransitionOverlay.classList.add('is-active');
-            setTimeout(() => {
-                window.location.href = destination;
-            }, TRANSITION_DURATION);
-        } else {
-            window.location.href = destination;
-        }
-    }
-
-    function bindTransitionLinks() {
-        // (MOD_v11.0) 恢復 v9.x 的連結綁定邏輯 (Req 1.1)
-        const desktopLinks = Array.from(document.querySelectorAll('#desktopContactLinks a'));
-        const mobileLinks = Array.from(document.querySelectorAll('#mobileContactLinks a'));
-        // (MOD_v11.0) 也綁定內頁的 Back/Next 按鈕
-        const subpageLinks = Array.from(document.querySelectorAll('.back-button-block, .next-project-block'));
-        
-        const allLinks = Array.from(new Set([...desktopLinks, ...mobileLinks, ...subpageLinks]));
-
-        allLinks.forEach(link => {
-            // (MOD_v11.0) 確保連結 (<a>) 存在
-            if (!link) return;
-
-            link.addEventListener('click', (event) => {
-                // 檢查是否為內部連結、非 mailto 且非新開視窗
-                if (link.hostname === window.location.hostname && !link.href.startsWith('mailto:') && !link.target) {
-                    event.preventDefault(); 
-                    handlePageTransition(link.href);
-                }
-            });
-        });
-    }
+    // (MOD_v11.1) 移除頁面轉場相關函式
+    // const TRANSITION_DURATION = 400;
+    // function handlePageTransition(destination) { ... }
+    // function bindTransitionLinks() { ... }
 });
