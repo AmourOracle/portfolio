@@ -928,8 +928,13 @@ header {
     /* --- End of Fix --- */
 
 
+    /* (MOD_v11.4) (Req 1)
+       - 調整手機版懸浮視窗大小
+       - JS (v11.4) 會動態計算置中位置
+    */
     .random-preview-popup {
-        width: 200px;
+        width: 200px; 
+        aspect-ratio: 1 / 1; /* 手機版改為 1:1 */
     }
 }
 

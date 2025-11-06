@@ -233,12 +233,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (previewBioElement) previewBioElement.textContent = newBio;
         if (previewInfoElement) previewInfoElement.innerHTML = newInfo; 
 
-        // (FIX_v9.6 & MOD_v11.0) 
-        // 恢復懸浮視窗 (Req 1.2)
-        // 僅在非手機版時顯示隨機預覽圖
-        if (!isMobile()) {
-            updateRandomPreview(newImageSrc);
-        }
+        // (MOD_v11.4) (Req 1) 
+        // 移除 !isMobile() 檢查，允許手機版也顯示懸浮預覽圖
+        updateRandomPreview(newImageSrc);
 
         // 更新左側欄位標籤
         if (previewLabelNo && previewLabelCategory && previewLabelInfo_Default && previewLabelDocs_Project && previewBlockBio) {
@@ -263,7 +260,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const rotate = getRandomFloat(-15, 15);
             const top = getRandomFloat(10, 60); 
             const left = getRandomFloat(45, 70);
-            randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;
+            
+            // (MOD_v11.4) 手機版動態調整位置
+            let finalTop = top;
+            let finalLeft = left;
+            
+            if (isMobile()) {
+                // 在手機上，強制位置在中間
+                finalTop = getRandomFloat(30, 50); 
+                finalLeft = getRandomFloat(10, 30); // (vw, 較小)
+                // CSS 中已有 @media (max-width: 768px) { .random-preview-popup { width: 200px; } }
+                // 但我們需要用 px 來計算
+                const popupWidth = 200; 
+                const windowWidth = window.innerWidth;
+                // 將 vw 轉換為 px
+                finalLeft = (windowWidth * (finalLeft / 100)) - (popupWidth / 2);
+                
+                // 確保 finalLeft 是 px 值
+                randomPreviewPopup.style.transform = `translate(${finalLeft}px, ${finalTop}vh) rotate(${rotate}deg) scale(${scale})`;
+            } else {
+                 randomPreviewPopup.style.transform = `translate(${finalLeft}vw, ${finalTop}vh) rotate(${rotate}deg) scale(${scale})`;
+            }
+            
             randomPreviewPopup.classList.add('is-visible');
         } else {
             randomPreviewPopup.classList.remove('is-visible');
@@ -317,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 邊界檢查 (v9.x 邏輯)
         if (newIndex < 0) newIndex = 0;
-        if (newIndex >= visibleItems.length) newIndex = newIndex;
+        if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
 
         if (newIndex !== currentActiveIndex) {
             // 桌面版滾輪使用 'auto' 立即跳轉 (v4.13 邏輯)
