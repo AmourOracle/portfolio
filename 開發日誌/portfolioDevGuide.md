@@ -1,32 +1,48 @@
-專案開發指南與進度記錄 (v11.0)
+專案開發指南與進度記錄 (v11.7)
 
-這份文件旨在統整目前 (v11.0) 專案的最終架構、遇到的核心問題以及對應的修復策略。
+這份文件旨在統整目前 (v11.7) 專案的最終架構、遇到的核心問題、修復策略，以及未來的優化方向。
 
-1. 專案目前狀態 (v11.0)
+專案目前狀態 (v11.6)
 
-經過 v8.x 以來的多次重構，專案目前達到一個桌面版與手機版邏輯分離的穩定狀態。
+經過 v11.0 至 v11.5 的多次修正，專案已達到桌面版與手機版佈局/互動一致的穩定狀態。
 
 portfolio.html (主頁):
 
-桌面版 (v11.0): 恢復 v9.x 的三欄式佈局。滾動採用「JS 滾輪劫持」 (wheel) 和「CSS 被動吸附」 (scroll-snap for Trackpad) 的混合模式。懸浮預覽視窗 (.random-preview-popup) 正常運作。
+桌面版 (v11.6):
 
-手機版 (v10.0): 滾動採用 v4.13 的「JS 觸控劫持」 (touchstart, preventDefault())。此方法繞過了行動裝置上 overflow: auto + grid 的渲染錯誤，確保列表可被滑動。懸浮預覽視窗在此模式下被 js/index.js 禁用，以防止觸控遮擋。
+佈局: v9.x 的三欄式佈局。
 
-project.html / about.html (內頁):
+滾動: 「JS 滾輪劫持」 (wheel) 和「CSS 被動吸附」 (scroll-snap for Trackpad) 的混合模式。
 
-桌面版 (v11.0): 恢復 v9.x 的二欄式佈局。Back/Next 按鈕已還原至 <aside class="left-column"> 的 .left-column-bottom 區塊中，佈局正常。
+預覽: 啟用「JS 浮動預覽視窗」 (.random-preview-popup)，視窗大小、位置隨機。
 
-手機版 (v9.9): 採用原生 body 滾動。導航按鈕 (Back/Next) 被放置在一個固定的 <footer> (.subpage-footer) 中，懸浮於頁面底部。
+連結: 導航連結 (Me/Gallery/Insta/Email) 已移至左欄底部。
 
-gallery.html (畫廊頁):
+手機版 (v11.6):
 
-桌面版 (v10.1): 顯示「無限畫布」，支援滑鼠拖曳 (mousedown) 和滾輪縮放 (wheel)。
+佈局: v10.0 的雙層 Footer 結構 (上層篩選器，下層聯絡連結)。
 
-手機版 (v10.1): 同樣顯示「無限畫布」，並支援「觸控拖曳」 (touchstart)。
+滾動: v4.13 的「JS 觸控劫持」 (touchstart, preventDefault())。
 
-佈局 (v11.0): HTML 結構已更新，Back 按鈕與 project.html 同步，放置於 .left-column-bottom 中，以修復桌面版佈局。
+預覽: (v11.4) 啟用「JS 浮動預覽視窗」 (.random-preview-popup)，以匹配桌面版體驗。
 
-2. 核心檔案結構
+project.html / about.html / gallery.html (內頁):
+
+桌面版 (v11.6):
+
+佈局: (v11.2) 恢復 v9.x 的二欄式佈局，並將容器高度鎖定為 100vh (同 portfolio.html)。
+
+滾動: (v11.2) 滾動範圍限定在右側的內容欄位 (overflow: auto)。
+
+對齊: (v11.3) about.html 的左欄資訊區塊已垂直置中 (同 portfolio.html)。
+
+手機版 (v11.6):
+
+佈局: (v11.2) 恢復 v9.9 的「原生 body 滾動」 (容器 height: auto)。
+
+導航: 導航按鈕 (Back/Next) 被放置在一個固定的 <footer> (.subpage-footer) 中。
+
+核心檔案結構
 
 專案的結構目前如下，js 和 css 分離，所有頁面共用 main.css。
 
@@ -39,77 +55,91 @@ gallery.html (畫廊頁):
 ├── data/
 │   └── projects.json (核心專案資料庫)
 ├── css/
-│   └── main.css (全站主要樣式表 v11.0)
+│   └── main.css (全站主要樣式表 v11.6)
 └── js/
-    ├── index.js (portfolio.html 邏輯 v10.0)
-    ├── project.js (project.html 邏輯 v1.x)
+    ├── index.js (portfolio.html 邏輯 v11.4)
+    ├── project.js (project.html 邏輯 v11.1)
     └── gallery.js (gallery.html 邏輯 v10.1)
 
 
-3. 主要問題與修復歷程 (v8.x - v11.0)
+主要問題與修復歷程 (v11.0 - v11.6)
 
-我們近期除錯的核心集中在兩個衝突點：
+我們近期的除錯集中在統一桌面版與手機版的體驗，並修復佈局錯誤。
 
-A. portfolio.html 手機版滾動失效
+A. 移除頁面轉場 (v11.1)
 
-問題: 從 v8.x 開始，我們嘗試將 portfolio.html 的滾動從「JS 驅動」 (v4.13) 重構為「CSS 驅動」 (overflow: auto + scroll-snap)。
+問題: 頁面轉場遮罩 (Page Transition Overlay) 雖然提供了平滑過渡，但也攔截了 <a> 標籤的預設行為，使點擊邏輯變得複雜。
 
-症狀: 此變更在桌面版有效，但在手機版 (iOS) 上，列表完全無法滾動。
+修復 (v11.1): 移除了 index.js 中的 handlePageTransition 相關邏輯，並刪除了 portfolio.html 和 main.css 中的遮罩元素 (.page-transition-overlay)。
 
-除錯歷程:
+B. 統一桌面版內頁 (project/about/gallery) 滾動機制 (v11.2)
 
-v9.5: 懷疑 mask-image 或 transform 導致渲染錯誤。移除後，桌面版佈局跑版，手機版依舊無效。
+問題: 內頁 (如 about.html) 的左側欄位會隨內容滾動，與 portfolio.html 的鎖定體驗不一致。
 
-v9.6: 懷疑 .random-preview-popup 的 pointer-events: none 在手機上失效，遮擋了觸控。在 JS 中禁用，問題依舊。
+修復 (v11.2):
 
-v9.8: 發現 css/main.css 中存在 overflow-y 規則衝突 (auto vs visible)。修正後，問題依舊。
+main.css: 將 .middle-container (所有頁面的主要容器) 的 height 統一設為 calc(100vh - 60px)。
 
-最終修復 (v10.0 + v10.1):
+main.css: 將 .project-content-column (右側內容欄) 設為 overflow-y: auto。
 
-結論: 手機瀏覽器 (iOS) 對 grid 佈局下的 overflow: auto 和 scroll-snap 組合存在渲染 Bug。
+結果: 桌面版所有頁面的左欄都被鎖定，僅右欄可滾動。
 
-js/index.js (v10.0): 還原 v4.13 的 JS 驅動邏輯。在 isMobile() 判斷下，重新綁定 touchstart, touchmove, touchend 事件，並使用 event.preventDefault() 劫持原生觸控。
+C. portfolio.html 佈局調整與 HTML 殘留清理 (v11.2 - v11.3)
 
-css/main.css (v10.1): 配合 JS，在手機 RWD 規則中，將 .portfolio-container .center-column 的 overflow-y 改回 visible，並移除 scroll-snap-type，將滾動控制權完全交還給 JavaScript。
+問題: portfolio.html 的佈局與設計稿不符（連結位置錯誤、篩選器多餘、有舊版靜態預覽圖殘留）。
 
-B. project.html / about.html 桌面版佈局跑版
+修復 (v11.2):
 
-問題: 在 v9.9 版本中，為了修復內頁在手機版的 Back 按鈕佈局，我們錯誤地修改了 project.html 等檔案的 HTML 結構，將 .left-column-bottom (導航區) 從 <aside class="left-column"> 移出，放入了一個全域 <footer>。
+portfolio.html: 將右欄的導航連結 (#desktopContactLinks) 移至左欄的 .left-column-bottom。
 
-症狀: 這導致桌面版的 grid 佈局失效。左側欄位的 margin-top: auto 壓縮了中間的 BIO/INFO 區塊，導致其消失；Back/Next 按鈕也因此錯位。
+portfolio.html: 移除了 "Comm. Photo" 篩選按鈕 (桌面版與手機版)。
 
-最終修復 (v11.0):
+修復 (v11.3):
 
-project.html / about.html / gallery.html (v11.0): 還原 HTML 結構。刪除 v9.9 引入的 <footer>，將 .left-column-bottom 區塊移回 <aside class="left-column"> 內部。
+portfolio.html: 徹底刪除了舊的靜態預覽圖區塊 (.profile-block)。
 
-css/main.css (v11.0): 恢復 v9.x 的桌面版佈局。grid-template-columns (2 欄) 和 margin-top: auto (推底) 的 CSS 規則現在可以正確套用到統一的 HTML 結構上。
+main.css: 將 about.html 的 .left-column-top 高度設為 50vh，使其資訊區塊 (BIO/CONTACT) 垂直對齊 portfolio.html。
 
-css/main.css (v11.0): 保留 v9.9 的手機版 fixed footer 邏輯。手機 RWD 規則現在會隱藏 .left-column-bottom (在 aside 內)，並顯示獨立的 .subpage-footer (在 body 層級)。
+D. 啟用手機版浮動預覽視窗 (v11.4)
 
-4. 關鍵架構決策 (v11.0)
+問題: 根據 v10.0 指南，手機版的浮動預覽視窗被 index.js 中的 if (!isMobile()) 檢查禁用了，與 v11.6 的統一體驗需求不符。
 
-目前專案採用了混合滾動模型 (Hybrid Scrolling Model)：
+修復 (v11.4):
 
-portfolio.html (主頁):
+js/index.js: 移除了 setActiveItem 函式中 updateRandomPreview 呼叫點的 if (!isMobile()) 條件。
 
-桌面版: JS (wheel) + CSS (scroll-snap)。
+js/index.js: 在 updateRandomPreview 函式中增加了邏輯，當偵測為 isMobile() 時，動態計算 px 位置以確保視窗置中。
 
-手機版: JS (touchstart + preventDefault)。
+css/main.css: 調整了手機版 .random-preview-popup 的 aspect-ratio 為 1 / 1。
 
-原因: 解決行動裝置上的 CSS 渲染 Bug。
+E. 修復手機版 portfolio.html 佈局與 JS 錯誤 (v11.5)
 
-gallery.html (畫廊):
+問題: 啟用 v11.4 的 JS 後，手機版浮動視窗未出現，且 Footer 佈局錯誤 (篩選器與連結重疊)。
 
-桌面版: JS (mousedown + wheel)。
+修復 (v11.5):
 
-手機版: JS (touchstart + touchmove)。
+ID 錯誤: portfolio.html 中的預覽視窗 ID 為 #mobilePreviewPopup，而 index.js 尋找的是 #randomPreviewPopup。已將 HTML 中的 ID 修正為 #randomPreviewPopup 和 #randomPreviewImage。
 
-原因: 統一所有裝置的「無限畫布」體驗。
+HTML 結構錯誤: portfolio.html 中缺少了 .main-footer 標籤，導致聯絡連結被錯誤地放入 .mobile-footer。已還原 v10.0 的雙層 Footer 結構，將 .mobile-contact-links 移回獨立的 .main-footer 中。
 
-project.html / about.html (內頁):
+未來可優化的方向 (v11.7 新增)
 
-桌面版: CSS (overflow: auto on .project-content-column)。
+在 v11.6 版本中，我們專注於修復佈局與統一體驗。以下是我們在先前討論中提到，但尚未執行的未來優化項目，可在未來 2.0 版本中考慮實作：
 
-手機版: CSS (overflow: auto on <body>)。
+A. 模組化與資料抓取 (Code Modularity & Data Fetching)
 
-原因: 內容最單純，使用原生 (Native) 滾動最穩定。
+問題: 目前 index.js, project.js, gallery.js 三個檔案各自 fetch('./data/projects.json')。
+
+優化方向: 建立一個共用的 dataService.js 模組，由它負責 fetch 資料一次並緩存 (cache) 結果。其他 JS 檔案透過 import 取得資料，可減少網路請求並統一資料入口。 (需將 <script> 標籤改為 type="module")。
+
+B. gallery.html 的效能擴展性 (Scalability)
+
+問題: gallery.js 會一次性將所有專案的所有圖片 (包含封面) 渲染為 DOM 元素。如果專案增加到 50 個 (150+ 圖片)，將導致頁面載入緩慢且消耗大量記憶體。
+
+優化方向: 採用「虛擬化」 (Virtualization) 策略。JS 僅渲染當前視窗可見範圍內的圖片 DOM，並在圖片移出視窗時將其移除或回收。
+
+C. 全站一致的頁面轉場 (Page Transitions)
+
+問題: 我們在 v11.1 中移除了頁面轉場。如果未來決定重新啟用，舊架構的轉場是單向的 (僅離開 portfolio.html)。
+
+優化方向: 如果重新實作，應建立一個共用的 transition.js，並在所有頁面載入。此腳本應攔截所有內部連結點擊，統一觸發「淡出」動畫，並在頁面載入時觸發「淡入」動畫，以確保全站體驗一致。
