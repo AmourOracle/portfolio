@@ -85,17 +85,19 @@ header {
 .portfolio-container, .middle-container {
     display: grid;
     gap: 2rem;
-    /* MOD: (FIX_v9.4) 內頁 (middle-container) 高度改為 auto */
-    height: auto; 
+    /* (MOD_v11.2) (Req 1) 統一將容器高度限制為視窗高度，使內頁滾動邏輯同主頁 */
+    height: calc(100vh - 60px); 
     
     padding: 0 4rem 60px 4rem;
     box-sizing: border-box;
 }
 /* (FIX_v9.4) 僅 portfolio-container (主頁) 需要鎖定高度 */
+/* (MOD_v11.2) 此規則已被併入上方 .middle-container */
+/*
 .portfolio-container {
     height: calc(100vh - 60px);
 }
-
+*/
 
 
 /* --- 左側欄位 (通用) --- */
@@ -265,6 +267,7 @@ header {
     padding-bottom: 0.5rem; 
 }
 /* (MOD_v11.0) 恢復 v9.x 桌面版左下角連結樣式 (Req 1.1) */
+/* (MOD_v11.2) (Req 3) 此規則現在適用於 portfolio.html 的左下角連結 */
 .left-column .contact-links ul {
     justify-content: flex-start; 
     gap: clamp(0.5rem, 1.2vw, 1.2rem); 
@@ -282,6 +285,7 @@ header {
     display: flex;
     gap: clamp(0.5rem, 1.5vw, 1.5rem);
     /* (MOD_v11.0) 恢復 v9.x 預設 (用於 .right-column) */
+    /* (MOD_v11.2) (Req 3) .right-column 中的連結已被移除，但保留此規則 */
     justify-content: flex-end;
 }
 .contact-links li {
@@ -436,7 +440,11 @@ header {
 .middle-container.project-layout,
 .middle-container.about-layout { 
     grid-template-columns: 28.57% 1fr; 
-    grid-template-rows: 1fr;
+    /* (MOD_v11.2) (Req 1) 
+       - 移除 1fr row. 
+       - 容器高度已由 .middle-container (line 103) 設為 100vh
+       - grid-template-rows: 1fr; 
+    */
 }
 
 
@@ -511,9 +519,14 @@ header {
     justify-content: flex-start;
 }
 
+/* (MOD_v11.2) (Req 1) 
+   - 確保內頁的內容欄位可滾動 (overflow-y: auto)
+   - .left-column (line 114) 已有 height: 100%，會被 .middle-container (line 103) 的 100vh 高度限制
+   - 這使得 .project-content-column 成為 grid 中唯一可滾動的區域
+*/
 .project-content-column { 
     padding-top: 1.5rem; 
-    overflow-y: auto; 
+    overflow-y: auto; /* 關鍵：允許此欄位滾動 */
     padding-right: 1rem; 
     grid-row: 1;
     scrollbar-width: none; 
@@ -581,7 +594,11 @@ header {
 /* (MOD_v11.0) 恢復 v9.x 桌面版佈局 */
 .middle-container.gallery-layout { 
     grid-template-columns: 28.57% 1fr; /* 恢復 2 欄 */
-    grid-template-rows: 1fr;
+    /* (MOD_v11.2) (Req 1) 
+       - 移除 1fr row. 
+       - 容器高度已由 .middle-container (line 103) 設為 100vh
+       - grid-template-rows: 1fr;
+    */
 }
 
 /* (MOD_v11.0) 恢復 v9.x 桌面版佈局 */
@@ -602,7 +619,7 @@ header {
 
 .gallery-content-column {
     position: relative;
-    overflow: hidden; 
+    overflow: hidden; /* 關鍵：此欄位本身不滾動 */
     height: 100%;
     cursor: grab; 
     padding: 0; 
@@ -732,13 +749,15 @@ header {
     .middle-container.project-layout,
     .middle-container.about-layout { 
         grid-template-columns: 1fr 2fr; 
-        grid-template-rows: 1fr;
+        /* (MOD_v11.2) 移除 1fr row (Req 1) */
+        /* grid-template-rows: 1fr; */
     }
 
     /* (MOD_v11.0) 恢復 v10.1 平板電腦 2 欄佈局 */
     .middle-container.gallery-layout { 
         grid-template-columns: 1fr 2fr; 
-        grid-template-rows: 1fr;
+        /* (MOD_v11.2) 移除 1fr row (Req 1) */
+        /* grid-template-rows: 1fr; */
     }
     .gallery-layout .gallery-content-column {
         padding: 0;
@@ -916,12 +935,21 @@ header {
        - .portfolio-scroll-lock 取代 :has()
        - 確保 *非* 主頁的 body 可以滾動
     */
+    /* (MOD_v11.2) (Req 1) 
+       - 恢復 v9.9 的手機版內頁 body 滾動邏輯
+       - 桌面版 .middle-container 已設為 100vh 高度
+       - 此處 RWD 規則會覆蓋它，讓手機版內頁 body 可滾動
+    */
     body:not(.portfolio-scroll-lock) {
         overflow: auto; /* 恢復 body 滾動 */
         padding-bottom: 60px; /* (FIX_v9.9) 為 fixed footer 騰出空間 */
         height: auto;
     }
 
+    /* (MOD_v11.2) (Req 1) 
+       - 恢復 v9.9 的手機版內頁 .middle-container 佈局
+       - 高度設回 auto，讓 body 滾動
+    */
     .middle-container { 
         grid-template-columns: 1fr; 
         padding: 2rem 2rem 60px 2rem; 
@@ -1089,13 +1117,21 @@ header {
        - 修正手機版滾動衝突
        - :not() 確保此規則 *只* 套用在內頁
     */
-    .middle-container:not(.portfolio-container) .center-column {
+    /* (MOD_v11.2) (Req 1) 
+       - 此規則現在已由 .middle-container (line 629) 的 height: auto 處理
+       - 但保留 .project-content-column 的 overflow: visible
+    */
+    .middle-container:not(.portfolio-container) .project-content-column {
         overflow-y: visible;
         padding-right: 0; 
         padding: 0;
         mask-image: none; 
     }
     
+    /* (MOD_v11.2) (Req 1) 
+       - 此規則已由 .middle-container (line 629) 的 height: auto 處理
+       - (此規則似乎是多餘的，但保留)
+    */
     .middle-container .project-list {
         padding-top: 0;
         padding-bottom: 0;
