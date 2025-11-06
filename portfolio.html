@@ -131,6 +131,10 @@
         </nav>
         
         <!-- (Request v3.10) 手機版 Footer -->
+        <!-- (MOD_v11.5) (Bug B) 
+          - 修正 Footer 結構錯誤
+          - .mobile-footer 僅包含篩選器
+        -->
         <footer class="mobile-footer">
             <!-- (Request v3.16) 新增手機版篩選器 -->
             <ul class="mobile-filter-nav">
@@ -141,19 +145,34 @@
                 <li><a href="#" data-filter="Identity">Branding</a></li>
             </ul>
             
-            <!-- (Request v3.10) 手機版外部連結 -->
-            <!-- (Request v3.16) 增加 class 區分 -->
-            <!-- (FEAT_v4.13) 新增 ID "mobileContactLinks" 用於轉場綁定 -->
-            <ul class="mobile-contact-links" id="mobileContactLinks">
-                <li><a href="mailto:email@example.com">Email</a></li>
-                <li><a href="#" target="_blank">Instagram</a></li>
-                <li><a href="about.html">Me</a></li>
-            </ul>
+            <!-- (MOD_v11.5) (Bug B) 
+              - .mobile-contact-links 已移至下方的 .main-footer
+            -->
         </footer>
 
-        <!-- (Task 3) ADD: Mobile Preview Popup -->
-        <div id="mobilePreviewPopup" class="mobile-preview-popup">
-            <img id="mobilePreviewImage" src="" alt="Project preview">
+        <!-- (MOD_v11.5) (Bug B) 
+          - 補回 v10.0 遺失的 .main-footer (用於手機版聯絡連結)
+          - CSS (body.portfolio-scroll-lock .main-footer) 將會選取此元素
+        -->
+        <footer class="main-footer">
+            <div class="footer-left"></div> <!-- CSS (line 864) 預期此元素存在 -->
+            <div class="footer-right"> <!-- CSS (line 867) 預期此元素存在 -->
+                <!-- (MOD_v11.5) .mobile-contact-links 已移至此處 -->
+                <ul class="mobile-contact-links" id="mobileContactLinks">
+                    <li><a href="mailto:email@example.com">Email</a></li>
+                    <li><a href="#" target="_blank">Instagram</a></li>
+                    <li><a href="about.html">Me</a></li>
+                </ul>
+            </div>
+        </footer>
+
+        <!-- (MOD_v11.5) (Bug A) 
+          - 修正 ID 錯誤 (mobilePreviewPopup -> randomPreviewPopup)
+          - 修正 ID 錯誤 (mobilePreviewImage -> randomPreviewImage)
+          - 使其與 index.js (v11.4) 和 main.css (v11.4) 匹配
+        -->
+        <div id="randomPreviewPopup" class="random-preview-popup">
+            <img id="randomPreviewImage" src="" alt="Project preview">
         </div>
     </main>
     
