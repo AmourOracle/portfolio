@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // --- (REFACTOR_v10.0) 滾動邏輯變數 ---
     let allProjectItems = [];
-    let currentActiveIndex = 0; 
+    let currentActiveIndex = -1; // (FIX_v11.8) 設為無效索引，以強制初始載入
     let visibleItems = []; 
     
     const centerColumn = document.querySelector('.portfolio-container .center-column');
@@ -130,9 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
             visibleItems = [...allProjectItems]; 
             
             if (visibleItems.length > 0) {
-                currentActiveIndex = 0;
-                // 立即 ('auto') 跳轉到第一個項目並更新 UI
-                setActiveItem(currentActiveIndex, 'auto'); 
+                // (FIX_v11.8) currentActiveIndex 初始值為 -1 (第 35 行)
+                const initialIndex = 0;
+                // (FIX_v11.8) 立即 ('auto') 跳轉到第一個項目並更新 UI
+                setActiveItem(initialIndex, 'auto'); 
                 
                 // 觸發CSS入場動畫
                 setTimeout(() => {
@@ -191,7 +192,10 @@ document.addEventListener('DOMContentLoaded', () => {
             index = visibleItems.length - 1;
         }
         
-        // 如果索引相同，且不是被動觸發 (false)，則返回
+        // (FIX_v11.8) 
+        // 初始 currentActiveIndex 為 -1，
+        // 第一次呼叫 setActiveItem(0, 'auto') 時，
+        // (0 === -1) 為 false，因此函式會繼續執行，解決了初始載入 Bug。
         if (scrollBehavior !== false && index === currentActiveIndex) {
             return;
         }
@@ -314,6 +318,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (previewBlockBio) previewBlockBio.classList.remove('hide-section');
         }
+        
+        // (FIX_v11.8) 確保在重置時，索引也重置回無效狀態
+        // (註：如果篩選為空，下一次點擊篩選器時，setActiveItem(0) 無論如何都會觸發)
+        // (為求保險，我們仍將其設為 -1)
+        currentActiveIndex = -1;
     }
 
     // --- (REFACTOR_v10.0) 桌面版滾輪事件 (v9.x 邏輯) ---
@@ -332,6 +341,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const direction = event.deltaY > 0 ? 1 : -1;
         let newIndex = currentActiveIndex + direction;
+        
+        // (FIX_v11.8) 修正初始滾動
+        // 如果 currentActiveIndex 是 -1 (初始狀態)，滾動時應跳到 0
+        if (currentActiveIndex === -1) {
+            newIndex = 0;
+        }
 
         // 邊界檢查 (v9.x 邏輯)
         if (newIndex < 0) newIndex = 0;
@@ -390,6 +405,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // 判斷方向
             const direction = deltaY > 0 ? -1 : 1; // 往上滑 (Y 變小) 是 -1，往下 (Y 變大) 是 +1
             let newIndex = currentActiveIndex + direction;
+            
+            // (FIX_v11.8) 修正初始觸控
+            if (currentActiveIndex === -1) {
+                newIndex = 0;
+            }
 
             // 邊界檢查 (v9.x 邏輯)
             if (newIndex < 0) newIndex = 0;
@@ -438,6 +458,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
+            if (!closestItem) return; // (FIX_v11.8) 增加保護
+
             const newIndex = visibleItems.indexOf(closestItem);
 
             if (newIndex !== -1 && newIndex !== currentActiveIndex) {
@@ -462,7 +484,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const newIndex = visibleItems.indexOf(clickedItem);
         if (newIndex === -1) return; 
-
+        
+        // (FIX_v11.8) 修正初始點擊
+        // 如果 currentActiveIndex 是 -1 (初始狀態)，此時 newIndex 必定不是 -1
+        // (newIndex === currentActiveIndex) 檢查 (例如 0 === -1) 會是 false
+        
         if (newIndex === currentActiveIndex) {
             // 情況 2：項目已啟用 -> 允許預設的連結點擊行為
             // (不執行 event.preventDefault()，點擊事件將自然傳遞到 <a> 標籤)
