@@ -196,6 +196,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // 初始 currentActiveIndex 為 -1，
         // 第一次呼叫 setActiveItem(0, 'auto') 時，
         // (0 === -1) 為 false，因此函式會繼續執行，解決了初始載入 Bug。
+        // (FIX_v11.9)
+        // 篩選器 (handleFilterClick) 會在呼叫此函式前將 currentActiveIndex 設為 -1，
+        // 確保 (0 === -1) 為 false，強制更新 UI。
         if (scrollBehavior !== false && index === currentActiveIndex) {
             return;
         }
@@ -539,6 +542,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (visibleItems.length > 0) {
             let targetIndex = 0; 
+            
+            // (FIX_v11.9) 
+            // 在呼叫 setActiveItem 之前，重設索引
+            // 確保 (0 === 0) 的檢查不會提早 return，強制 UI 更新
+            currentActiveIndex = -1; 
+            
             setTimeout(() => {
                 // 篩選後使用 'auto' 立即跳轉
                 setActiveItem(targetIndex, 'auto');
