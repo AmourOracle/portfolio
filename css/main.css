@@ -42,7 +42,8 @@ html:has(body.portfolio-scroll-lock) {
     overflow: hidden;
 }
 
-body.portfolio-scroll-lock {
+body.portfolio-scroll-lock,
+body.gallery-scroll-lock {
     height: 100vh;
     overflow: hidden;
     box-sizing: border-box;
@@ -627,7 +628,8 @@ header {
     pointer-events: none;
     /* Let clicks pass through to canvas */
     background: transparent;
-    height: 100vh;
+    /* (FIX_v11.11) Fix Overflow: Subtract header height/padding */
+    height: calc(100vh - 60px);
 }
 
 /* Title Block (Bottom Layer) */
@@ -1219,3 +1221,4 @@ header {
 
         /* (FIX_v9.9) 此規則不再需要，因為 .left-column-bottom 已被移至 footer */
     }
+}
