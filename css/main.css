@@ -6,56 +6,47 @@
     --secondary-color: #a0a0e0;
     --divider-color: #333;
 
-    /* MOD: (Request 2) 更新字體變數，建立中英文字體堆疊 */
-    --font-en: 'DM Mono', monospace; /* 英文/數字字體 */
-    --font-zh: "momochidori", sans-serif; /* 中文字體 (由 Typekit 載入) */
+    /* Font Variables */
+    --font-en: 'DM Mono', monospace;
+    --font-zh: "momochidori", sans-serif;
     --font-main: var(--font-en), var(--font-zh);
     --font-mono: var(--font-en), var(--font-zh);
 }
 
-/* --- (MOD_v11.1) 移除 Page Transition Overlay --- */
-/* .page-transition-overlay { ... } */
-/* .page-transition-overlay.is-active { ... } */
-/* --- End of Page Transition --- */
+
 
 
 /* --- 基本設定 --- */
-/* MOD: (FIX_v9.1) 移除全域 HTML 高度/滾動鎖定 */
-html {
-    /* (v9.1) 保持預設，讓內頁可以滾動 */
-}
+/* html {} - Removed empty rule */
 
 body {
     margin: 0;
     font-family: var(--font-main);
     background-color: var(--background-color);
     color: var(--text-color);
-    /* MOD: (FIX_v9.1) 移除全域 Body 高度/滾動鎖定 */
+    /* Global Body Styles */
     font-size: 16px;
-    padding-top: 60px; /* MOD: 縮小 header 高度 */
-    
-    padding-bottom: 0; 
-    
+    padding-top: 60px;
+
+    padding-bottom: 0;
+
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
-/* --- (FIX_v9.4) 鎖定 portfolio.html (主頁) 的滾動 --- */
-/* JS (index.js) 會在主頁 body 加上 .portfolio-scroll-lock */
-/* 這個 class 取代了不相容的 :has() 選擇器 */
+/* Portfolio Scroll Lock */
 html:has(body.portfolio-scroll-lock) {
-     /* (FIX_v9.4) 保留 :has() 給支援的瀏覽器，但不依賴它 */
     height: 100vh;
     overflow: hidden;
 }
+
 body.portfolio-scroll-lock {
     height: 100vh;
-    overflow: hidden; /* 防止 body 本身滾動 */
-    box-sizing: border-box; /* 確保 padding-bottom 被計算 */
+    overflow: hidden;
+    box-sizing: border-box;
 }
-/* --- End of Fix --- */
 
 
 
@@ -65,14 +56,15 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    height: 60px; /* MOD: 縮小 header 高度 */
+    height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: transparent; /* MOD: 透明 background */
+    background-color: transparent;
     z-index: 1000;
-    box-shadow: none; /* MOD: 移除陰影 */
+    box-shadow: none;
 }
+
 .logo {
     font-family: var(--font-mono);
     font-weight: 700;
@@ -82,131 +74,118 @@ header {
 }
 
 /* --- 主要容器 (通用) --- */
-.portfolio-container, .middle-container {
+.portfolio-container,
+.middle-container {
     display: grid;
     gap: 2rem;
-    /* (MOD_v11.2) (Req 1) 統一將容器高度限制為視窗高度，使內頁滾動邏輯同主頁 */
-    height: calc(100vh - 60px); 
-    
+    height: calc(100vh - 60px);
+
     padding: 0 4rem 60px 4rem;
     box-sizing: border-box;
 }
-/* (FIX_v9.4) 僅 portfolio-container (主頁) 需要鎖定高度 */
-/* (MOD_v11.2) 此規則已被併入上方 .middle-container */
-/*
-.portfolio-container {
-    height: calc(100vh - 60px);
-}
-*/
 
 
 /* --- 左側欄位 (通用) --- */
 .left-column {
     display: flex;
     flex-direction: column;
-    min-width: 0; /* 關鍵！防止 h1 內容撐開 fr 欄位 */
-    height: 100%; /* 填滿 grid 區域高度 */
-    
+    min-width: 0;
+    height: 100%;
+
     grid-row: 1;
     grid-column: 1;
     position: relative;
     z-index: 10;
 }
 
-/* ADD: 左欄頂部 (標題區) */
+/* Left Column Top */
 .left-column-top {
-    /* MOD: (FIX_v9.4) 內頁高度改為 auto */
-    height: auto; 
-    
-    box-sizing: border-box; /* 確保 padding 不會增加高度 */
-    padding-top: 2rem; /* MOD: 與 .center-column 對齊 */
+    height: auto;
+
+    box-sizing: border-box;
+    padding-top: 2rem;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* 標題置頂 */
+    justify-content: flex-start;
     flex-shrink: 0;
 }
-/* (FIX_v9.4 / MOD_v11.3) 
-   - 僅主頁和 About 頁的 left-column-top 需要 50vh 高度
-   - (Req 2) 
-*/
+
 .portfolio-container .left-column-top,
 .about-layout .left-column-top {
     height: calc(50vh - 60px);
 }
 
 
-/* ADD: 左欄中部 (BIO/INFO 區) */
+/* Left Column Middle */
 .left-column-middle {
-    height: auto; /* MOD: 高度自動 */
-    flex-shrink: 0; /* MOD: 不壓縮 */
+    height: auto;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* 內容從此區塊頂部開始 */
+    justify-content: flex-start;
 }
 
-/* ADD: (v6.3) 左欄底部 (Nav 區) */
-/* (MOD_v11.0) 恢復 v9.x 桌面版佈局 (Req 1.1, Req 2) */
+/* Left Column Bottom */
 .left-column-bottom {
-    margin-top: auto; /* 關鍵：推到底部 */
-    padding-bottom: 0.5rem; /* 匹配間距 */
+    margin-top: auto;
+    padding-bottom: 0.5rem;
     flex-shrink: 0;
-    
+
     display: flex;
-    justify-content: flex-start; /* 預設靠左 (for portfolio links) */
+    justify-content: flex-start;
     align-items: flex-end;
-    gap: 2rem; 
+    gap: 2rem;
 }
 
-/* (MOD_v11.0) 
-  - 恢復 .project-layout (project.html) 的按鈕佈局 (Req 2)
-  - 讓 Back/Next 分散對齊
-*/
 .project-layout .left-column-bottom {
-    justify-content: space-between; 
-    gap: 0; 
+    justify-content: space-between;
+    gap: 0;
 }
 
-/* (MOD_v11.0) 
-  - 恢復 .about-layout (about.html) 的按鈕佈局 (Req 2)
-  - Next 按鈕將在 HTML 中被移除，此規則確保 Back 按鈕靠左
-*/
 .about-layout .left-column-bottom {
     justify-content: flex-start;
 }
 
 
-.name-block { position: relative; }
-.name-block .label { 
-    font-family: var(--font-mono); 
-    font-size: 0.8rem; 
-    color: var(--secondary-color); 
-    position: absolute; 
-    top: 0.5rem; 
-    left: 0.2rem; 
-    transition: opacity 0.3s ease-in-out; 
-    width: 100px; 
-    display: inline-block; 
+.name-block {
+    position: relative;
+}
+
+.name-block .label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    position: absolute;
+    top: 0.5rem;
+    left: 0.2rem;
+    transition: opacity 0.3s ease-in-out;
+    width: 100px;
+    display: inline-block;
     text-align: left;
 }
+
 .name-block h1 {
     font-size: clamp(3rem, 10vw, 7rem);
     font-weight: 700;
     margin: 0;
     color: var(--primary-color);
-    line-height: 1.1; 
+    line-height: 1.1;
     transition: opacity 0.3s ease-in-out;
     word-break: break-word;
 }
-.info-divider-block { 
-    border-top: 1px solid var(--divider-color); 
-    padding-top: 1rem; 
-    margin-top: 1.5rem; 
-    display: flex; 
-    gap: 1.5rem; 
-    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-out, transform 0.3s ease-out; 
-    max-height: 500px; /* 預設高度 */
+
+.info-divider-block {
+    border-top: 1px solid var(--divider-color);
+    padding-top: 1rem;
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1.5rem;
+    transition: opacity 0.3s ease-in-out, max-height 0.3s ease-out, transform 0.3s ease-out;
+    max-height: 500px;
+    /* 預設高度 */
     overflow: hidden;
 }
+
 .info-divider-block.hide-section {
     opacity: 0;
     max-height: 0;
@@ -215,86 +194,99 @@ header {
     border-top: none;
     transform: translateY(-20px);
 }
-.info-divider-block .label { 
-    font-family: var(--font-mono); 
-    font-size: 0.8rem; 
-    color: var(--secondary-color); 
-    min-width: 100px; 
-    transition: opacity 0.3s ease-in-out; 
-    width: 100px; 
-    display: inline-block; 
-    text-align: left;
-    flex-shrink: 0; 
-}
-.info-divider-block p { font-size: 0.9rem; line-height: 1.6; color: var(--text-color); margin: 0; transition: opacity 0.3s ease-in-out; }
 
-/* --- INDEX 頁面專用 --- */
-/* (MOD_v11.0) 恢復 v9.x 桌面版 3 欄佈局 (Req 1) */
+.info-divider-block .label {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--secondary-color);
+    min-width: 100px;
+    transition: opacity 0.3s ease-in-out;
+    width: 100px;
+    display: inline-block;
+    text-align: left;
+    flex-shrink: 0;
+}
+
+.info-divider-block p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: var(--text-color);
+    margin: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* --- INDEX Page Styles --- */
 .portfolio-container {
     grid-template-columns: 28.57% 1fr 10vw;
-    grid-template-rows: 1fr; 
+    grid-template-rows: 1fr;
 }
 
-/* (FEAT_v7.2) 入場動畫 */
+/* Entrance Animation */
 .portfolio-container .left-column,
 .portfolio-container .center-column,
 .portfolio-container .right-column {
     opacity: 0;
     transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 }
+
 .portfolio-container .left-column,
 .portfolio-container .right-column {
     transform: translateY(20px);
 }
+
 .portfolio-container .center-column {
     transform: translateY(40px);
 }
+
 .portfolio-container.is-loaded .left-column,
 .portfolio-container.is-loaded .center-column,
 .portfolio-container.is-loaded .right-column {
     opacity: 1;
     transform: translateY(0);
 }
+
 .portfolio-container.is-loaded .left-column {
     transition-delay: 0.1s;
 }
+
 .portfolio-container.is-loaded .right-column {
     transition-delay: 0.2s;
 }
+
 .portfolio-container.is-loaded .center-column {
-    transition-delay: 0.3s; /* 列表最後滑入 */
+    transition-delay: 0.3s;
 }
 
 
+/* Contact Links */
 .contact-links {
-    margin-top: 1rem; 
-    padding-bottom: 0.5rem; 
-}
-/* (MOD_v11.0) 恢復 v9.x 桌面版左下角連結樣式 (Req 1.1) */
-/* (MOD_v11.2) (Req 3) 此規則現在適用於 portfolio.html 的左下角連結 */
-.left-column .contact-links ul {
-    justify-content: flex-start; 
-    gap: clamp(0.5rem, 1.2vw, 1.2rem); 
+    margin-top: 1rem;
+    padding-bottom: 0.5rem;
 }
 
-/* (MOD_v11.0) 此規則現在僅用於手機版 footer */
+.left-column .contact-links ul {
+    justify-content: flex-start;
+    gap: clamp(0.5rem, 1.2vw, 1.2rem);
+}
+
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;
 }
+
 .contact-links ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     gap: clamp(0.5rem, 1.5vw, 1.5rem);
-    /* (MOD_v11.0) 恢復 v9.x 預設 (用於 .right-column) */
-    /* (MOD_v11.2) (Req 3) .right-column 中的連結已被移除，但保留此規則 */
     justify-content: flex-end;
 }
+
 .contact-links li {
-    margin-bottom: 0; 
+    margin-bottom: 0;
 }
+
 .contact-links a {
     color: var(--secondary-color);
     text-decoration: none;
@@ -303,9 +295,11 @@ header {
     transition: color 0.3s ease;
     white-space: nowrap;
 }
-.contact-links a:hover { color: var(--primary-color); }
 
-/* (MOD_v11.0) 恢復 v9.x 邏輯，手機連結預設隱藏 */
+.contact-links a:hover {
+    color: var(--primary-color);
+}
+
 .main-footer #mobileContactLinks {
     display: none;
 }
@@ -314,21 +308,18 @@ header {
 .center-column {
     padding: 0 1rem 0 2rem;
     overflow-y: auto;
-    box-sizing: border-box; 
-    
-    /* (REFACTOR_v10.1) 桌面版保留 CSS 滾動吸附 (用於 Trackpad) */
+    box-sizing: border-box;
+
     scroll-snap-type: y mandatory;
     scroll-behavior: smooth;
 
-    mask-image: linear-gradient(
-        to bottom,
-        transparent 0%,
-        black 30%,
-        black 70%,
-        transparent 100%
-    );
-    
-    scrollbar-width: none; 
+    mask-image: linear-gradient(to bottom,
+            transparent 0%,
+            black 30%,
+            black 70%,
+            transparent 100%);
+
+    scrollbar-width: none;
 }
 
 .center-column::-webkit-scrollbar {
@@ -339,34 +330,33 @@ header {
     list-style: none;
     margin: 0;
     padding: 40vh 0;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 .project-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem; 
+    gap: 0.75rem;
     transition: opacity 0.4s ease-out, max-height 0.4s ease-out, transform 0.4s ease-out, padding 0.4s ease-out;
-    max-height: 15rem; 
+    max-height: 15rem;
     overflow: hidden;
-    padding: 0.5rem 0; 
+    padding: 0.5rem 0;
     transform-origin: center center;
-    cursor: pointer; 
-    
-    /* (REFACTOR_v10.1) 桌面版保留 CSS 滾動吸附 (用於 Trackpad) */
+    cursor: pointer;
+
     scroll-snap-align: center;
     scroll-snap-stop: always;
-    
-    /* MOD: (FIX_v9.8) 恢復桌面版 (基礎樣式) 的視覺效果 */
+
     opacity: 0.4;
     transform: scale(0.85);
 }
+
 .project-item.hide {
     opacity: 0;
     max-height: 0;
     padding-top: 0;
     padding-bottom: 0;
-    margin-top: -1px; 
+    margin-top: -1px;
 }
 
 .project-category {
@@ -374,32 +364,31 @@ header {
     font-size: 0.8rem;
     color: #999;
     min-width: 100px;
-    transition: color 0.4s ease, opacity 0.4s ease; 
-    text-align: right; 
+    transition: color 0.4s ease, opacity 0.4s ease;
+    text-align: right;
 }
 
-/* MOD: (FIX_v9.8) 恢復桌面版 (基礎樣式) 的視覺效果 */
 .project-item.is-active .project-category {
     color: var(--primary-color);
-    opacity: 0; 
+    opacity: 0;
 }
 
 .project-item a {
     display: block;
     font-size: clamp(2rem, 6vw, 4.5rem);
     font-weight: 700;
-    color: #999; 
+    color: #999;
     text-decoration: none;
-    padding: 0; 
-    transition: color 0.4s ease; 
+    padding: 0;
+    transition: color 0.4s ease;
     line-height: 1.1;
 }
 
-/* MOD: (FIX_v9.8) 恢復桌面版 (基礎樣式) 的視覺效果 */
 .project-item.is-active {
     opacity: 1;
     transform: scale(1);
 }
+
 .project-item.is-active a {
     color: var(--primary-color);
 }
@@ -419,19 +408,32 @@ header {
     margin-top: auto;
     margin-bottom: auto;
 }
+
 .category-nav h3 {
     display: none;
 }
-.category-nav ul { list-style: none; padding: 0; margin: 0; }
-.category-nav li { margin-bottom: 1rem; }
+
+.category-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.category-nav li {
+    margin-bottom: 1rem;
+}
+
 .category-nav a {
     color: var(--secondary-color);
     text-decoration: none;
     font-size: clamp(0.7rem, 1.2vw, 1rem);
     transition: color 0.3s ease;
-    cursor: pointer; 
+    cursor: pointer;
 }
-.category-nav a:hover { color: var(--primary-color); }
+
+.category-nav a:hover {
+    color: var(--primary-color);
+}
 
 .category-nav a.active {
     color: var(--primary-color);
@@ -439,49 +441,48 @@ header {
 }
 
 
-/* --- PROJECT 頁面專用 --- */
-/* (MOD_v11.0) 恢復 v9.x 桌面版 2 欄佈局 (Req 2) */
+/* --- PROJECT Page Styles --- */
 .middle-container.project-layout,
-.middle-container.about-layout { 
-    grid-template-columns: 28.57% 1fr; 
-    /* (MOD_v11.2) (Req 1) 
-       - 移除 1fr row. 
-       - 容器高度已由 .middle-container (line 103) 設為 100vh
-       - grid-template-rows: 1fr; 
-    */
+.middle-container.about-layout {
+    grid-template-columns: 28.57% 1fr;
 }
 
 
-.back-button-block { 
-    display: inline-flex; 
-    align-items: baseline; 
-    gap: 0.8rem; 
-    color: var(--secondary-color); 
-    text-decoration: none; 
-    font-family: var(--font-mono); 
-    font-size: 0.9rem; 
-    transition: color 0.3s ease; 
+.back-button-block {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
 }
-.back-button-block:hover { color: var(--primary-color); }
 
-.back-button-block .arrow { 
-    font-size: 1.5rem; 
-    transition: transform 0.3s ease; 
+.back-button-block:hover {
+    color: var(--primary-color);
 }
+
+.back-button-block .arrow {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
 .back-button-block:hover .arrow {
-    transform: translateX(-5px); 
+    transform: translateX(-5px);
 }
 
 
 .next-project-block {
-    display: flex; 
+    display: flex;
     flex-direction: row;
-    align-items: flex-end; 
-    gap: 0.5rem; 
+    align-items: flex-end;
+    gap: 0.5rem;
     text-decoration: none;
     color: var(--secondary-color);
     transition: color 0.3s ease;
 }
+
 .next-project-block:hover {
     color: var(--primary-color);
 }
@@ -489,77 +490,78 @@ header {
 .next-project-text-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: flex-end; 
+    align-items: flex-end;
     text-align: right;
 }
 
 .next-project-block .label {
-    font-family: var(--font-mono); 
-    font-size: 0.7rem; 
-    color: var(--secondary-color); 
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--secondary-color);
     text-align: right;
 }
 
 #nextProjectTitle {
-    font-family: var(--font-mono); 
-    font-size: 0.9rem; 
-    color: currentColor; 
-    margin-top: 0.25rem; 
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: currentColor;
+    margin-top: 0.25rem;
 }
 
 .next-project-block .arrow {
-    font-size: 1.2rem; 
-    line-height: 1; 
+    font-size: 1.2rem;
+    line-height: 1;
     transition: transform 0.3s ease;
 }
+
 .next-project-block:hover .arrow {
-    transform: translateX(5px); 
+    transform: translateX(5px);
 }
 
-/* (MOD_v11.0) 此規則現在僅用於手機版 footer */
 .main-footer .contact-links {
     margin-top: 0;
     padding-bottom: 0;
     justify-content: flex-start;
 }
 
-/* (MOD_v11.2) (Req 1) 
-   - 確保內頁的內容欄位可滾動 (overflow-y: auto)
-   - .left-column (line 114) 已有 height: 100%，會被 .middle-container (line 103) 的 100vh 高度限制
-   - 這使得 .project-content-column 成為 grid 中唯一可滾動的區域
-*/
-.project-content-column { 
-    padding-top: 1.5rem; 
-    overflow-y: auto; /* 關鍵：允許此欄位滾動 */
-    padding-right: 1rem; 
+.project-content-column {
+    padding-top: 1.5rem;
+    overflow-y: auto;
+    padding-right: 1rem;
     grid-row: 1;
-    scrollbar-width: none; 
+    scrollbar-width: none;
 }
+
 .project-content-column::-webkit-scrollbar {
     display: none;
 }
 
-.project-content-column img { width: 100%; height: auto; margin-bottom: 2rem; }
+.project-content-column img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 2rem;
+}
 
-/* --- About Page 靜態內容樣式 --- */
+/* --- About Page Static Content Styles --- */
 
 .about-intro-text {
     margin-bottom: 4rem;
 }
+
 .about-intro-text p {
-    font-size: clamp(1.8rem, 4vw, 3rem); 
-    font-family: var(--font-mono); 
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-family: var(--font-mono);
     font-weight: 700;
     line-height: 1.3;
     color: var(--primary-color);
-    text-transform: uppercase; 
+    text-transform: uppercase;
     margin: 0;
 }
 
 .about-details-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 3rem 2rem; 
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem 2rem;
 }
 
 .about-details-grid .grid-item {
@@ -573,7 +575,7 @@ header {
     font-size: 0.8rem;
     color: var(--secondary-color);
     margin-bottom: 1rem;
-    text-transform: uppercase; 
+    text-transform: uppercase;
 }
 
 .about-details-grid .grid-item p {
@@ -581,11 +583,13 @@ header {
     line-height: 1.6;
     color: var(--text-color);
     margin: 0;
-    margin-bottom: 1rem; 
+    margin-bottom: 1rem;
 }
+
 .about-details-grid .grid-item p:last-child {
     margin-bottom: 0;
 }
+
 /* --- End of About Page Styles --- */
 
 
@@ -594,48 +598,72 @@ header {
 }
 
 
-/* --- Gallery Page 專用樣式 --- */
-/* (MOD_v11.0) 恢復 v9.x 桌面版佈局 */
-.middle-container.gallery-layout { 
-    grid-template-columns: 28.57% 1fr; /* 恢復 2 欄 */
-    /* (MOD_v11.2) (Req 1) 
-       - 移除 1fr row. 
-       - 容器高度已由 .middle-container (line 103) 設為 100vh
-       - grid-template-rows: 1fr;
-    */
+/* --- Gallery Page Styles --- */
+/* (MOD_v11.7) Full Screen Canvas */
+.gallery-full-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+    /* Canvas on top of Title */
+    overflow: hidden;
+    cursor: grab;
 }
 
-/* (MOD_v11.0) 恢復 v9.x 桌面版佈局 */
-.gallery-layout .gallery-content-column {
-    padding: 0; 
-    grid-row: 1;
-    grid-column: 2; /* 恢復第 2 欄 */
-    z-index: auto; 
-    pointer-events: auto; /* 恢復 pointer-events */
+.gallery-full-screen:active {
+    cursor: grabbing;
 }
 
-/* (MOD_v11.0) 恢復 v9.x 桌面版佈局 */
-.gallery-layout .left-column-bottom {
-    position: static; /* 恢復靜態 */
-    z-index: auto; 
-}
-
-
-.gallery-content-column {
+/* (MOD_v11.7) UI Layer */
+.middle-container.gallery-layout.ui-layer {
     position: relative;
-    overflow: hidden; /* 關鍵：此欄位本身不滾動 */
-    height: 100%;
-    cursor: grab; 
-    padding: 0; 
+    z-index: 0;
+    /* Title at bottom layer */
+    pointer-events: none;
+    /* Let clicks pass through to canvas */
+    background: transparent;
+    height: 100vh;
+    /* Ensure it covers screen for layout */
 }
+
+/* Title Block (Bottom Layer) */
+.gallery-layout .left-column-top {
+    position: relative;
+    z-index: 0;
+    pointer-events: auto;
+    /* Allow text selection if needed, or none */
+}
+
+/* Back Button (Top Layer) */
+.gallery-layout .left-column-bottom {
+    position: relative;
+    z-index: 2;
+    /* Buttons on top of Canvas */
+    pointer-events: auto;
+    /* Clickable */
+}
+
+/* Remove old grid constraints for canvas */
+.middle-container.gallery-layout {
+    grid-template-columns: 28.57% 1fr;
+}
+
+/* Remove old column styles */
+/* .gallery-layout .gallery-content-column { ... } */
+
+
+/* #galleryContainer is now .gallery-full-screen */
+/* .gallery-content-column { ... } */
 .gallery-content-column:active {
-    cursor: grabbing; 
+    cursor: grabbing;
 }
 
 #pan-container {
-    transform-origin: 0 0; 
+    transform-origin: 0 0;
     position: relative;
-    pointer-events: auto; 
+    pointer-events: auto;
 }
 
 .gallery-item {
@@ -643,16 +671,16 @@ header {
     display: block;
     background-color: #222;
     border: 1px solid var(--divider-color);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
     transform: rotate(var(--rotate-deg, 0deg));
-    pointer-events: auto; 
+    pointer-events: auto;
 }
 
 .gallery-item:hover {
-    transform: rotate(var(--rotate-deg, 0deg)) scale(1.1); 
-    box-shadow: 0 15px 40px rgba(0,0,0,0.4);
-    z-index: 999 !important; 
+    transform: rotate(var(--rotate-deg, 0deg)) scale(1.1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    z-index: 999 !important;
 }
 
 .gallery-item img {
@@ -662,19 +690,18 @@ header {
     display: block;
 }
 
-/* MOD: (MOD_v10.2) 移除 .is-mobile-grid 相關規則 */
-/* --- End of Gallery Page Styles --- */
 
 
-/* --- ADD: (v5.0) 全站 Footer --- */
+
+/* --- Footer --- */
 .main-footer {
-    display: none; 
+    display: none;
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 60px; 
-    padding: 0 4rem; 
+    height: 60px;
+    padding: 0 4rem;
     box-sizing: border-box;
     justify-content: space-between;
     align-items: center;
@@ -682,44 +709,44 @@ header {
     z-index: 1000;
 }
 
-.footer-left, .footer-right {
+.footer-left,
+.footer-right {
     display: flex;
     align-items: center;
-    gap: 2rem; 
+    gap: 2rem;
 }
 
 .footer-right {
     justify-content: flex-end;
 }
+
 /* --- End of Footer --- */
 
 
-/* --- ADD: (Request v3.13) 預設隱藏手機版 Footer --- */
 .mobile-footer {
-    display: none; /* 預設在桌面版隱藏 */
+    display: none;
 }
 
 
 
-/* --- (v6.0) 新增 Random Preview Popup --- */
-/* (MOD_v11.0) 恢復 v9.x 懸浮視窗 (Req 1.2) */
+/* --- Random Preview Popup --- */
 .random-preview-popup {
     position: fixed;
-    width: 440px; 
+    width: 440px;
     aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
-    z-index: 2000; 
+    z-index: 2000;
     pointer-events: none;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     overflow: hidden;
-    
+
     opacity: 0;
     transform-origin: center center;
-    
+
     transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    
-    top: 0; 
+
+    top: 0;
     left: 0;
     transform: translate(50vw, 50vh) scale(0.5);
 }
@@ -734,40 +761,37 @@ header {
     object-fit: cover;
     display: block;
 }
-/* --- End of (v6.0) --- */
 
 
 
 
-/* --- 響應式設計 --- */
+
+/* --- Responsive Design --- */
 @media (max-width: 1024px) {
-    .portfolio-container, .middle-container {
+
+    .portfolio-container,
+    .middle-container {
         padding: 0 2rem 60px 2rem;
     }
-    
+
     .portfolio-container {
         grid-template-columns: 1.5fr 1fr;
     }
-    
-    /* (MOD_v11.0) 恢復 v9.x 平板電腦 2 欄佈局 (Req 2) */
+
     .middle-container.project-layout,
-    .middle-container.about-layout { 
-        grid-template-columns: 1fr 2fr; 
-        /* (MOD_v11.2) 移除 1fr row (Req 1) */
-        /* grid-template-rows: 1fr; */
+    .middle-container.about-layout {
+        grid-template-columns: 1fr 2fr;
     }
 
-    /* (MOD_v11.0) 恢復 v10.1 平板電腦 2 欄佈局 */
-    .middle-container.gallery-layout { 
-        grid-template-columns: 1fr 2fr; 
-        /* (MOD_v11.2) 移除 1fr row (Req 1) */
-        /* grid-template-rows: 1fr; */
+    .middle-container.gallery-layout {
+        grid-template-columns: 1fr 2fr;
     }
+
     .gallery-layout .gallery-content-column {
         padding: 0;
-        grid-column: 2; 
-        z-index: auto; 
-        pointer-events: auto; 
+        grid-column: 2;
+        z-index: auto;
+        pointer-events: auto;
     }
 
     .gallery-layout .left-column-bottom {
@@ -776,8 +800,10 @@ header {
     }
 
 
-    .right-column { display: none; }
-    
+    .right-column {
+        display: none;
+    }
+
     .main-footer {
         padding: 0 2rem;
     }
@@ -786,376 +812,397 @@ header {
         width: 300px;
     }
 
-    /* (FIX_v9.7) 平板裝置 (<= 1024px) 保持桌面視覺效果 */
-    /* (此處規則繼承基礎樣式，不需額外添加) */
-}
-
-/* --- (Request v3.9) 手機版首頁 (portfolio.html) --- */
-@media (max-width: 768px) {
-    /* (FIX_v9.4) 
-       - .portfolio-scroll-lock 取代 :has()
-       - 確保主頁的 body 被鎖定
-    */
-    body.portfolio-scroll-lock {
-        overflow: hidden; 
-        padding-bottom: 121px;
-        height: 100%;
+    .random-preview-popup {
+        width: 300px;
     }
 
-    .portfolio-container { 
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr; 
-        padding: 2rem 0 0 0; 
-        height: calc(100vh - 181px); 
-    }
-    
-    /* --- (REFACTOR_v10.1) --- */
-    /* - 關鍵修復：還原 JS 驅動邏輯 (v4.13)
+    @media (max-width: 768px) {
+        body.portfolio-scroll-lock {
+            overflow: hidden;
+            padding-bottom: 121px;
+            height: 100%;
+        }
+
+        .portfolio-container {
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+            padding: 2rem 0 0 0;
+            height: calc(100vh - 181px);
+        }
+
+        /* --- (REFACTOR_v10.1) --- */
+        /* - 關鍵修復：還原 JS 驅動邏輯 (v4.13)
       - JS (v10.0) 現在會劫持 'touch' 事件並手動呼叫 'scrollIntoView'
       - CSS *不能* 再使用 'overflow: auto' 或 'scroll-snap-type'
     */
-    .portfolio-container .center-column {
-        overflow-y: visible; /* 關鍵：改回 visible (v4.13 邏輯) */
-        padding: 0; 
-        mask-image: none; 
-        scroll-snap-type: none; /* 關鍵：移除滾動吸附 */
-    }
-    /* --- 結束 (REFACTOR_v10.1) --- */
+        .portfolio-container .center-column {
+            overflow-y: visible;
+            /* 關鍵：改回 visible (v4.13 邏輯) */
+            padding: 0;
+            mask-image: none;
+            scroll-snap-type: none;
+            /* 關鍵：移除滾動吸附 */
+        }
+
+        /* --- 結束 (REFACTOR_v10.1) --- */
 
 
-    .portfolio-container .left-column,
-    .portfolio-container .right-column {
-        display: none !important;
-    }
-    
-    .mobile-footer {
-        display: flex;
-        align-items: center; 
-        border-top: 1px solid var(--divider-color);
-        position: fixed;
-        bottom: 60px;
-        left: 0;
-        width: 100%;
-        z-index: 1000;
-        background-color: var(--background-color);
-        box-sizing: border-box;
-        height: 61px; 
-        padding: 0; 
-    }
-    
-    .mobile-filter-nav {
-        width: 100%; 
-        overflow-x: auto; 
-        -webkit-overflow-scrolling: touch; 
-        scrollbar-width: none; 
-        
-        display: flex;
-        justify-content: center; 
-        gap: 1.5rem; 
-        
-        padding: 0 2rem; 
-        box-sizing: border-box;
-        
-        list-style: none;
-        margin: 0;
-    }
-    .mobile-filter-nav::-webkit-scrollbar {
-        display: none; 
-    }
-    .mobile-filter-nav li {
-        flex-shrink: 0; 
-        margin-bottom: 0; 
-    }
+        .portfolio-container .left-column,
+        .portfolio-container .right-column {
+            display: none !important;
+        }
 
-    .mobile-filter-nav a {
-        color: var(--secondary-color);
-        text-decoration: none;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        transition: color 0.3s ease;
-    }
-    .mobile-filter-nav a:hover {
-        color: var(--primary-color);
-    }
-    .mobile-filter-nav a.active {
-        color: var(--primary-color);
-        font-weight: 700;
-    }
+        .mobile-footer {
+            display: flex;
+            align-items: center;
+            border-top: 1px solid var(--divider-color);
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: var(--background-color);
+            box-sizing: border-box;
+            height: 61px;
+            padding: 0;
+        }
 
-    .mobile-contact-links {
-        padding: 0 2rem; 
-        box-sizing: border-box;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        justify-content: center; 
-        flex-wrap: wrap; 
-        gap: 1.5rem; 
-    }
-    .mobile-contact-links a {
-        color: var(--secondary-color);
-        text-decoration: none;
-        font-family: var(--font-mono);
-        font-size: 0.9rem;
-        transition: color 0.3s ease;
-    }
-    .mobile-contact-links a:hover {
-        color: var(--primary-color);
-    }
+        .mobile-filter-nav {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
 
-    .portfolio-container .project-list {
-        padding: 40vh 0;
-    }
-    
-    /* (REFACTOR_v10.1) 移除 CSS 滾動吸附 */
-    .portfolio-container .project-item {
-        scroll-snap-align: none;
-    }
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
 
-    /* --- (FIX_v9.7) 移除手機版的 iOS 選擇器視覺效果 (除錯) --- */
-    /* 覆蓋基礎樣式，確保手機版移除特效 */
-    .portfolio-container .project-item {
-        opacity: 1;
-        transform: none;
-    }
-    .portfolio-container .project-item.is-active {
-        /* .is-active 仍然有 .project-item a 的顏色變化 */
-    }
-    .portfolio-container .project-item.is-active .project-category {
-        opacity: 1; /* 保持可見 */
-    }
-    /* --- End of Fix --- */
+            padding: 0 2rem;
+            box-sizing: border-box;
+
+            list-style: none;
+            margin: 0;
+        }
+
+        .mobile-filter-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .mobile-filter-nav li {
+            flex-shrink: 0;
+            margin-bottom: 0;
+        }
+
+        .mobile-filter-nav a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .mobile-filter-nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .mobile-filter-nav a.active {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .mobile-contact-links {
+            padding: 0 2rem;
+            box-sizing: border-box;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .mobile-contact-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .mobile-contact-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .portfolio-container .project-list {
+            padding: 40vh 0;
+        }
+
+        /* (REFACTOR_v10.1) 移除 CSS 滾動吸附 */
+        .portfolio-container .project-item {
+            scroll-snap-align: none;
+        }
+
+        /* --- (FIX_v9.7) 移除手機版的 iOS 選擇器視覺效果 (除錯) --- */
+        /* 覆蓋基礎樣式，確保手機版移除特效 */
+        .portfolio-container .project-item {
+            opacity: 1;
+            transform: none;
+        }
+
+        .portfolio-container .project-item.is-active {
+            /* .is-active 仍然有 .project-item a 的顏色變化 */
+        }
+
+        .portfolio-container .project-item.is-active .project-category {
+            opacity: 1;
+            /* 保持可見 */
+        }
+
+        /* --- End of Fix --- */
 
 
-    /* (MOD_v11.4) (Req 1)
+        /* (MOD_v11.4) (Req 1)
        - 調整手機版懸浮視窗大小
        - JS (v11.4) 會動態計算置中位置
     */
-    .random-preview-popup {
-        width: 200px; 
-        aspect-ratio: 1 / 1; /* 手機版改為 1:1 */
+        .random-preview-popup {
+            width: 200px;
+            aspect-ratio: 1 / 1;
+            /* 手機版改為 1:1 */
+        }
     }
-}
 
-/* 手機版內頁 (project.html, about.html, gallery.html) */
-@media (max-width: 768px) {
-    /* (FIX_v9.4) 
+    /* 手機版內頁 (project.html, about.html, gallery.html) */
+    @media (max-width: 768px) {
+
+        /* (FIX_v9.4) 
        - .portfolio-scroll-lock 取代 :has()
        - 確保 *非* 主頁的 body 可以滾動
     */
-    /* (MOD_v11.2) (Req 1) 
+        /* (MOD_v11.2) (Req 1) 
        - 恢復 v9.9 的手機版內頁 body 滾動邏輯
        - 桌面版 .middle-container 已設為 100vh 高度
        - 此處 RWD 規則會覆蓋它，讓手機版內頁 body 可滾動
     */
-    body:not(.portfolio-scroll-lock) {
-        overflow: auto; /* 恢復 body 滾動 */
-        padding-bottom: 60px; /* (FIX_v9.9) 為 fixed footer 騰出空間 */
-        height: auto;
-    }
+        body:not(.portfolio-scroll-lock) {
+            overflow: auto;
+            /* 恢復 body 滾動 */
+            padding-bottom: 60px;
+            /* (FIX_v9.9) 為 fixed footer 騰出空間 */
+            height: auto;
+        }
 
-    /* (MOD_v11.2) (Req 1) 
+        /* (MOD_v11.2) (Req 1) 
        - 恢復 v9.9 的手機版內頁 .middle-container 佈局
        - 高度設回 auto，讓 body 滾動
     */
-    .middle-container { 
-        grid-template-columns: 1fr; 
-        padding: 2rem 2rem 60px 2rem; 
-        height: auto; 
-    }
-    
-    /* (MOD_v11.0) 恢復 v9.x 手機版單欄佈局 (Req 2) */
-    .middle-container.project-layout,
-    .middle-container.about-layout {
-        grid-template-columns: 1fr; 
-        grid-template-rows: auto 1fr; 
-    }
-    
-    /* (MOD_v11.0) 恢復 v10.1 手機版畫布佈局 */
-    .middle-container.gallery-layout {
-        grid-template-columns: 1fr; 
-        grid-template-rows: auto 1fr; 
-    }
+        .middle-container {
+            grid-template-columns: 1fr;
+            padding: 2rem 2rem 60px 2rem;
+            height: auto;
+        }
+
+        /* (MOD_v11.0) 恢復 v9.x 手機版單欄佈局 (Req 2) */
+        .middle-container.project-layout,
+        .middle-container.about-layout {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+        }
+
+        /* (MOD_v11.0) 恢復 v10.1 手機版畫布佈局 */
+        .middle-container.gallery-layout {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+        }
 
 
-    .middle-container .left-column {
-        display: flex;
-        flex-direction: column; 
-        position: static; 
-        height: auto; 
-        margin-bottom: 3rem; 
-        gap: 2rem; 
-        grid-row: 1;
-        z-index: auto;
-    }
-    
-    /* (MOD_v11.0) 
+        .middle-container .left-column {
+            display: flex;
+            flex-direction: column;
+            position: static;
+            height: auto;
+            margin-bottom: 3rem;
+            gap: 2rem;
+            grid-row: 1;
+            z-index: auto;
+        }
+
+        /* (MOD_v11.0) 
       - 在手機版，隱藏 .left-column-bottom
       - 因為 v9.9 已經將它移至 fixed footer
     */
-    .middle-container .left-column-bottom {
-        display: none;
-    }
-    
-    .middle-container .project-content-column {
-        overflow-y: visible;
-        padding-right: 0;
-        padding-top: 0;
-        mask-image: none;
-        grid-row: 2;
-    }
-    
-    /* (MOD_v11.0) 恢復 v10.1 手機版畫布佈局 */
-    .gallery-layout .gallery-content-column {
-        grid-row: 2; 
-        grid-column: 1;
-        z-index: auto;
-        pointer-events: auto;
-    }
+        .middle-container .left-column-bottom {
+            display: none;
+        }
 
-    .gallery-layout .left-column-bottom {
-        z-index: auto;
-        display: none; /* (MOD_v11.0) 同上，隱藏 */
-    }
+        .middle-container .project-content-column {
+            overflow-y: visible;
+            padding-right: 0;
+            padding-top: 0;
+            mask-image: none;
+            grid-row: 2;
+        }
+
+        /* (MOD_v11.0) 恢復 v10.1 手機版畫布佈局 */
+        .gallery-layout .gallery-content-column {
+            grid-row: 2;
+            grid-column: 1;
+            z-index: auto;
+            pointer-events: auto;
+        }
+
+        .gallery-layout .left-column-bottom {
+            z-index: auto;
+            display: none;
+            /* (MOD_v11.0) 同上，隱藏 */
+        }
 
 
-    /* (FIX_v9.4) 
+        /* (FIX_v9.4) 
        - .portfolio-scroll-lock 取代 :has()
        - 確保主頁的 .main-footer (連結列) 顯示
     */
-    body.portfolio-scroll-lock .main-footer {
-        display: flex; 
-        padding: 0; 
-        
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        z-index: 1000;
-        background-color: var(--background-color);
-        box-sizing: border-box;
-        
-        height: 60px; 
-        flex-direction: row; 
-        align-items: center; 
-        
-        border-top: 1px solid var(--divider-color); 
-    }
-    
-    /* (FIX_v9.9) 顯示 *內頁* (subpage) 的 fixed footer */
-    /* (MOD_v11.0) 恢復 v9.9 的手機版 fixed footer 邏輯 */
-    body:not(.portfolio-scroll-lock) .main-footer.subpage-footer {
-        display: flex;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 60px; 
-        padding: 0 2rem; 
-        box-sizing: border-box;
-        justify-content: space-between;
-        align-items: center;
-        background-color: var(--background-color);
-        z-index: 1000;
-        border-top: 1px solid var(--divider-color);
-    }
-    
-    .subpage-footer .footer-right {
-        display: flex; 
-    }
-    .subpage-footer .footer-left {
-        display: flex; 
-    }
+        body.portfolio-scroll-lock .main-footer {
+            display: flex;
+            padding: 0;
 
-    .about-layout ~ .subpage-footer .footer-right,
-    .gallery-layout ~ .subpage-footer .footer-right {
-        display: none;
-    }
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: var(--background-color);
+            box-sizing: border-box;
+
+            height: 60px;
+            flex-direction: row;
+            align-items: center;
+
+            border-top: 1px solid var(--divider-color);
+        }
+
+        /* (FIX_v9.9) 顯示 *內頁* (subpage) 的 fixed footer */
+        /* (MOD_v11.0) 恢復 v9.9 的手機版 fixed footer 邏輯 */
+        body:not(.portfolio-scroll-lock) .main-footer.subpage-footer {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            padding: 0 2rem;
+            box-sizing: border-box;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--background-color);
+            z-index: 1000;
+            border-top: 1px solid var(--divider-color);
+        }
+
+        .subpage-footer .footer-right {
+            display: flex;
+        }
+
+        .subpage-footer .footer-left {
+            display: flex;
+        }
+
+        .about-layout~.subpage-footer .footer-right,
+        .gallery-layout~.subpage-footer .footer-right {
+            display: none;
+        }
 
 
-    .main-footer #desktopContactLinks {
-        display: none;
-    }
-    .main-footer #mobileContactLinks {
-        display: flex; 
-    }
-    
-    /* (FIX_v9.4) 
+        .main-footer #desktopContactLinks {
+            display: none;
+        }
+
+        .main-footer #mobileContactLinks {
+            display: flex;
+        }
+
+        /* (FIX_v9.4) 
        - .portfolio-scroll-lock 取代 :has()
        - 確保主頁的 .main-footer 無頂部邊框
     */
-    body.portfolio-scroll-lock .main-footer {
-        border-top: none;
-    }
-    /* (FIX_v9.4) 
+        body.portfolio-scroll-lock .main-footer {
+            border-top: none;
+        }
+
+        /* (FIX_v9.4) 
        - .portfolio-scroll-lock 取代 :has()
        - K確保主頁的 .main-footer 連結置中
     */
-    body.portfolio-scroll-lock .main-footer .mobile-contact-links {
-        padding: 0 2rem; 
-        width: 100%;
-        justify-content: center;
-    }
+        body.portfolio-scroll-lock .main-footer .mobile-contact-links {
+            padding: 0 2rem;
+            width: 100%;
+            justify-content: center;
+        }
 
-    /* (FIX_v9.3) 修正手機版 .main-footer 佈局 */
-    /* (FIX_v9.4) .portfolio-scroll-lock 取代 :has() */
-    body.portfolio-scroll-lock .main-footer .footer-left {
-        display: none; 
-    }
-    body.portfolio-scroll-lock .main-footer .footer-right {
-        width: 100%; 
-        justify-content: center; 
-    }
+        /* (FIX_v9.3) 修正手機版 .main-footer 佈局 */
+        /* (FIX_v9.4) .portfolio-scroll-lock 取代 :has() */
+        body.portfolio-scroll-lock .main-footer .footer-left {
+            display: none;
+        }
+
+        body.portfolio-scroll-lock .main-footer .footer-right {
+            width: 100%;
+            justify-content: center;
+        }
 
 
 
-    /* MOD: (v3.9) 重置手機版的左欄結構 */
-    .left-column-top, .left-column-middle {
-        height: auto;
-        overflow: visible;
-        padding-top: 0;
-    }
-    .name-block .label {
-        position: absolute;
-        top: -1.5rem;
-        left: 0.2rem;
-    }
-    
-    /* MOD: (FIX_v9.8) 
+        /* MOD: (v3.9) 重置手機版的左欄結構 */
+        .left-column-top,
+        .left-column-middle {
+            height: auto;
+            overflow: visible;
+            padding-top: 0;
+        }
+
+        .name-block .label {
+            position: absolute;
+            top: -1.5rem;
+            left: 0.2rem;
+        }
+
+        /* MOD: (FIX_v9.8) 
        - 修正手機版滾動衝突
        - :not() 確保此規則 *只* 套用在內頁
     */
-    /* (MOD_v11.2) (Req 1) 
+        /* (MOD_v11.2) (Req 1) 
        - 此規則現在已由 .middle-container (line 629) 的 height: auto 處理
        - 但保留 .project-content-column 的 overflow: visible
     */
-    .middle-container:not(.portfolio-container) .project-content-column {
-        overflow-y: visible;
-        padding-right: 0; 
-        padding: 0;
-        mask-image: none; 
-    }
-    
-    /* (MOD_v11.2) (Req 1) 
+        .middle-container:not(.portfolio-container) .project-content-column {
+            overflow-y: visible;
+            padding-right: 0;
+            padding: 0;
+            mask-image: none;
+        }
+
+        /* (MOD_v11.2) (Req 1) 
        - 此規則已由 .middle-container (line 629) 的 height: auto 處理
        - (此規則似乎是多餘的，但保留)
     */
-    .middle-container .project-list {
-        padding-top: 0;
-        padding-bottom: 0;
-    }
+        .middle-container .project-list {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
 
-    #nextProjectTitle {
-        font-size: 0.9rem;
+        #nextProjectTitle {
+            font-size: 0.9rem;
+        }
+
+        .about-intro-text p {
+            font-size: 1.5rem;
+        }
+
+        .about-details-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        /* (FIX_v9.9) 此規則不再需要，因為 .left-column-bottom 已被移至 footer */
     }
-    .about-intro-text p {
-        font-size: 1.5rem; 
-    }
-    .about-details-grid {
-        grid-template-columns: 1fr;
-        gap: 2rem; 
-    }
-    
-    /* (FIX_v9.9) 此規則不再需要，因為 .left-column-bottom 已被移至 footer */
-}

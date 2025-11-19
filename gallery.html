@@ -1,84 +1,83 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sywan - Gallery</title>
-    
-    <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" sizes="any">
-    <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" sizes="180x180">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sywan - Gallery</title>
 
-    <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" sizes="any">
+  <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" sizes="180x180">
 
-    <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
-    <script>
-      (function(d) {
-        var config = {
-          kitId: 'hcg4voj',
-          scriptTimeout: 3000,
-          async: true
-        },
-        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
-      })(document);
-    </script>
-    
-    <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
-    <link rel="stylesheet" href="css/main.css">
+  <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
+    rel="stylesheet">
+
+  <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
+  <script>
+    (function (d) {
+      var config = {
+        kitId: 'hcg4voj',
+        scriptTimeout: 3000,
+        async: true
+      },
+        h = d.documentElement, t = setTimeout(function () { h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive"; }, config.scriptTimeout), tk = d.createElement("script"), f = false, s = d.getElementsByTagName("script")[0], a; h.className += " wf-loading"; tk.src = 'https://use.typekit.net/' + config.kitId + '.js'; tk.async = true; tk.onload = tk.onreadystatechange = function () { a = this.readyState; if (f || a && a != "complete" && a != "loaded") return; f = true; clearTimeout(t); try { Typekit.load(config) } catch (e) { } }; s.parentNode.insertBefore(tk, s)
+    })(document);
+  </script>
+
+  <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
+  <link rel="stylesheet" href="css/main.css">
 </head>
-<body>
-    <header>
-        <a href="portfolio.html" class="logo">SYWAN</a>
-    </header>
 
-    <!-- (MOD_v11.0) 
+<body>
+  <header>
+    <a href="portfolio.html" class="logo">SYWAN</a>
+  </header>
+
+  <!-- (MOD_v11.0) 
       - HTML 結構重構，`main` 標籤使用 `middle-container` 和 `gallery-layout`
       - 這與 v11.0 的 project.html 和 about.html 保持一致
     -->
-    <main class="middle-container gallery-layout">
-        
-        <aside class="left-column">
-            
-            <!-- 標題 (頂部) -->
-            <div class="left-column-top">
-                <div class="name-block">
-                    <span class="label">COLLECTION</span>
-                    <h1>Gallery</h1>
-                </div>
-            </div>
+  <!-- (MOD_v11.7) 
+      - Canvas Container moved outside of grid for full screen
+      - Z-Index: 1 (Middle Layer)
+    -->
+  <div id="galleryContainer" class="gallery-full-screen">
+    <div id="pan-container">
+      <!-- Images injected by JS -->
+    </div>
+  </div>
 
-            <!-- (MOD_v11.0) 
-              - 導航按鈕區塊 (`.left-column-bottom`) 
-              - 已移至 `<aside class="left-column">` 內部
-              - 這修復了 v9.9 引入的桌面版佈局錯誤
-            -->
-            <div class="left-column-bottom">
-                <a href="portfolio.html" class="back-button-block">
-                    <span class="arrow">&larr;</span> Back
-                </a>
-            </div>
+  <!-- (MOD_v11.7) 
+      - UI Container (Title, Back Button)
+      - Z-Index: 0 (Title - Bottom Layer)
+      - Z-Index: 2 (Buttons - Top Layer)
+    -->
+  <main class="middle-container gallery-layout ui-layer">
+    <aside class="left-column">
+      <div class="left-column-top">
+        <div class="name-block">
+          <span class="label">COLLECTION</span>
+          <h1>Gallery</h1>
+        </div>
+      </div>
+      <div class="left-column-bottom">
+        <a href="portfolio.html" class="back-button-block">
+          <span class="arrow">&larr;</span> Back
+        </a>
+      </div>
+    </aside>
+  </main>
 
-        </aside>
-
-        <!-- 
-          MOD: (v8.0) 
-          - #galleryContainer 現在是 *視窗* (viewport)
-          - 新增 #pan-container 作為可平移/縮放的 *畫布* (canvas)
-        -->
-        <section id="galleryContainer" class="gallery-content-column">
-            <div id="pan-container">
-                <!-- 圖片將由 gallery.js 動態注入此處 -->
-            </div>
-        </section>
-    </main>
-
-    <!-- (MOD_v11.0) 
+  <!-- (MOD_v11.0) 
       - 移除了 v9.9 錯誤引入的 fixed footer
       - 導航按鈕現在位於 .left-column 中
     -->
 
-    <script src="js/gallery.js"></script>
+  <script src="js/gallery.js"></script>
 </body>
+
 </html>
