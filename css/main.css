@@ -641,8 +641,12 @@ header {
     /* Buttons on top of Canvas */
     pointer-events: auto;
     /* Clickable */
-    /* Ensure consistent positioning with other pages */
     display: block;
+    /* (MOD_v11.9) Ensure alignment with other pages */
+    /* Other pages rely on .left-column flex layout (space-between) */
+    /* Gallery .left-column also has flex layout? Let's check line 62 */
+    margin-top: auto;
+    /* Push to bottom if in flex container */
 }
 
 /* Remove old grid constraints for canvas */
@@ -1191,9 +1195,10 @@ header {
        - 此規則已由 .middle-container (line 629) 的 height: auto 處理
        - (此規則似乎是多餘的，但保留)
     */
+        /* (MOD_v11.9) iOS Picker Feel: Add padding to allow first/last items to center */
         .middle-container .project-list {
-            padding-top: 0;
-            padding-bottom: 0;
+            padding-top: 45vh;
+            padding-bottom: 45vh;
         }
 
         #nextProjectTitle {

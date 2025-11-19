@@ -86,47 +86,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
             projectListElement.innerHTML = ''; // 清空現有列表
 
-            // Infinite Scrolling Strategy:
-            // Create 3 sets of items: [Clones A] [Originals B] [Clones C]
-            // Default view is in set B.
-            // When scrolling into A, jump to B.
-            // When scrolling into C, jump to B.
+            projectListElement.innerHTML = ''; // 清空現有列表
 
-            const originalItems = [];
+            // (MOD_v11.9) Remove Infinite Scroll (User Request: Focus on smoothness)
+            // Just render original items.
 
-            // 1. Create Original Items (Set B)
             projects.forEach((project, index) => {
                 const listItem = createProjectItem(project, index);
-                originalItems.push(listItem);
+                projectListElement.appendChild(listItem);
             });
-
-            // 2. Clone for Set A (Prepend)
-            const clonesA = originalItems.map(item => item.cloneNode(true));
-            clonesA.forEach(item => item.classList.add('clone-a'));
-
-            // 3. Clone for Set C (Append)
-            const clonesC = originalItems.map(item => item.cloneNode(true));
-            clonesC.forEach(item => item.classList.add('clone-c'));
-
-            // 4. Append all to DOM
-            // Order: Clones A -> Originals B -> Clones C
-            clonesA.forEach(item => projectListElement.appendChild(item));
-            originalItems.forEach(item => projectListElement.appendChild(item));
-            clonesC.forEach(item => projectListElement.appendChild(item));
 
             allProjectItems = Array.from(document.querySelectorAll('#projectList .project-item'));
             visibleItems = [...allProjectItems];
 
             if (visibleItems.length > 0) {
-                // Start at the first item of the middle set (Originals)
-                // Index offset = projects.length
-                const initialIndex = projects.length;
+                // Start at the first item (Index 0)
+                const initialIndex = 0;
 
-                // Force jump to initial position without animation first
-                // We need to wait for layout to be ready
-                setTimeout(() => {
-                    setActiveItem(initialIndex, 'auto');
-                }, 10);
+                // (FIX_v11.9) Fix Loading Jitter
+                // Set active item immediately without 'auto' scroll first if possible,
+                // or just use 'auto' but ensure no other jumps happen.
+                // Since we removed the "jump to middle set" logic, we can just set it.
+
+                setActiveItem(initialIndex, 'auto');
 
                 // 觸發CSS入場動畫
                 setTimeout(() => {
@@ -314,32 +296,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const scrollHeight = centerColumn.scrollHeight;
         const clientHeight = centerColumn.clientHeight;
 
-        // 1. Infinite Loop Logic
-        // We have 3 sets: [Clones A] [Originals B] [Clones C]
-        // Total height ~ 3 * setHeight
-        // We want to keep user in Set B.
+        // (MOD_v11.9) Removed Infinite Loop Logic
+        // We just want smooth native scrolling.
 
         if (visibleItems.length === 0) return;
-
-        // Estimate set height based on total height / 3
-        // Note: This assumes all sets are roughly equal height, which they should be.
-        const totalHeight = projectListElement.scrollHeight;
-        const setHeight = totalHeight / 3;
-
-        // Thresholds
-        const topThreshold = setHeight * 0.5; // Middle of Set A
-        const bottomThreshold = setHeight * 2.5; // Middle of Set C
-
-        if (scrollTop < 50) {
-            // Near top of Set A -> Jump to top of Set B
-            // We add setHeight to current scrollTop
-            centerColumn.scrollTop = scrollTop + setHeight;
-            return; // Skip active item check this frame
-        } else if (scrollTop > totalHeight - clientHeight - 50) {
-            // Near bottom of Set C -> Jump to bottom of Set B
-            centerColumn.scrollTop = scrollTop - setHeight;
-            return;
-        }
 
         // 2. Update Active Item based on Center Position
         const containerCenter = scrollTop + (clientHeight / 2);
