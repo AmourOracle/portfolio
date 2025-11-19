@@ -617,15 +617,14 @@ header {
 }
 
 /* (MOD_v11.7) UI Layer */
+/* (MOD_v11.7) UI Layer */
 .middle-container.gallery-layout.ui-layer {
     position: relative;
-    z-index: 0;
-    /* Title at bottom layer */
+    /* z-index: 0;  <-- REMOVED to allow children to escape stacking context if needed, or just use auto */
     pointer-events: none;
     /* Let clicks pass through to canvas */
     background: transparent;
     height: 100vh;
-    /* Ensure it covers screen for layout */
 }
 
 /* Title Block (Bottom Layer) */
@@ -633,7 +632,6 @@ header {
     position: relative;
     z-index: 0;
     pointer-events: auto;
-    /* Allow text selection if needed, or none */
 }
 
 /* Back Button (Top Layer) */
@@ -643,6 +641,8 @@ header {
     /* Buttons on top of Canvas */
     pointer-events: auto;
     /* Clickable */
+    /* Ensure consistent positioning with other pages */
+    display: block;
 }
 
 /* Remove old grid constraints for canvas */
@@ -985,8 +985,13 @@ header {
        - 桌面版 .middle-container 已設為 100vh 高度
        - 此處 RWD 規則會覆蓋它，讓手機版內頁 body 可滾動
     */
+        /* (MOD_v11.8) Enable native scrolling for smooth infinite loop */
         body:not(.portfolio-scroll-lock) {
-            overflow: auto;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE/Edge */
             /* 恢復 body 滾動 */
             padding-bottom: 60px;
             /* (FIX_v9.9) 為 fixed footer 騰出空間 */

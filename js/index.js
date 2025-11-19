@@ -306,143 +306,85 @@ document.addEventListener('DOMContentLoaded', () => {
         currentActiveIndex = -1;
     }
 
-    function handleWheelScroll(event) {
-        // 阻止瀏覽器預設的滾輪滾動
-        event.preventDefault();
+    // (MOD_v11.8) Native Scroll Handler for Infinite Loop & Active Item
+    function handleScroll() {
+        if (!centerColumn) return;
 
-        if (isManualScrolling) return;
-        isManualScrolling = true;
+        const scrollTop = centerColumn.scrollTop;
+        const scrollHeight = centerColumn.scrollHeight;
+        const clientHeight = centerColumn.clientHeight;
 
-        // 50ms 節流 (Throttle)
-        setTimeout(() => { isManualScrolling = false; }, 50);
+        // 1. Infinite Loop Logic
+        // We have 3 sets: [Clones A] [Originals B] [Clones C]
+        // Total height ~ 3 * setHeight
+        // We want to keep user in Set B.
 
-        const direction = event.deltaY > 0 ? 1 : -1;
-        let newIndex = currentActiveIndex + direction;
+        if (visibleItems.length === 0) return;
 
-        if (currentActiveIndex === -1) {
-            newIndex = 0;
+        // Estimate set height based on total height / 3
+        // Note: This assumes all sets are roughly equal height, which they should be.
+        const totalHeight = projectListElement.scrollHeight;
+        const setHeight = totalHeight / 3;
+
+        // Thresholds
+        const topThreshold = setHeight * 0.5; // Middle of Set A
+        const bottomThreshold = setHeight * 2.5; // Middle of Set C
+
+        if (scrollTop < 50) {
+            // Near top of Set A -> Jump to top of Set B
+            // We add setHeight to current scrollTop
+            centerColumn.scrollTop = scrollTop + setHeight;
+            return; // Skip active item check this frame
+        } else if (scrollTop > totalHeight - clientHeight - 50) {
+            // Near bottom of Set C -> Jump to bottom of Set B
+            centerColumn.scrollTop = scrollTop - setHeight;
+            return;
         }
 
-        if (newIndex < 0) newIndex = 0;
-        if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+        // 2. Update Active Item based on Center Position
+        const containerCenter = scrollTop + (clientHeight / 2);
 
-        if (newIndex !== currentActiveIndex) {
-            setActiveItem(newIndex, 'auto');
-        } else {
-            // 如果沒有變更，也必須釋放鎖
-            isManualScrolling = false;
-        }
-    }
+        let closestItem = null;
+        let minDistance = Infinity;
 
-    function handleTouchStart(event) {
-        // 如果正在滾動，則忽略新的觸控
-        if (isManualScrolling) return;
+        // Optimization: Only check visible items? 
+        // For now, checking all visibleItems is fine (usually < 50 items total)
+        visibleItems.forEach((item, index) => {
+            // We need relative position within the container
+            // item.offsetTop is relative to parent (projectListElement)
+            // projectListElement might have top padding? No, it's 0.
 
-        touchStartY = event.touches[0].clientY;
-        touchEndY = event.touches[0].clientY;
-    }
+            const itemTop = item.offsetTop;
+            const itemHeight = item.offsetHeight;
+            const itemCenter = itemTop + (itemHeight / 2);
 
-    function handleTouchMove(event) {
-        // 阻止瀏覽器滾動 (關鍵！)
-        event.preventDefault();
-        touchEndY = event.touches[0].clientY;
-    }
+            const distance = Math.abs(containerCenter - itemCenter);
 
-    function handleTouchEnd(event) {
-        if (isManualScrolling) return;
-
-        const deltaY = touchEndY - touchStartY;
-
-        // 檢查滑動距離是否足夠
-        if (Math.abs(deltaY) > touchThreshold) {
-            // 阻止可能的點擊事件 (例如 touchend 後的 click)
-            event.preventDefault();
-
-            // 鎖定滾動，防止重複觸發
-            isManualScrolling = true;
-            // 300ms 節流
-            setTimeout(() => { isManualScrolling = false; }, 300);
-
-            // 判斷方向
-            const direction = deltaY > 0 ? -1 : 1; // 往上滑 (Y 變小) 是 -1，往下 (Y 變大) 是 +1
-            let newIndex = currentActiveIndex + direction;
-
-            if (currentActiveIndex === -1) {
-                newIndex = 0;
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestItem = item;
             }
+        });
 
-            // 邊界檢查 (v9.x 邏輯)
-            if (newIndex < 0) newIndex = 0;
-            if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
-
-            if (newIndex !== currentActiveIndex) {
-                setActiveItem(newIndex, true);
-            } else {
-                // 如果沒有變更，也必須釋放鎖
-                isManualScrolling = false;
-            }
-        }
-    }
-
-    function handleFreeScroll() {
-        // 如果是 JS 正在手動滾動，則忽略
-        if (isManualScrolling) return;
-
-        // Debounce (防抖)
-        clearTimeout(scrollTimer);
-
-        scrollTimer = setTimeout(() => {
-            // 再次檢查，防止在 setTimeout 期間被鎖定
-            if (isManualScrolling || !centerColumn || visibleItems.length === 0) return;
-
-            const containerRect = centerColumn.getBoundingClientRect();
-            const containerCenter = containerRect.top + (containerRect.height / 2);
-
-            let closestItem = null;
-            let minDistance = Infinity;
-
-            visibleItems.forEach(item => {
-                const itemRect = item.getBoundingClientRect();
-                const itemCenter = itemRect.top + (itemRect.height / 2);
-                const distance = Math.abs(containerCenter - itemCenter);
-
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestItem = item;
-                }
-            });
-
-            if (!closestItem) return;
-
-            let newIndex = visibleItems.indexOf(closestItem);
-
-            // Infinite Scroll Jump Logic
-            const totalItems = visibleItems.length;
-            const setSize = totalItems / 3;
-
-            // Check if we are in Set A (Top Clones) -> Jump to Set B
-            if (newIndex < setSize) {
-                newIndex += setSize;
-                // Jump instantly (no animation)
-                setActiveItem(newIndex, 'auto');
-                return;
-            }
-
-            // Check if we are in Set C (Bottom Clones) -> Jump to Set B
-            if (newIndex >= setSize * 2) {
-                newIndex -= setSize;
-                // Jump instantly (no animation)
-                setActiveItem(newIndex, 'auto');
-                return;
-            }
-
+        if (closestItem) {
+            const newIndex = visibleItems.indexOf(closestItem);
             if (newIndex !== -1 && newIndex !== currentActiveIndex) {
-                // 傳入 'false' (不觸發滾動)，僅更新 UI
+                // Update active state without scrolling (false)
                 setActiveItem(newIndex, false);
-            } else if (newIndex !== -1) {
-                currentActiveIndex = newIndex;
             }
-        }, 50); // Reduced delay for more responsive jumps
+        }
+    }
+
+    // (MOD_v11.8) Remove JS Hijacking Listeners
+    // We no longer need handleWheelScroll, handleTouchStart/Move/End, handleFreeScroll
+    // But we need to bind the scroll listener
+
+    function bindScrollListeners() {
+        if (centerColumn) {
+            // Remove old listeners if any (not strictly necessary as we are replacing functions)
+            centerColumn.removeEventListener('scroll', handleScroll);
+            centerColumn.addEventListener('scroll', handleScroll, { passive: true });
+        }
     }
 
     function handleItemClick(event) {
