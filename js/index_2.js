@@ -86,29 +86,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
             projectListElement.innerHTML = ''; // 清空現有列表
 
-            projectListElement.innerHTML = ''; // 清空現有列表
+            // Infinite Scrolling Strategy:
+            // Create 3 sets of items: [Clones A] [Originals B] [Clones C]
+            // Default view is in set B.
+            // When scrolling into A, jump to B.
+            // When scrolling into C, jump to B.
 
-            // (MOD_v11.9) Remove Infinite Scroll (User Request: Focus on smoothness)
-            // Just render original items.
+            const originalItems = [];
 
+            // 1. Create Original Items (Set B)
             projects.forEach((project, index) => {
                 const listItem = createProjectItem(project, index);
-                projectListElement.appendChild(listItem);
+                originalItems.push(listItem);
             });
+
+            // 2. Clone for Set A (Prepend)
+            const clonesA = originalItems.map(item => item.cloneNode(true));
+            clonesA.forEach(item => item.classList.add('clone-a'));
+
+            // 3. Clone for Set C (Append)
+            const clonesC = originalItems.map(item => item.cloneNode(true));
+            clonesC.forEach(item => item.classList.add('clone-c'));
+
+            // 4. Append all to DOM
+            // Order: Clones A -> Originals B -> Clones C
+            clonesA.forEach(item => projectListElement.appendChild(item));
+            originalItems.forEach(item => projectListElement.appendChild(item));
+            clonesC.forEach(item => projectListElement.appendChild(item));
 
             allProjectItems = Array.from(document.querySelectorAll('#projectList .project-item'));
             visibleItems = [...allProjectItems];
 
             if (visibleItems.length > 0) {
-                // Start at the first item (Index 0)
-                const initialIndex = 0;
+                // Start at the first item of the middle set (Originals)
+                // Index offset = projects.length
+                const initialIndex = projects.length;
 
-                // (FIX_v11.9) Fix Loading Jitter
-                // Set active item immediately without 'auto' scroll first if possible,
-                // or just use 'auto' but ensure no other jumps happen.
-                // Since we removed the "jump to middle set" logic, we can just set it.
-
-                setActiveItem(initialIndex, 'auto');
+                // Force jump to initial position without animation first
+                // We need to wait for layout to be ready
+                setTimeout(() => {
+                    setActiveItem(initialIndex, 'auto');
+                }, 10);
 
                 // 觸發CSS入場動畫
                 setTimeout(() => {
@@ -288,59 +306,45 @@ document.addEventListener('DOMContentLoaded', () => {
         currentActiveIndex = -1;
     }
 
-    // (MOD_v11.10) Restore JS Hijacking for "Picker" Feel
-
-    function bindScrollListeners() {
-        if (!centerColumn) return;
-
-        // Remove native scroll listener
-        centerColumn.removeEventListener('scroll', handleScroll);
-
-        // Add JS Hijacking listeners
-        // Desktop (Wheel)
-        centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
-
-        // Mobile (Touch)
-        centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
-        centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
-        centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
-    }
-
     function handleWheelScroll(event) {
-        event.preventDefault(); // Stop native scroll
+        // 阻止瀏覽器預設的滾輪滾動
+        event.preventDefault();
 
         if (isManualScrolling) return;
+        isManualScrolling = true;
 
-        const delta = event.deltaY;
-        if (Math.abs(delta) > 5) { // Threshold
-            isManualScrolling = true;
-            setTimeout(() => { isManualScrolling = false; }, 50); // Throttle
+        // 50ms 節流 (Throttle)
+        setTimeout(() => { isManualScrolling = false; }, 50);
 
-            const direction = delta > 0 ? 1 : -1;
-            let newIndex = currentActiveIndex + direction;
+        const direction = event.deltaY > 0 ? 1 : -1;
+        let newIndex = currentActiveIndex + direction;
 
-            if (currentActiveIndex === -1) newIndex = 0;
+        if (currentActiveIndex === -1) {
+            newIndex = 0;
+        }
 
-            // Boundary checks
-            if (newIndex < 0) newIndex = 0;
-            if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+        if (newIndex < 0) newIndex = 0;
+        if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
 
-            if (newIndex !== currentActiveIndex) {
-                setActiveItem(newIndex, true);
-            } else {
-                isManualScrolling = false;
-            }
+        if (newIndex !== currentActiveIndex) {
+            setActiveItem(newIndex, 'auto');
+        } else {
+            // 如果沒有變更，也必須釋放鎖
+            isManualScrolling = false;
         }
     }
 
     function handleTouchStart(event) {
+        // 如果正在滾動，則忽略新的觸控
         if (isManualScrolling) return;
+
         touchStartY = event.touches[0].clientY;
         touchEndY = event.touches[0].clientY;
     }
 
     function handleTouchMove(event) {
-        event.preventDefault(); // Stop native scroll
+        // 阻止瀏覽器滾動 (關鍵！)
+        event.preventDefault();
         touchEndY = event.touches[0].clientY;
     }
 
@@ -349,30 +353,97 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const deltaY = touchEndY - touchStartY;
 
+        // 檢查滑動距離是否足夠
         if (Math.abs(deltaY) > touchThreshold) {
+            // 阻止可能的點擊事件 (例如 touchend 後的 click)
             event.preventDefault();
-            isManualScrolling = true;
-            setTimeout(() => { isManualScrolling = false; }, 300); // Throttle
 
-            const direction = deltaY > 0 ? -1 : 1; // Up drag = Scroll Down (Index +)
+            // 鎖定滾動，防止重複觸發
+            isManualScrolling = true;
+            // 300ms 節流
+            setTimeout(() => { isManualScrolling = false; }, 300);
+
+            // 判斷方向
+            const direction = deltaY > 0 ? -1 : 1; // 往上滑 (Y 變小) 是 -1，往下 (Y 變大) 是 +1
             let newIndex = currentActiveIndex + direction;
 
-            if (currentActiveIndex === -1) newIndex = 0;
+            if (currentActiveIndex === -1) {
+                newIndex = 0;
+            }
 
+            // 邊界檢查 (v9.x 邏輯)
             if (newIndex < 0) newIndex = 0;
             if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
 
             if (newIndex !== currentActiveIndex) {
                 setActiveItem(newIndex, true);
             } else {
+                // 如果沒有變更，也必須釋放鎖
                 isManualScrolling = false;
             }
         }
     }
 
-    // Placeholder for old handleScroll if needed, or just remove it.
-    // We'll keep an empty function or just remove the reference in bindScrollListeners
-    function handleScroll() { }
+    function handleFreeScroll() {
+        // 如果是 JS 正在手動滾動，則忽略
+        if (isManualScrolling) return;
+
+        // Debounce (防抖)
+        clearTimeout(scrollTimer);
+
+        scrollTimer = setTimeout(() => {
+            // 再次檢查，防止在 setTimeout 期間被鎖定
+            if (isManualScrolling || !centerColumn || visibleItems.length === 0) return;
+
+            const containerRect = centerColumn.getBoundingClientRect();
+            const containerCenter = containerRect.top + (containerRect.height / 2);
+
+            let closestItem = null;
+            let minDistance = Infinity;
+
+            visibleItems.forEach(item => {
+                const itemRect = item.getBoundingClientRect();
+                const itemCenter = itemRect.top + (itemRect.height / 2);
+                const distance = Math.abs(containerCenter - itemCenter);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestItem = item;
+                }
+            });
+
+            if (!closestItem) return;
+
+            let newIndex = visibleItems.indexOf(closestItem);
+
+            // Infinite Scroll Jump Logic
+            const totalItems = visibleItems.length;
+            const setSize = totalItems / 3;
+
+            // Check if we are in Set A (Top Clones) -> Jump to Set B
+            if (newIndex < setSize) {
+                newIndex += setSize;
+                // Jump instantly (no animation)
+                setActiveItem(newIndex, 'auto');
+                return;
+            }
+
+            // Check if we are in Set C (Bottom Clones) -> Jump to Set B
+            if (newIndex >= setSize * 2) {
+                newIndex -= setSize;
+                // Jump instantly (no animation)
+                setActiveItem(newIndex, 'auto');
+                return;
+            }
+
+            if (newIndex !== -1 && newIndex !== currentActiveIndex) {
+                // 傳入 'false' (不觸發滾動)，僅更新 UI
+                setActiveItem(newIndex, false);
+            } else if (newIndex !== -1) {
+                currentActiveIndex = newIndex;
+            }
+        }, 50); // Reduced delay for more responsive jumps
+    }
 
     function handleItemClick(event) {
         // 如果正在滾動，阻止點擊
@@ -434,7 +505,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (visibleItems.length > 0) {
             // Reset to the start of the middle set (Set B)
-            let targetIndex = 0; // Start at top for filtered list
+            let targetIndex = Math.floor(visibleItems.length / 3);
 
             currentActiveIndex = -1;
 

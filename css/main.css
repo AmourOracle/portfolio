@@ -307,11 +307,13 @@ header {
 
 .center-column {
     padding: 0 1rem 0 2rem;
-    overflow-y: auto;
+    /* (MOD_v11.10) Disable native scroll for JS Hijacking */
+    overflow-y: hidden;
     box-sizing: border-box;
 
-    scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
+    /* (MOD_v11.10) Remove Scroll Snap */
+    /* scroll-snap-type: y mandatory; */
+    /* scroll-behavior: smooth; */
 
     mask-image: linear-gradient(to bottom,
             transparent 0%,
@@ -344,8 +346,9 @@ header {
     transform-origin: center center;
     cursor: pointer;
 
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
+    /* (MOD_v11.10) Remove Scroll Snap */
+    /* scroll-snap-align: center; */
+    /* scroll-snap-stop: always; */
 
     opacity: 0.4;
     transform: scale(0.85);
