@@ -1,107 +1,87 @@
-專案開發指南與進度記錄 (v11.11)
+# 專案開發指南與進度記錄 (v11.11)
 
-這份文件旨在統整目前 (v11.11) 專案的最終架構、遇到的核心問題、修復策略，以及未來的優化方向。
+本文件統整了 Portfolio 專案的最終架構、核心流程、技術細節與注意事項。
 
-專案目前狀態 (v11.11)
+## 1. 專案目前進度 (Project Status v11.11)
 
-經過 v11.0 至 v11.11 的多次修正，專案已達到桌面版與手機版佈局/互動一致的穩定狀態。桌面版運行狀況良好。
+目前專案已達到 **v11.11 穩定版本**。桌面版與手機版的佈局、互動體驗皆已統一並優化。
 
-portfolio.html (主頁):
+*   **桌面版 (Desktop)**: 運行良好，滾動手感已優化為類 iOS 選擇器體驗。
+*   **手機版 (Mobile)**: 佈局修復，預覽視窗與導航功能正常。
+*   **Gallery**: 全螢幕無限畫布體驗流暢，無意外滾動問題。
 
-桌面版 (v11.11):
+---
 
-佈局: v9.x 的三欄式佈局。
+## 2. 專案結構 (Project Structure)
 
-滾動: (v11.10) 恢復「JS 滾輪劫持」 (wheel) 模式，移除 CSS Scroll Snap，以實現精確的「iOS 鬧鐘選擇器」手感 (一格一跳)。
+專案採用 **HTML/CSS/JS 分離** 的架構，所有頁面共用同一個 `main.css` 以確保樣式一致性。
 
-預覽: 啟用「JS 浮動預覽視窗」 (.random-preview-popup)，視窗大小、位置隨機。
-
-連結: 導航連結 (Me/Gallery/Insta/Email) 已移至左欄底部。
-
-手機版 (v11.11):
-
-佈局: v10.0 的雙層 Footer 結構 (上層篩選器，下層聯絡連結)。
-
-滾動: v4.13 的「JS 觸控劫持」 (touchstart, preventDefault())。
-
-預覽: (v11.4) 啟用「JS 浮動預覽視窗」 (.random-preview-popup)，以匹配桌面版體驗。
-
-project.html / about.html / gallery.html (內頁):
-
-桌面版 (v11.11):
-
-佈局: (v11.2) 恢復 v9.x 的二欄式佈局，並將容器高度鎖定為 calc(100vh - 60px)。
-
-滾動: (v11.2) 滾動範圍限定在右側的內容欄位 (overflow: auto)。gallery.html 除外 (全頁鎖定)。
-
-對齊: (v11.3) about.html 的左欄資訊區塊已垂直置中 (同 portfolio.html)。
-
-gallery.html: (v11.7) 採用全螢幕無限畫布設計，Canvas 位於中層 (z-index: 1)，UI 位於底層 (z-index: 0) 與頂層 (z-index: 2)。
-
-手機版 (v11.11):
-
-佈局: (v11.2) 恢復 v9.9 的「原生 body 滾動」 (容器 height: auto)。gallery.html 除外 (全頁鎖定)。
-
-導航: 導航按鈕 (Back/Next) 被放置在一個固定的 <footer> (.subpage-footer) 中。
-
-核心檔案結構
-
-專案的結構目前如下，js 和 css 分離，所有頁面共用 main.css。
-
+```text
 /
-├── index.html (載入頁面, 轉導至 portfolio.html)
-├── portfolio.html (主頁/專案列表)
-├── project.html (專案詳細頁模板)
-├── about.html (關於我頁面)
-├── gallery.html (畫廊/無限畫布頁面)
+├── index.html       # 入口頁 (負責轉導至 portfolio.html)
+├── portfolio.html   # [主頁] 專案列表 (核心互動頁面)
+├── project.html     # [內頁] 專案詳細內容模板
+├── about.html       # [內頁] 關於我
+├── gallery.html     # [內頁] 無限畫布畫廊
 ├── data/
+│   └── projects.json # 核心資料庫 (JSON 格式)
 ├── css/
-│   └── main.css (全站主要樣式表 v11.11)
+│   └── main.css      # 全站樣式表 (包含 RWD 設定)
 └── js/
-    ├── index.js (portfolio.html 邏輯 v11.10)
-    ├── project.js (project.html 邏輯 v11.1)
-    └── gallery.js (gallery.html 邏輯 v10.1)
+    ├── index.js      # portfolio.html 的核心邏輯 (滾動、預覽、篩選)
+    ├── project.js    # project.html 的內容渲染邏輯
+    └── gallery.js    # gallery.html 的 Canvas 繪圖與互動邏輯
+```
 
+---
 
-主要問題與修復歷程 (v11.0 - v11.11)
+## 3. 核心流程與互動機制 (Core Flow & Interaction)
 
-我們近期的除錯集中在統一桌面版與手機版的體驗，並修復佈局錯誤。
+### A. 專案列表滾動 (Portfolio Scrolling)
+*   **機制**: **JS 劫持 (JS Hijacking)**。
+*   **桌面版**: 監聽 `wheel` 事件。
+    *   **手感**: 模擬 iOS 鬧鐘選擇器 (Picker)，滾動一次精確切換一個項目 (Ratchet feel)。
+    *   **優化**: 移除了 CSS Scroll Snap 以避免卡頓。
+*   **手機版**: 監聽 `touchstart`, `touchmove`, `touchend`。
+    *   **手感**: 跟隨手指拖動，放開後自動吸附至最近項目。
 
-A. 移除頁面轉場 (v11.1)
-(同上)
+### B. 畫廊體驗 (Gallery Experience)
+*   **機制**: **全螢幕 Canvas + 固定 UI**。
+*   **互動**: 支援滑鼠拖曳 (Pan) 與滾輪縮放 (Zoom)。
+*   **防護**: 透過 `body.gallery-scroll-lock` 鎖定原生滾動，防止頁面因內容溢出而晃動。
 
-B. 統一桌面版內頁 (project/about/gallery) 滾動機制 (v11.2)
-(同上)
+### C. 預覽視窗 (Preview Popup)
+*   **觸發**: 當專案位於視窗中央 (Active) 時觸發。
+*   **位置**: 隨機浮動位置 (Random Position)，但有邊界檢查防止超出螢幕。
+*   **手機版**: 強制置中顯示，並調整長寬比為 1:1。
 
-C. portfolio.html 佈局調整與 HTML 殘留清理 (v11.2 - v11.3)
-(同上)
+---
 
-D. 啟用手機版浮動預覽視窗 (v11.4)
-(同上)
+## 4. 開發注意事項 (Technical Notes & Gotchas)
 
-E. 修復手機版 portfolio.html 佈局與 JS 錯誤 (v11.5)
-(同上)
+### CSS 架構
+*   **`main.css`**: 是唯一的樣式來源。修改時請注意不要破壞其他頁面的佈局。
+*   **`.middle-container`**: 所有頁面的主容器。
+    *   高度設定為 `calc(100vh - 60px)` (扣除 Header)，以確保佈局固定。
+*   **Z-Index 管理 (Gallery)**:
+    *   `z-index: 0`: 底層 UI (標題)。
+    *   `z-index: 1`: Canvas 畫布 (中層)。
+    *   `z-index: 2`: 頂層 UI (Back 按鈕)，確保可點擊。
 
-F. Gallery 頁面重構與優化 (v11.7 - v11.11)
+### JavaScript 邏輯
+*   **滾動劫持**: `index.js` 中使用了 `event.preventDefault()` 來阻止原生滾動。若需恢復原生滾動，需移除相關監聽器並恢復 CSS `overflow-y: auto`。
+*   **資料載入**: 目前每個頁面獨立 fetch `projects.json`。修改資料結構時需同步檢查所有 JS 檔案。
 
-問題: Gallery 頁面原本受限於 Grid 佈局，無法實現全螢幕畫布效果；Back 按鈕位置不一致且無法點擊；左側欄位會意外滾動。
+### 常見問題排除
+*   **Gallery 無法點擊 Back 按鈕**: 檢查 `.left-column-bottom` 的 `z-index` 是否大於 Canvas。
+*   **頁面出現雙重滾動條**: 檢查 `body` 或 `.center-column` 是否同時設定了 `overflow: scroll`。目前應由 JS 控制或鎖定。
 
-修復 (v11.7): 將 Canvas 移出 Grid 結構，設為 fixed 全螢幕。調整 z-index 層級，確保 Back 按鈕 (z-index: 2) 在 Canvas (z-index: 1) 之上。
+---
 
-修復 (v11.9): 調整 Back 按鈕 CSS，使其與其他頁面底部對齊。
+## 5. 未來優化方向 (Future Roadmap)
 
-修復 (v11.11): 為 gallery.html 的 body 加上 .gallery-scroll-lock，並將 UI 容器高度設為 calc(100vh - 60px)，徹底解決左側欄位意外滾動的問題。
+以下項目建議在 2.0 版本中考慮：
 
-G. Project List 滾動手感優化 (v11.8 - v11.10)
-
-問題: 原本嘗試使用 Native Scroll + CSS Snap 模擬 iOS 選擇器，但因 CSS 吸附過於強硬導致卡頓 (Stutter)，且缺乏機械段落感。
-
-修復 (v11.8): 嘗試切換為 Native Scroll，但發現手感不符需求。
-
-修復 (v11.9): 移除無限循環功能，專注於流暢度。加入上下 Padding (45vh) 讓首尾項目能置中。
-
-修復 (v11.10): 恢復 JS 劫持 (JS Hijacking) 滾動邏輯。重新實作 wheel 與 touch 監聽器，移除 CSS scroll-snap，實現了精確的「一格一跳」 (Ratchet) 手感，並解決了卡頓問題。
-
-未來可優化的方向 (v11.11 更新)
-
-(同上，保留 A, B, C)
+1.  **模組化 (Modularity)**: 建立 `dataService.js` 統一管理資料請求與快取。
+2.  **虛擬化 (Virtualization)**: Gallery 頁面僅渲染可見範圍內的圖片，提升效能。
+3.  **轉場效果 (Transitions)**: 重新實作全站統一的頁面切換動畫 (Fade in/out)。
