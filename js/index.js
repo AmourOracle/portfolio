@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let touchStartY = 0;
     let touchEndY = 0;
-    const touchThreshold = 50;
+    const touchThreshold = 30; // (MOD) Lower threshold for more sensitive picker feel
 
 
     function getRandomFloat(min, max) {

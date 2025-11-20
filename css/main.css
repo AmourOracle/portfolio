@@ -834,9 +834,11 @@ header {
 
         .portfolio-container {
             grid-template-columns: 1fr;
-            grid-template-rows: 1fr;
+            grid-template-rows: auto 1fr;
+            /* (MOD) Auto for top info, 1fr for list */
             padding: 2rem 0 0 0;
-            height: calc(100vh - 181px);
+            height: calc(100vh - 121px);
+            /* (MOD) Subtract double footer height (60+61) */
         }
 
         /* --- (REFACTOR_v10.1) --- */
@@ -845,20 +847,54 @@ header {
       - CSS *不能* 再使用 'overflow: auto' 或 'scroll-snap-type'
     */
         .portfolio-container .center-column {
-            overflow-y: visible;
-            /* 關鍵：改回 visible (v4.13 邏輯) */
+            overflow-y: hidden;
+            /* (MOD) Enforce hidden for JS Hijacking */
             padding: 0;
-            mask-image: none;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+            /* (MOD) Add mask back */
             scroll-snap-type: none;
-            /* 關鍵：移除滾動吸附 */
         }
 
         /* --- 結束 (REFACTOR_v10.1) --- */
 
 
-        .portfolio-container .left-column,
+        .portfolio-container .left-column {
+            display: flex !important;
+            /* (MOD) Unhide left column */
+            height: auto;
+            padding: 0 2rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 10;
+        }
+
         .portfolio-container .right-column {
             display: none !important;
+        }
+
+        /* Hide contact links in left column on mobile (they are in footer) */
+        .portfolio-container .left-column .left-column-bottom {
+            display: none;
+        }
+
+        .portfolio-container .left-column-top {
+            height: auto;
+            padding-top: 0;
+        }
+
+        .portfolio-container .left-column-middle {
+            margin-top: 1rem;
+        }
+
+        /* Adjust Name Block for Mobile */
+        .name-block h1 {
+            font-size: 3rem;
+            /* Smaller title */
+        }
+
+        .portfolio-container .info-divider-block {
+            margin-top: 1rem;
+            padding-top: 0.5rem;
         }
 
         .mobile-footer {
@@ -1060,16 +1096,23 @@ header {
 
         /* (MOD_v11.0) 恢復 v10.1 手機版畫布佈局 */
         .gallery-layout .gallery-content-column {
-            grid-row: 2;
+            grid-row: 1 / -1;
+            /* Full height */
             grid-column: 1;
             z-index: auto;
             pointer-events: auto;
         }
 
         .gallery-layout .left-column-bottom {
-            z-index: auto;
-            display: none;
-            /* (MOD_v11.0) 同上，隱藏 */
+            z-index: 10;
+            /* Ensure above canvas */
+            display: flex;
+            /* (MOD) Show back button */
+            position: fixed;
+            bottom: 80px;
+            /* Above footer if exists, or just bottom */
+            left: 2rem;
+            pointer-events: auto;
         }
 
 
