@@ -1,119 +1,80 @@
 document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('portfolio-scroll-lock');
 
-    // --- DOM 元素獲取 ---
-    const projectListWrapper = document.getElementById('projectListWrapper');
-
-    // 左側資訊欄位
+    // DOM Elements
+    const projectListElement = document.getElementById('projectList'); // .swiper-wrapper
     const previewTitleElement = document.getElementById('previewTitle');
     const previewBioElement = document.getElementById('previewBio');
     const previewInfoElement = document.getElementById('previewInfo');
-
-    // 標籤與區塊
-    const previewLabelNo = document.getElementById('previewLabelNo');
-    const previewLabelCategory = document.getElementById('previewLabelCategory');
-    const previewBlockBio = document.getElementById('previewBlockBio');
-    const previewLabelInfo_Default = document.getElementById('previewLabelInfo_Default');
-    const previewLabelDocs_Project = document.getElementById('previewLabelDocs_Project');
-
-    // 隨機預覽元素
     const randomPreviewPopup = document.getElementById('randomPreviewPopup');
     const randomPreviewImage = document.getElementById('randomPreviewImage');
-
-    // 篩選器元素
     const categoryNavElement = document.getElementById('categoryNav');
     const mobileFooterElement = document.querySelector('.mobile-footer');
 
-    // --- 全域變數 ---
-    let portfolioSwiper = null;
-    let allProjectsData = []; // (Stage 3) 儲存所有原始資料
-    let currentFilter = 'all';
+    // State
+    let allProjects = [];
+    let swiperInstance = null;
 
-    // --- 輔助函式 ---
-    function getRandomFloat(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-
-    function isMobile() {
-        return window.innerWidth <= 768;
-    }
-
-    // --- 1. 初始資料獲取 ---
+    // Fetch Projects
     fetch('./data/projects.json')
         .then(response => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             return response.json();
         })
         .then(projects => {
-            if (!projects || projects.length === 0) throw new Error("No projects found.");
+            if (!projects || projects.length === 0) throw new Error("No projects loaded.");
 
-            // (Stage 3) 儲存資料
-            allProjectsData = projects;
+            allProjects = projects; // Store globally
+            renderProjects(allProjects);
 
-            // 初始渲染 (顯示全部)
-            renderProjectSlides('all');
-
-            // 綁定篩選事件
-            bindFilterEvents();
-
-            // 入場動畫
+            // Entrance Animation
             setTimeout(() => {
                 const mainContainer = document.querySelector('.portfolio-container');
                 if (mainContainer) mainContainer.classList.add('is-loaded');
             }, 50);
+
+            // Bind Filter Events
+            if (categoryNavElement) categoryNavElement.addEventListener('click', handleFilterClick);
+            if (mobileFooterElement) mobileFooterElement.addEventListener('click', handleFilterClick);
         })
         .catch(error => {
-            console.error('Error:', error);
-            if (projectListWrapper) {
-                projectListWrapper.innerHTML = `<div class="swiper-slide">Error: ${error.message}</div>`;
+            console.error('Error fetching projects:', error);
+            if (projectListElement) {
+                projectListElement.innerHTML = `<div class="swiper-slide">Error loading projects</div>`;
             }
         });
 
-    // --- 2. (Stage 3) 渲染與篩選核心邏輯 ---
-    function renderProjectSlides(filterType) {
-        // A. 銷毀舊實例 (如果存在)
-        if (portfolioSwiper) {
-            portfolioSwiper.destroy(true, true);
-            portfolioSwiper = null;
+    function renderProjects(projects) {
+        // 1. Destroy existing Swiper if any
+        if (swiperInstance) {
+            swiperInstance.destroy(true, true);
+            swiperInstance = null;
         }
 
-        // B. 清空 DOM
-        projectListWrapper.innerHTML = '';
+        // 2. Clear DOM
+        projectListElement.innerHTML = '';
 
-        // C. 過濾資料
-        let filteredProjects = [];
-        if (filterType === 'all') {
-            filteredProjects = allProjectsData;
-        } else {
-            filteredProjects = allProjectsData.filter(p => p.category === filterType);
-        }
-
-        // D. 處理空狀態
-        if (filteredProjects.length === 0) {
-            projectListWrapper.innerHTML = `<div class="swiper-slide project-item" style="justify-content: center; opacity: 1;"><span style="font-family: var(--font-mono); color: var(--secondary-color);">No projects found.</span></div>`;
-            resetPreviewInfo(); // 重置左側資訊
+        // 3. Rebuild DOM
+        if (projects.length === 0) {
+            projectListElement.innerHTML = '<div class="swiper-slide">No projects found.</div>';
             return;
         }
 
-        // E. 重建 Slide DOM
-        filteredProjects.forEach((project, index) => {
+        projects.forEach((project, index) => {
             const slide = createProjectSlide(project, index);
-            projectListWrapper.appendChild(slide);
+            projectListElement.appendChild(slide);
         });
 
-        // F. 重新初始化 Swiper
-        // 稍微延遲確保 DOM 已插入
-        requestAnimationFrame(() => {
-            initSwiper();
-        });
+        // 4. Re-init Swiper
+        initSwiper();
     }
 
     function createProjectSlide(project, index) {
         const slide = document.createElement('div');
         slide.className = 'swiper-slide project-item';
 
-        slide.setAttribute('data-id', project.id);
-        slide.setAttribute('data-index', index);
+        // Data attributes
+        slide.setAttribute('data-index', index); // Note: This index is relative to the filtered list now
         slide.setAttribute('data-category', project.category);
         slide.setAttribute('data-title', project.title);
         slide.setAttribute('data-bio', project.bio);
@@ -122,170 +83,139 @@ document.addEventListener('DOMContentLoaded', () => {
 
         slide.innerHTML = `
             <span class="project-category">${project.category}</span>
-            <a href="project.html?id=${project.id}" onclick="event.preventDefault()">${project.title}</a>
+            <a href="project.html?id=${project.id}">${project.title}</a>
         `;
-
         return slide;
     }
 
-    // --- 3. 初始化 Swiper (含 RWD 參數) ---
     function initSwiper() {
-        // 再次檢查以防萬一
-        if (portfolioSwiper) portfolioSwiper.destroy(true, true);
+        // RWD Parameters
+        const isMobileDevice = isMobile();
 
-        portfolioSwiper = new Swiper('#portfolioSwiper', {
+        // Tune effects based on device
+        const rotateAngle = isMobileDevice ? 35 : 30; // Slightly less rotation on desktop?
+        const depthVal = isMobileDevice ? 100 : 50;   // Flatter on desktop?
+
+        swiperInstance = new Swiper('.mySwiper', {
             direction: 'vertical',
-            loop: true, // 無限循環
+            loop: true,
             centeredSlides: true,
             slidesPerView: 'auto',
-            spaceBetween: 20, // 基礎間距
-
-            mousewheel: {
-                sensitivity: 1,
-                releaseOnEdges: true,
-            },
+            mousewheel: true,
             grabCursor: true,
-            speed: 600,
 
-            // 3D 效果設定
             effect: 'coverflow',
             coverflowEffect: {
+                rotate: rotateAngle,
+                stretch: 0,
+                depth: depthVal,
+                modifier: 1,
                 slideShadows: false,
             },
 
-            // (Stage 3) 響應式斷點：針對不同裝置微調 3D 參數
-            breakpoints: {
-                // 手機版: 強烈的滾筒感 (iOS Picker 風格)
-                0: {
-                    coverflowEffect: {
-                        rotate: 35,      // 較大的旋轉角度
-                        stretch: 10,     // 稍微拉開一點距離
-                        depth: 150,      // 深度更深
-                        modifier: 1,
-                    }
-                },
-                // 桌面版 (768px以上): 優雅的微 3D
-                769: {
-                    coverflowEffect: {
-                        rotate: 20,      // 較小的旋轉
-                        stretch: 0,
-                        depth: 100,      // 標準深度
-                        modifier: 1,
-                    }
-                }
-            },
+            speed: 600,
 
             on: {
-                init: function () {
-                    updateActiveContent(this.slides[this.activeIndex]);
-                },
                 slideChange: function () {
-                    updateActiveContent(this.slides[this.activeIndex]);
+                    updateActiveItem(this.realIndex);
                 },
-                click: function (swiper, event) {
-                    const clickedIndex = swiper.clickedIndex;
-                    if (clickedIndex === undefined) return;
-
-                    if (clickedIndex === swiper.activeIndex) {
-                        // 點擊中間項目 -> 跳轉
-                        const slide = swiper.slides[clickedIndex];
-                        const projectId = slide.getAttribute('data-id');
-                        // 防止空狀態被點擊
-                        if (projectId) {
-                            window.location.href = `project.html?id=${projectId}`;
-                        }
-                    } else {
-                        // 點擊兩側 -> 滑動
-                        swiper.slideTo(clickedIndex);
-                    }
+                init: function () {
+                    updateActiveItem(this.realIndex);
                 }
             }
         });
+
+        // Attach click listener (Delegation)
+        // Note: We need to re-attach or ensure delegation works. 
+        // Since projectListElement is constant, delegation is fine.
+        // But we need to make sure we don't add multiple listeners if we call initSwiper multiple times?
+        // Actually, the listener is on projectListElement which is NOT destroyed, only its children are.
+        // So we should attach the listener ONCE outside.
+
+        console.log('Swiper initialized:', swiperInstance);
     }
 
-    // --- 4. 篩選事件監聽 (Stage 3) ---
-    function bindFilterEvents() {
-        const handleFilter = (event) => {
-            const targetLink = event.target.closest('a[data-filter]');
-            if (!targetLink) return;
+    // Click Listener (Attached once)
+    projectListElement.addEventListener('click', (e) => {
+        if (!swiperInstance) return;
 
-            event.preventDefault();
-            const newFilter = targetLink.getAttribute('data-filter');
+        const clickedSlide = e.target.closest('.swiper-slide');
+        if (!clickedSlide) return;
 
-            // 如果點擊當前篩選器，不做事
-            if (newFilter === currentFilter) return;
-            currentFilter = newFilter;
+        e.preventDefault();
 
-            // 更新 UI 狀態 (Active Class)
-            updateFilterUI(newFilter);
+        const slideIndex = clickedSlide.getAttribute('data-swiper-slide-index') || clickedSlide.getAttribute('data-index');
 
-            // 執行篩選與重建
-            renderProjectSlides(newFilter);
-        };
-
-        if (categoryNavElement) {
-            categoryNavElement.addEventListener('click', handleFilter);
+        if (slideIndex !== null) {
+            swiperInstance.slideToLoop(parseInt(slideIndex), 600);
         }
-        if (mobileFooterElement) {
-            mobileFooterElement.addEventListener('click', handleFilter);
+    });
+
+    function handleFilterClick(event) {
+        const targetLink = event.target.closest('a[data-filter]');
+        if (!targetLink) return;
+
+        event.preventDefault();
+        const filter = targetLink.getAttribute('data-filter');
+
+        // Update UI Active State
+        document.querySelectorAll('a[data-filter]').forEach(a => a.classList.remove('active'));
+        document.querySelectorAll(`a[data-filter="${filter}"]`).forEach(a => a.classList.add('active'));
+
+        // Filter Data
+        let filteredProjects = [];
+        if (filter === 'all') {
+            filteredProjects = allProjects;
+        } else {
+            filteredProjects = allProjects.filter(p => p.category === filter);
         }
+
+        // Render
+        renderProjects(filteredProjects);
     }
 
-    function updateFilterUI(activeFilter) {
-        const allLinks = document.querySelectorAll('a[data-filter]');
-        allLinks.forEach(link => {
-            if (link.getAttribute('data-filter') === activeFilter) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
-        });
-    }
+    function updateActiveItem(realIndex) {
+        // Find the slide in the DOM that corresponds to the realIndex
+        // Note: With filtering, the "index" data attribute might not match 0,1,2... if we preserved original indices.
+        // BUT, createProjectSlide uses the index passed to it.
+        // In renderProjects, we pass the index of the *filtered* array.
+        // So realIndex (0 to N-1 of filtered items) should match data-index (0 to N-1).
 
-    // --- 5. 更新內容與重置 ---
-    function updateActiveContent(activeSlide) {
+        const activeSlide = document.querySelector(`.swiper-slide[data-index="${realIndex}"]`);
+
         if (!activeSlide) return;
 
-        // 如果是 "No projects found" 的 slide，不做更新
-        if (!activeSlide.hasAttribute('data-title')) return;
+        const newTitle = activeSlide.getAttribute('data-title');
+        const newBio = activeSlide.getAttribute('data-bio');
+        const newImageSrc = activeSlide.getAttribute('data-cover-image');
+        const newCategory = activeSlide.getAttribute('data-category');
+        const newInfo = activeSlide.getAttribute('data-info');
 
-        const title = activeSlide.getAttribute('data-title');
-        const bio = activeSlide.getAttribute('data-bio');
-        const category = activeSlide.getAttribute('data-category');
-        const info = activeSlide.getAttribute('data-info');
-        const coverImage = activeSlide.getAttribute('data-cover-image');
+        if (previewTitleElement) previewTitleElement.textContent = newTitle;
+        if (previewBioElement) previewBioElement.textContent = newBio;
+        if (previewInfoElement) previewInfoElement.innerHTML = newInfo;
 
-        if (previewTitleElement) previewTitleElement.textContent = title;
-        if (previewBioElement) previewBioElement.textContent = bio;
-        if (previewInfoElement) previewInfoElement.innerHTML = info;
+        // Update Labels
+        const previewLabelNo = document.getElementById('previewLabelNo');
+        const previewLabelCategory = document.getElementById('previewLabelCategory');
+        const previewBlockBio = document.getElementById('previewBlockBio');
+        const previewLabelInfo_Default = document.getElementById('previewLabelInfo_Default');
+        const previewLabelDocs_Project = document.getElementById('previewLabelDocs_Project');
 
-        if (previewLabelNo && previewLabelCategory) {
+        if (previewLabelNo && previewLabelCategory && previewLabelInfo_Default && previewLabelDocs_Project && previewBlockBio) {
             previewLabelNo.style.display = 'none';
             previewLabelCategory.style.display = 'inline-block';
-            previewLabelCategory.textContent = category;
-        }
+            previewLabelCategory.textContent = newCategory;
 
-        if (previewLabelInfo_Default && previewLabelDocs_Project) {
             previewLabelInfo_Default.style.display = 'none';
             previewLabelDocs_Project.style.display = 'inline-block';
+
+            if (previewBlockBio) previewBlockBio.classList.add('hide-section');
         }
 
-        if (previewBlockBio) {
-            previewBlockBio.classList.add('hide-section');
-        }
-
-        updateRandomPreview(coverImage);
+        updateRandomPreview(newImageSrc);
     }
 
-    function resetPreviewInfo() {
-        // 當沒有篩選結果時的重置狀態
-        if (previewTitleElement) previewTitleElement.textContent = 'No Projects';
-        if (previewBioElement) previewBioElement.textContent = '';
-        if (previewInfoElement) previewInfoElement.textContent = '';
-        updateRandomPreview(null);
-    }
-
-    // --- 6. 隨機預覽圖 ---
     function updateRandomPreview(imageSrc) {
         if (!randomPreviewPopup || !randomPreviewImage) return;
 
@@ -293,20 +223,35 @@ document.addEventListener('DOMContentLoaded', () => {
             randomPreviewImage.src = imageSrc;
             const scale = getRandomFloat(0.9, 1.3);
             const rotate = getRandomFloat(-15, 15);
+            const top = getRandomFloat(10, 60);
+            const left = getRandomFloat(45, 70);
 
-            let top, left;
+            let finalTop = top;
+            let finalLeft = left;
+
             if (isMobile()) {
-                top = getRandomFloat(30, 50); // vh
-                left = getRandomFloat(10, 30); // % (Approximation)
-                randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;
+                finalTop = getRandomFloat(30, 50);
+                finalLeft = getRandomFloat(10, 30);
+                const popupWidth = 200;
+                const windowWidth = window.innerWidth;
+                finalLeft = (windowWidth * (finalLeft / 100)) - (popupWidth / 2);
+
+                randomPreviewPopup.style.transform = `translate(${finalLeft}px, ${finalTop}vh) rotate(${rotate}deg) scale(${scale})`;
             } else {
-                top = getRandomFloat(10, 60); // vh
-                left = getRandomFloat(45, 70); // vw
-                randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;
+                randomPreviewPopup.style.transform = `translate(${finalLeft}vw, ${finalTop}vh) rotate(${rotate}deg) scale(${scale})`;
             }
+
             randomPreviewPopup.classList.add('is-visible');
         } else {
             randomPreviewPopup.classList.remove('is-visible');
         }
+    }
+
+    function getRandomFloat(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
+    function isMobile() {
+        return window.innerWidth <= 768;
     }
 });

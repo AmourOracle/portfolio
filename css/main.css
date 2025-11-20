@@ -124,7 +124,6 @@ header {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    flex-shrink: 0;
 }
 
 /* Left Column Bottom */
@@ -307,50 +306,58 @@ header {
 }
 
 
-/* --- (STAGE 1, 2 & 3) Center Column & Swiper Styles --- */
 .center-column {
-    padding: 0 1rem 0 2rem;
-    box-sizing: border-box;
+    padding: 0;
     overflow: hidden;
+    box-sizing: border-box;
     height: 100%;
+    position: relative;
 
+    /* Optional: Keep mask for fade effect if desired, or remove for raw Swiper */
     mask-image: linear-gradient(to bottom,
             transparent 0%,
-            black 30%,
-            black 70%,
+            black 20%,
+            black 80%,
             transparent 100%);
 }
 
-/* Swiper 容器必須有高度 */
+/* Swiper Styles */
 .swiper {
     width: 100%;
     height: 100%;
 }
 
-.swiper-wrapper {
+.swiper-slide {
+    height: auto;
+    display: flex;
+    align-items: center;
+    /* justify-content: flex-start;  <-- Swiper centeredSlides handles positioning, but content alignment? */
     box-sizing: border-box;
+    /* opacity handled by Swiper or manual styles below */
 }
 
-/* Project Item */
 .project-item {
-    height: auto !important;
-    max-height: 15rem;
-
     display: flex;
     align-items: center;
     gap: 0.75rem;
-
-    opacity: 0.4;
-
+    /* transition: opacity 0.4s ease-out; <-- Let Swiper handle transitions */
+    /* max-height: 15rem; */
     padding: 0.5rem 0;
     cursor: pointer;
-    box-sizing: border-box;
-    white-space: nowrap;
-    transition: opacity 0.3s ease;
+    width: 100%;
+    /* Ensure it fills slide */
+
+    /* Reset old transforms */
+    opacity: 1;
+    transform: none;
 }
 
 .project-item.hide {
-    display: none;
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-top: -1px;
 }
 
 .project-category {
@@ -362,13 +369,6 @@ header {
     text-align: right;
 }
 
-/* Swiper Active State */
-.swiper-slide-active .project-item,
-.project-item.is-active {
-    opacity: 1;
-}
-
-.swiper-slide-active .project-category,
 .project-item.is-active .project-category {
     color: var(--primary-color);
     opacity: 0;
@@ -383,17 +383,18 @@ header {
     padding: 0;
     transition: color 0.4s ease;
     line-height: 1.1;
-
-    /* 防止連結預設跳轉，由 JS 控制點擊邏輯 */
-    pointer-events: none;
 }
 
-.swiper-slide-active .project-item a,
+.project-item.is-active {
+    opacity: 1;
+    transform: scale(1);
+}
+
 .project-item.is-active a {
     color: var(--primary-color);
 }
 
-/* --- End of Swiper Refactor --- */
+
 
 
 .right-column {
@@ -838,27 +839,31 @@ header {
             /* (MOD) Subtract single footer height */
         }
 
-        /* --- (STAGE 1 REFACTOR) --- */
-        /* 移除手寫的 3D loop 樣式，改用 Swiper 控制 */
+        /* --- (REFACTOR_v10.1) --- */
+        /* - 關鍵修復：還原 JS 驅動邏輯 (v4.13)
+      - JS (v10.0) 現在會劫持 'touch' 事件並手動呼叫 'scrollIntoView'
+      - CSS *不能* 再使用 'overflow: auto' 或 'scroll-snap-type'
+    */
         .portfolio-container .center-column {
-            /* 確保 Swiper 填滿空間 */
-            overflow: hidden;
+            overflow-y: auto;
+            /* (MOD) Restore native scroll for Scroll Snap */
             padding: 0;
-
-            /* 漸層遮罩：手機版可以加強一點 */
             mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+            scroll-snap-type: y mandatory;
+            /* (MOD) Enable Scroll Snap */
+            scrollbar-width: none;
+            /* Hide scrollbar */
 
-            /* 移除舊的 scroll snap */
-            scroll-snap-type: none;
+            /* (MOD) 3D Perspective */
             perspective: 1000px;
-            /* 配合 Swiper coverflow */
+            perspective-origin: center center;
         }
 
         .portfolio-container .center-column::-webkit-scrollbar {
             display: none;
         }
 
-        /* --- 結束 (STAGE 1 REFACTOR) --- */
+        /* --- 結束 (REFACTOR_v10.1) --- */
 
 
         .portfolio-container .left-column {
@@ -971,17 +976,67 @@ header {
             color: var(--primary-color);
         }
 
-        /* (STAGE 1 REFACTOR) 移除巨大的 padding */
         .portfolio-container .project-list {
-            /* padding: 40vh 0;  <-- REMOVED */
-            padding: 0;
+            padding: calc(50vh - 30px) 0;
+            /* (MOD) Exact centering padding: 50vh - half item height (approx) */
+            /* Actually, to center the *middle* of the list in the viewport:
+               Viewport Height = 100vh
+               Header = 60px
+               Footer = 0 (hidden) or 60px? Mobile footer is hidden, main footer is hidden?
+               Wait, .mobile-footer is hidden, .main-footer is hidden?
+               Let's check line 914: .mobile-footer { display: none; }
+               Line 1186: .main-footer #mobileContactLinks { display: flex; } -> So main footer is visible?
+               Line 1131: body.portfolio-scroll-lock .main-footer { display: flex ... }
+               
+               If footer is visible (60px), and header is visible (60px).
+               Available space = 100vh - 120px.
+               Center is at (100vh - 120px) / 2 + 60px = 50vh.
+               
+               To center an item of height H, padding should be (ViewportH - H) / 2.
+               Item height is variable? Max height 15rem.
+               Let's use a safe large padding like 45vh, but ensure the container allows scrolling to the very end.
+               The "sticking" issue usually happens if padding is too small.
+               Let's try 50vh - 100px to be safe.
+            */
+            padding: 40vh 0;
+            transform-style: preserve-3d;
         }
 
+        /* (REFACTOR_v10.1) 恢復 CSS 滾動吸附 */
         .portfolio-container .project-item {
-            /* 移除舊的 scroll snap */
-            scroll-snap-align: none;
-            scroll-snap-stop: none;
+            scroll-snap-align: center;
+            /* (MOD) Snap to center */
+            scroll-snap-stop: always;
+            /* (MOD) Force stop at each item */
+
+            /* (MOD) iOS Picker Visuals - JS Driven */
+            /* Remove CSS transitions for transform/opacity to avoid conflict with JS loop */
+            /* transition: opacity 0.3s ease-out, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); */
+            transition: none;
+            opacity: 0.3;
+            transform: scale(0.85);
         }
+
+        /* --- (FIX_v9.7) 移除手機版的 iOS 選擇器視覺效果 (除錯) --- */
+        /* 覆蓋基礎樣式，確保手機版移除特效 */
+        /* (MOD_v11.11) Re-enable picker visuals */
+        /* .portfolio-container .project-item {
+            opacity: 1;
+            transform: none;
+        } */
+
+        .portfolio-container .project-item.is-active {
+            opacity: 1;
+            transform: scale(1);
+            /* .is-active 仍然有 .project-item a 的顏色變化 */
+        }
+
+        .portfolio-container .project-item.is-active .project-category {
+            opacity: 1;
+            /* 保持可見 */
+        }
+
+        /* --- End of Fix --- */
 
 
         /* (MOD_v11.4) (Req 1)
@@ -1220,11 +1275,10 @@ header {
        - 此規則已由 .middle-container (line 629) 的 height: auto 處理
        - (此規則似乎是多餘的，但保留)
     */
-        /* (STAGE 1) 移除針對舊結構的 padding */
+        /* (MOD_v11.9) iOS Picker Feel: Add padding to allow first/last items to center */
         .middle-container .project-list {
-            /* padding-top: 45vh;
-            padding-bottom: 45vh; */
-            padding: 0;
+            padding-top: 45vh;
+            padding-bottom: 45vh;
         }
 
         #nextProjectTitle {
