@@ -318,23 +318,34 @@ header {
             black 30%,
             black 70%,
             transparent 100%);
+
+    /* (MOD) Scroll Snap Implementation */
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
 }
 
-/* Swiper 容器必須有高度 */
-.swiper {
-    width: 100%;
-    height: 100%;
+.center-column::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
 }
 
-.swiper-wrapper {
-    box-sizing: border-box;
+.project-list {
+    list-style: none;
+    padding: 45vh 0;
+    /* Padding to allow first/last items to center */
+    margin: 0;
 }
+
+
 
 /* Project Item */
 .project-item {
-    /* (FIX) 確保每個項目有基本高度，讓 Swiper 更好計算 Loop */
     min-height: 80px;
-    height: auto !important;
+    height: auto;
     max-height: 15rem;
 
     display: flex;
@@ -348,8 +359,12 @@ header {
     box-sizing: border-box;
     white-space: nowrap;
     transition: opacity 0.3s ease;
+    /* Only opacity transition here, transform handled by JS */
 
-    /* (FIX) 確保點擊事件能正確穿透 */
+    /* (MOD) Scroll Snap Alignment */
+    scroll-snap-align: center;
+
+    /* (FIX) Ensure click events pass through */
     touch-action: pan-y;
 }
 
@@ -366,13 +381,11 @@ header {
     text-align: right;
 }
 
-/* Swiper Active State */
-.swiper-slide-active .project-item,
+/* Active State (Managed by JS) */
 .project-item.is-active {
     opacity: 1;
 }
 
-.swiper-slide-active .project-category,
 .project-item.is-active .project-category {
     color: var(--primary-color);
     opacity: 0;
@@ -392,7 +405,6 @@ header {
     pointer-events: none;
 }
 
-.swiper-slide-active .project-item a,
 .project-item.is-active a {
     color: var(--primary-color);
 }

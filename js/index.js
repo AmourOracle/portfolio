@@ -1,35 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('portfolio-scroll-lock');
 
-    // --- DOM 元素獲取 ---
-    const projectListWrapper = document.getElementById('projectListWrapper');
+    // --- DOM Elements ---
+    const projectList = document.getElementById('projectList');
+    const centerColumn = document.querySelector('.center-column');
 
-    // 左側資訊欄位
+    // Left Column Info
     const previewTitleElement = document.getElementById('previewTitle');
     const previewBioElement = document.getElementById('previewBio');
     const previewInfoElement = document.getElementById('previewInfo');
 
-    // 標籤與區塊
+    // Labels & Blocks
     const previewLabelNo = document.getElementById('previewLabelNo');
     const previewLabelCategory = document.getElementById('previewLabelCategory');
     const previewBlockBio = document.getElementById('previewBlockBio');
     const previewLabelInfo_Default = document.getElementById('previewLabelInfo_Default');
     const previewLabelDocs_Project = document.getElementById('previewLabelDocs_Project');
 
-    // 隨機預覽元素
+    // Random Preview
     const randomPreviewPopup = document.getElementById('randomPreviewPopup');
     const randomPreviewImage = document.getElementById('randomPreviewImage');
 
-    // 篩選器元素
+    // Filter Elements
     const categoryNavElement = document.getElementById('categoryNav');
     const mobileFooterElement = document.querySelector('.mobile-footer');
 
-    // --- 全域變數 ---
-    let portfolioSwiper = null;
+    // --- Global Variables ---
     let allProjectsData = [];
+    let visibleItems = [];
     let currentFilter = 'all';
+    let currentActiveIndex = -1;
+    let pickerLoopId = null;
+    let isScrolling = false;
 
-    // --- 輔助函式 ---
+    // --- Helper Functions ---
     function getRandomFloat(min, max) {
         return Math.random() * (max - min) + min;
     }
@@ -38,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return window.innerWidth <= 768;
     }
 
-    // --- 1. 初始資料獲取 ---
+    // --- 1. Initial Data Fetch ---
     fetch('./data/projects.json')
         .then(response => {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -49,13 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             allProjectsData = projects;
 
-            // 初始渲染 (顯示全部)
-            renderProjectSlides('all');
+            // Initial Render
+            renderProjectList('all');
 
-            // 綁定篩選事件
+            // Bind Events
             bindFilterEvents();
+            bindScrollListeners();
 
-            // 入場動畫
+            // Entrance Animation
             setTimeout(() => {
                 const mainContainer = document.querySelector('.portfolio-container');
                 if (mainContainer) mainContainer.classList.add('is-loaded');
@@ -63,19 +68,15 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .catch(error => {
             console.error('Error:', error);
-            if (projectListWrapper) {
-                projectListWrapper.innerHTML = `<div class="swiper-slide">Error: ${error.message}</div>`;
+            if (projectList) {
+                projectList.innerHTML = `<li class="project-item">Error: ${error.message}</li>`;
             }
         });
 
-    // --- 2. 渲染與篩選核心邏輯 ---
-    function renderProjectSlides(filterType) {
-        if (portfolioSwiper) {
-            portfolioSwiper.destroy(true, true);
-            portfolioSwiper = null;
-        }
-
-        projectListWrapper.innerHTML = '';
+    // --- 2. Render & Filter Logic ---
+    function renderProjectList(filterType) {
+        projectList.innerHTML = '';
+        visibleItems = [];
 
         let filteredProjects = [];
         if (filterType === 'all') {
@@ -85,128 +86,182 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (filteredProjects.length === 0) {
-            projectListWrapper.innerHTML = `<div class="swiper-slide project-item" style="justify-content: center; opacity: 1;"><span style="font-family: var(--font-mono); color: var(--secondary-color);">No projects found.</span></div>`;
+            projectList.innerHTML = `<li class="project-item" style="justify-content: center; opacity: 1;"><span style="font-family: var(--font-mono); color: var(--secondary-color);">No projects found.</span></li>`;
             resetPreviewInfo();
             return;
         }
 
         filteredProjects.forEach((project, index) => {
-            const slide = createProjectSlide(project, index);
-            projectListWrapper.appendChild(slide);
+            const item = createProjectItem(project, index);
+            projectList.appendChild(item);
+            visibleItems.push(item);
         });
 
-        requestAnimationFrame(() => {
-            initSwiper();
-        });
+        // Reset scroll position to top
+        if (centerColumn) {
+            centerColumn.scrollTop = 0;
+        }
+
+        // Initial Active Update
+        setTimeout(() => {
+            updateActiveItemOnScroll();
+        }, 100);
     }
 
-    function createProjectSlide(project, index) {
-        const slide = document.createElement('div');
-        slide.className = 'swiper-slide project-item';
+    function createProjectItem(project, index) {
+        const li = document.createElement('li');
+        li.className = 'project-item';
 
-        slide.setAttribute('data-id', project.id);
-        slide.setAttribute('data-index', index);
-        slide.setAttribute('data-category', project.category);
-        slide.setAttribute('data-title', project.title);
-        slide.setAttribute('data-bio', project.bio);
-        slide.setAttribute('data-cover-image', project.coverImage);
-        slide.setAttribute('data-info', project.info);
+        li.setAttribute('data-id', project.id);
+        li.setAttribute('data-index', index);
+        li.setAttribute('data-category', project.category);
+        li.setAttribute('data-title', project.title);
+        li.setAttribute('data-bio', project.bio);
+        li.setAttribute('data-cover-image', project.coverImage);
+        li.setAttribute('data-info', project.info);
 
-        slide.innerHTML = `
+        li.innerHTML = `
             <span class="project-category">${project.category}</span>
             <a href="project.html?id=${project.id}" onclick="event.preventDefault()">${project.title}</a>
         `;
 
-        return slide;
-    }
-
-    // --- 3. 初始化 Swiper (FIX: iOS Picker Physics) ---
-    function initSwiper() {
-        if (portfolioSwiper) portfolioSwiper.destroy(true, true);
-
-        portfolioSwiper = new Swiper('#portfolioSwiper', {
-            direction: 'vertical',
-
-            // Loop 設定：確保緩衝區足夠大，解決往回滾動鎖死問題
-            loop: true,
-            loopedSlides: 8, // 關鍵修正：增加緩衝 Slide 數量
-
-            centeredSlides: true,
-            slidesPerView: 'auto',
-            spaceBetween: 20,
-
-            // Free Mode 設定：模擬 iOS 慣性滾動
-            freeMode: {
-                enabled: true,
-                sticky: true,      // 關鍵：停止時自動吸附到最近的 Slide
-                momentumRatio: 0.25, // 關鍵：降低慣性比率 (越小越重)，模擬滾筒的重量感
-                velocityRatio: 0.25, // 降低初速靈敏度
-            },
-
-            mousewheel: {
-                sensitivity: 1,
-                releaseOnEdges: true,
-                thresholdDelta: 5, // 防止桌面版過於靈敏
-            },
-
-            grabCursor: true,
-            speed: 800, // 稍微放慢吸附動畫的速度
-
-            effect: 'coverflow',
-            coverflowEffect: {
-                slideShadows: false,
-            },
-
-            breakpoints: {
-                // 手機版: 強烈的滾筒感
-                0: {
-                    coverflowEffect: {
-                        rotate: 40,      // 加大旋轉角度
-                        stretch: 0,
-                        depth: 200,      // 加深深度
-                        modifier: 1,
-                    }
-                },
-                // 桌面版
-                769: {
-                    coverflowEffect: {
-                        rotate: 20,
-                        stretch: 0,
-                        depth: 100,
-                        modifier: 1,
-                    }
-                }
-            },
-
-            on: {
-                init: function () {
-                    updateActiveContent(this.slides[this.activeIndex]);
-                },
-                // 改用 setTranslate 或 transitionEnd 來更新，比 slideChange 更平滑
-                slideChange: function () {
-                    updateActiveContent(this.slides[this.activeIndex]);
-                },
-                click: function (swiper, event) {
-                    const clickedIndex = swiper.clickedIndex;
-                    if (clickedIndex === undefined) return;
-
-                    // 如果是 Loop 模式，clickedIndex 可能會與 activeIndex 計算不同
-                    // 使用 slideToClickedSlide 是一個更安全的方法
-                    if (clickedIndex === swiper.activeIndex) {
-                        const slide = swiper.slides[clickedIndex];
-                        const projectId = slide.getAttribute('data-id');
-                        if (projectId) {
-                            window.location.href = `project.html?id=${projectId}`;
-                        }
-                    } else {
-                        swiper.slideToClickedSlide();
-                    }
-                }
+        // Click Event for Navigation
+        li.addEventListener('click', (e) => {
+            // If item is already active, navigate
+            if (li.classList.contains('is-active')) {
+                window.location.href = `project.html?id=${project.id}`;
+            } else {
+                // If not active, scroll to it
+                e.preventDefault();
+                li.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
+
+        return li;
     }
 
-    // --- 4. 篩選事件監聽 ---
+    // --- 3. Scroll & Picker Logic (The Core) ---
+    function bindScrollListeners() {
+        if (!centerColumn) return;
+
+        centerColumn.addEventListener('scroll', handleScroll, { passive: true });
+
+        // Start the visual loop
+        startPickerLoop();
+    }
+
+    function startPickerLoop() {
+        if (pickerLoopId) cancelAnimationFrame(pickerLoopId);
+        pickerLoopId = requestAnimationFrame(renderPickerLoop);
+    }
+
+    function renderPickerLoop() {
+        if (!centerColumn) return;
+
+        const containerRect = centerColumn.getBoundingClientRect();
+        const containerCenter = containerRect.top + containerRect.height / 2;
+        const range = containerRect.height / 2; // Distance where effect fades out significantly
+
+        visibleItems.forEach(item => {
+            const itemRect = item.getBoundingClientRect();
+            const itemCenter = itemRect.top + itemRect.height / 2;
+            const distance = itemCenter - containerCenter;
+
+            // Normalize distance (-1 to 1)
+            let ratio = distance / range;
+
+            // Clamp ratio for safety, though we use it for visuals
+            // We want the effect to continue slightly beyond the range for smoothness
+
+            // Visual Calculations
+
+            // 1. Rotation (Cylinder Effect)
+            // RotateX: -45deg (top) to 45deg (bottom)
+            // We clamp rotation to avoid flipping
+            let rotateX = -ratio * 45;
+            if (rotateX > 90) rotateX = 90;
+            if (rotateX < -90) rotateX = -90;
+
+            // 2. Scale (Depth Effect)
+            // Scale: 1 (center) to 0.8 (edges)
+            const scale = Math.max(0.8, 1 - Math.abs(ratio) * 0.3);
+
+            // 3. Opacity (Focus Effect)
+            // Opacity: 1 (center) to 0.3 (edges)
+            // We use a power curve for smoother falloff
+            const opacity = Math.max(0.2, 1 - Math.pow(Math.abs(ratio), 1.5));
+
+            // Apply Styles
+            item.style.transform = `perspective(1000px) rotateX(${rotateX}deg) scale(${scale})`;
+            item.style.opacity = opacity;
+
+            // Z-Index: Center items should be on top
+            const zIndex = Math.round(100 - Math.abs(ratio) * 100);
+            item.style.zIndex = zIndex;
+        });
+
+        pickerLoopId = requestAnimationFrame(renderPickerLoop);
+    }
+
+    // Handle Logical Updates (Active State)
+    function handleScroll() {
+        if (isScrolling) {
+            clearTimeout(isScrolling);
+        }
+
+        // Debounce slightly to avoid thrashing DOM during fast scrolls
+        // But keep it snappy enough for visual feedback
+        isScrolling = setTimeout(() => {
+            updateActiveItemOnScroll();
+        }, 50);
+    }
+
+    function updateActiveItemOnScroll() {
+        if (!centerColumn) return;
+
+        const containerRect = centerColumn.getBoundingClientRect();
+        const containerCenter = containerRect.top + containerRect.height / 2;
+
+        let closestItem = null;
+        let minDistance = Infinity;
+        let closestIndex = -1;
+
+        visibleItems.forEach((item, index) => {
+            const rect = item.getBoundingClientRect();
+            const itemCenter = rect.top + rect.height / 2;
+            const distance = Math.abs(containerCenter - itemCenter);
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestItem = item;
+                closestIndex = index;
+            }
+        });
+
+        // Threshold for "Active": Must be reasonably close to center
+        // This prevents activating items when the list is scrolled way out of bounds (if possible)
+        if (closestItem && minDistance < containerRect.height / 4) {
+            if (closestIndex !== currentActiveIndex) {
+                setActiveItem(closestIndex);
+            }
+        }
+    }
+
+    function setActiveItem(index) {
+        if (index < 0 || index >= visibleItems.length) return;
+
+        currentActiveIndex = index;
+        const activeItem = visibleItems[index];
+
+        // Update Classes
+        visibleItems.forEach(item => item.classList.remove('is-active'));
+        activeItem.classList.add('is-active');
+
+        // Update Left Column Info
+        updateActiveContent(activeItem);
+    }
+
+    // --- 4. Filter Events ---
     function bindFilterEvents() {
         const handleFilter = (event) => {
             const targetLink = event.target.closest('a[data-filter]');
@@ -219,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             currentFilter = newFilter;
 
             updateFilterUI(newFilter);
-            renderProjectSlides(newFilter);
+            renderProjectList(newFilter);
         };
 
         if (categoryNavElement) {
@@ -241,16 +296,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 5. 更新內容與重置 ---
-    function updateActiveContent(activeSlide) {
-        if (!activeSlide) return;
-        if (!activeSlide.hasAttribute('data-title')) return;
+    // --- 5. Content Updates ---
+    function updateActiveContent(activeItem) {
+        if (!activeItem) return;
 
-        const title = activeSlide.getAttribute('data-title');
-        const bio = activeSlide.getAttribute('data-bio');
-        const category = activeSlide.getAttribute('data-category');
-        const info = activeSlide.getAttribute('data-info');
-        const coverImage = activeSlide.getAttribute('data-cover-image');
+        const title = activeItem.getAttribute('data-title');
+        const bio = activeItem.getAttribute('data-bio');
+        const category = activeItem.getAttribute('data-category');
+        const info = activeItem.getAttribute('data-info');
+        const coverImage = activeItem.getAttribute('data-cover-image');
 
         if (previewTitleElement) previewTitleElement.textContent = title;
         if (previewBioElement) previewBioElement.textContent = bio;
@@ -281,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateRandomPreview(null);
     }
 
-    // --- 6. 隨機預覽圖 ---
+    // --- 6. Random Preview ---
     function updateRandomPreview(imageSrc) {
         if (!randomPreviewPopup || !randomPreviewImage) return;
 

@@ -31,8 +31,6 @@
 
 
 
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="css/main.css">
 </head>
 
@@ -82,15 +80,11 @@
             </div>
         </aside>
 
-        <!-- 中欄：作品列表 (Swiper Structure) -->
+        <!-- 中欄：作品列表 (將由 JS 動態生成) -->
         <section class="center-column">
-            <!-- Swiper Container (修正 ID) -->
-            <div class="swiper portfolio-swiper" id="portfolioSwiper">
-                <!-- Swiper Wrapper (修正 ID) -->
-                <div class="swiper-wrapper" id="projectListWrapper">
-                    <!-- Slides will be injected here by JS -->
-                </div>
-            </div>
+            <ul class="project-list" id="projectList">
+                <!-- Projects will be injected here -->
+            </ul>
         </section>
 
         <!-- 右欄：作品分類 (僅桌面版) -->
@@ -142,7 +136,6 @@
 
 
     <!-- 連結外部 JavaScript 檔案 -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="js/index.js"></script>
 </body>
 
