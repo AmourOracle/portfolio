@@ -854,27 +854,18 @@ header {
             /* (MOD) Subtract single footer height */
         }
 
-        /* --- (STAGE 1 REFACTOR) --- */
-        /* 移除手寫的 3D loop 樣式，改用 Swiper 控制 */
+        /* (MOD) Restore Desktop Scrolling for Mobile */
         .portfolio-container .center-column {
-            /* 確保 Swiper 填滿空間 */
-            overflow: hidden;
-            padding: 0;
-
-            /* 漸層遮罩：手機版可以加強一點 */
-            mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
-
-            /* 移除舊的 scroll snap */
-            scroll-snap-type: none;
-            perspective: 1000px;
-            /* 配合 Swiper coverflow */
+            /* Inherit scrolling from desktop */
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            padding: 0 1rem 0 2rem;
+            /* Keep padding consistent */
         }
 
         .portfolio-container .center-column::-webkit-scrollbar {
             display: none;
         }
-
-        /* --- 結束 (STAGE 1 REFACTOR) --- */
 
 
         .portfolio-container .left-column {
@@ -987,16 +978,14 @@ header {
             color: var(--primary-color);
         }
 
-        /* (STAGE 1 REFACTOR) 移除巨大的 padding */
+        /* (MOD) Restore Padding for Centering */
         .portfolio-container .project-list {
-            /* padding: 40vh 0;  <-- REMOVED */
-            padding: 0;
+            padding: 45vh 0;
         }
 
         .portfolio-container .project-item {
-            /* 移除舊的 scroll snap */
-            scroll-snap-align: none;
-            scroll-snap-stop: none;
+            scroll-snap-align: center;
+            scroll-snap-stop: normal;
         }
 
 
