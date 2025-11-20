@@ -834,10 +834,10 @@ header {
 
         .portfolio-container {
             grid-template-columns: 1fr;
-            grid-template-rows: auto 1fr;
-            /* (MOD) Auto for top info, 1fr for list */
-            padding: 2rem 0 0 0;
-            /* (MOD) Match project.html padding (was 6rem) */
+            grid-template-rows: 1fr;
+            /* (MOD) Single row for list */
+            padding: 0;
+            /* (MOD) Remove top padding as header is fixed and list has its own padding */
             height: calc(100vh - 60px);
             /* (MOD) Subtract single footer height */
         }
@@ -856,6 +856,10 @@ header {
             /* (MOD) Enable Scroll Snap */
             scrollbar-width: none;
             /* Hide scrollbar */
+
+            /* (MOD) 3D Perspective */
+            perspective: 1000px;
+            perspective-origin: center center;
         }
 
         .portfolio-container .center-column::-webkit-scrollbar {
@@ -866,16 +870,8 @@ header {
 
 
         .portfolio-container .left-column {
-            display: flex !important;
-            /* (MOD) Unhide left column */
-            height: auto;
-            padding: 0 2rem;
-            margin-bottom: 3rem;
-            /* (MOD) Match project.html margin */
-            position: relative;
-            z-index: 10;
-            gap: 2rem;
-            /* (MOD) Match project.html gap */
+            display: none !important;
+            /* (MOD) Hide title section on mobile */
         }
 
         .portfolio-container .right-column {
@@ -984,8 +980,29 @@ header {
         }
 
         .portfolio-container .project-list {
-            padding: 45vh 0;
-            /* (MOD) Padding to allow centering first/last items */
+            padding: calc(50vh - 30px) 0;
+            /* (MOD) Exact centering padding: 50vh - half item height (approx) */
+            /* Actually, to center the *middle* of the list in the viewport:
+               Viewport Height = 100vh
+               Header = 60px
+               Footer = 0 (hidden) or 60px? Mobile footer is hidden, main footer is hidden?
+               Wait, .mobile-footer is hidden, .main-footer is hidden?
+               Let's check line 914: .mobile-footer { display: none; }
+               Line 1186: .main-footer #mobileContactLinks { display: flex; } -> So main footer is visible?
+               Line 1131: body.portfolio-scroll-lock .main-footer { display: flex ... }
+               
+               If footer is visible (60px), and header is visible (60px).
+               Available space = 100vh - 120px.
+               Center is at (100vh - 120px) / 2 + 60px = 50vh.
+               
+               To center an item of height H, padding should be (ViewportH - H) / 2.
+               Item height is variable? Max height 15rem.
+               Let's use a safe large padding like 45vh, but ensure the container allows scrolling to the very end.
+               The "sticking" issue usually happens if padding is too small.
+               Let's try 50vh - 100px to be safe.
+            */
+            padding: 40vh 0;
+            transform-style: preserve-3d;
         }
 
         /* (REFACTOR_v10.1) 恢復 CSS 滾動吸附 */
@@ -995,10 +1012,12 @@ header {
             scroll-snap-stop: always;
             /* (MOD) Force stop at each item */
 
-            /* (MOD) iOS Picker Visuals */
+            /* (MOD) iOS Picker Visuals - JS Driven */
+            /* Remove CSS transitions for transform/opacity to avoid conflict with JS loop */
+            /* transition: opacity 0.3s ease-out, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); */
+            transition: none;
             opacity: 0.3;
             transform: scale(0.85);
-            transition: opacity 0.3s ease-out, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         /* --- (FIX_v9.7) 移除手機版的 iOS 選擇器視覺效果 (除錯) --- */

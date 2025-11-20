@@ -273,30 +273,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // (MOD_v11.10) Restore JS Hijacking for "Picker" Feel
 
+    // (MOD) Continuous 3D Picker Loop
+    let pickerLoopId = null;
+
     function bindScrollListeners() {
         if (!centerColumn) return;
 
-        // Remove native scroll listener
         centerColumn.removeEventListener('scroll', handleScroll);
+        centerColumn.removeEventListener('wheel', handleWheelScroll);
 
-        // Add JS Hijacking listeners
         // Desktop (Wheel)
         centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
 
         // Mobile (Touch)
-        // TRIGGER MECHANISM: Native Scroll + CSS Scroll Snap
-        // The 'scroll' event triggers 'handleScroll', which calculates the center item
-        // and updates the visual state (scale/opacity) via 'setActiveItem'.
         if (isMobile()) {
             centerColumn.addEventListener('scroll', handleScroll, { passive: true });
+            startPickerLoop();
         } else {
-            // centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
-            // centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
-            // centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
+            stopPickerLoop();
         }
     }
 
-    // (MOD) Handle native scroll for mobile snap updates
+    function startPickerLoop() {
+        if (pickerLoopId) cancelAnimationFrame(pickerLoopId);
+        pickerLoopId = requestAnimationFrame(renderPickerLoop);
+    }
+
+    function stopPickerLoop() {
+        if (pickerLoopId) cancelAnimationFrame(pickerLoopId);
+        // Reset styles
+        visibleItems.forEach(item => {
+            item.style.transform = '';
+            item.style.opacity = '';
+        });
+    }
+
+    function renderPickerLoop() {
+        if (!isMobile()) {
+            stopPickerLoop();
+            return;
+        }
+
+        const containerRect = centerColumn.getBoundingClientRect();
+        const containerCenter = containerRect.top + containerRect.height / 2;
+        const range = containerRect.height / 2; // Distance where effect fades out
+
+        visibleItems.forEach(item => {
+            const itemRect = item.getBoundingClientRect();
+            const itemCenter = itemRect.top + itemRect.height / 2;
+            const distance = itemCenter - containerCenter;
+
+            // Normalize distance (-1 to 1)
+            let ratio = distance / range;
+            // Clamp ratio
+            if (ratio > 1) ratio = 1;
+            if (ratio < -1) ratio = -1;
+
+            // Calculate Visuals
+            // RotateX: -45deg (top) to 45deg (bottom)
+            const rotateX = -ratio * 45;
+
+            // Scale: 1 (center) to 0.8 (edges)
+            const scale = 1 - Math.abs(ratio) * 0.2;
+
+            // Opacity: 1 (center) to 0.3 (edges)
+            const opacity = 1 - Math.abs(ratio) * 0.7;
+
+            item.style.transform = `perspective(1000px) rotateX(${rotateX}deg) scale(${scale})`;
+            item.style.opacity = opacity;
+        });
+
+        pickerLoopId = requestAnimationFrame(renderPickerLoop);
+    }
+
+    // (MOD) Handle native scroll for logical updates (Active Item Text)
     let isScrolling = false;
     function handleScroll() {
         if (!isMobile()) return;
@@ -304,10 +354,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isScrolling) return;
         isScrolling = true;
 
-        requestAnimationFrame(() => {
+        // Debounce logical updates to avoid flickering text
+        setTimeout(() => {
             updateActiveItemOnScroll();
             isScrolling = false;
-        });
+        }, 100);
     }
 
     function updateActiveItemOnScroll() {
@@ -331,6 +382,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (closestIndex !== -1 && closestIndex !== currentActiveIndex) {
             // Update active item without scrolling (pass false)
+            // This only updates the text/URL now, visuals are handled by loop
             setActiveItem(closestIndex, false);
         }
     }
