@@ -51,24 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return window.innerWidth <= 768;
     }
 
-    function bindScrollListeners() {
-        if (!centerColumn) return;
 
-        centerColumn.removeEventListener('scroll', handleFreeScroll, { passive: true });
-        centerColumn.removeEventListener('wheel', handleWheelScroll, { passive: false });
-        centerColumn.removeEventListener('touchstart', handleTouchStart, { passive: false });
-        centerColumn.removeEventListener('touchmove', handleTouchMove, { passive: false });
-        centerColumn.removeEventListener('touchend', handleTouchEnd, { passive: false });
-
-        if (isMobile()) {
-            centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
-            centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
-            centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
-        } else {
-            centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
-            centerColumn.addEventListener('scroll', handleFreeScroll, { passive: true });
-        }
-    }
 
 
     // 1. 獲取專案資料並生成列表
@@ -304,9 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isMobile()) {
             centerColumn.addEventListener('scroll', handleScroll, { passive: true });
         } else {
-            centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
-            centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
-            centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
+            // centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
+            // centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
+            // centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
         }
     }
 
