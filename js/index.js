@@ -300,81 +300,81 @@ document.addEventListener('DOMContentLoaded', () => {
         // Desktop (Wheel)
         centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
 
-        // Mobile (Touch)
-        centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
-        centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
-        centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
-    }
-
-    function handleWheelScroll(event) {
-        event.preventDefault(); // Stop native scroll
-
-        if (isManualScrolling) return;
-
-        const delta = event.deltaY;
-        if (Math.abs(delta) > 5) { // Threshold
-            isManualScrolling = true;
-            setTimeout(() => { isManualScrolling = false; }, 50); // Throttle
-
-            const direction = delta > 0 ? 1 : -1;
-            let newIndex = currentActiveIndex + direction;
-
-            if (currentActiveIndex === -1) newIndex = 0;
-
-            // Boundary checks
-            if (newIndex < 0) newIndex = 0;
-            if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
-
-            if (newIndex !== currentActiveIndex) {
-                setActiveItem(newIndex, true);
-            } else {
-                isManualScrolling = false;
-            }
+        // Mobile (Touch) - (MOD) Disable hijacking on mobile, use native scroll
+        if (isMobile()) {
+            centerColumn.addEventListener('scroll', handleScroll, { passive: true });
+        } else {
+            centerColumn.addEventListener('touchstart', handleTouchStart, { passive: false });
+            centerColumn.addEventListener('touchmove', handleTouchMove, { passive: false });
+            centerColumn.addEventListener('touchend', handleTouchEnd, { passive: false });
         }
     }
 
-    function handleTouchStart(event) {
-        if (isManualScrolling) return;
-        touchStartY = event.touches[0].clientY;
-        touchEndY = event.touches[0].clientY;
+    // (MOD) Handle native scroll for mobile snap updates
+    let isScrolling = false;
+    function handleScroll() {
+        if (!isMobile()) return;
+
+        if (isScrolling) return;
+        isScrolling = true;
+
+        requestAnimationFrame(() => {
+            updateActiveItemOnScroll();
+            isScrolling = false;
+        });
     }
 
-    function handleTouchMove(event) {
-        event.preventDefault(); // Stop native scroll
-        touchEndY = event.touches[0].clientY;
-    }
+    function updateActiveItemOnScroll() {
+        const containerCenter = centerColumn.getBoundingClientRect().top + centerColumn.clientHeight / 2;
 
-    function handleTouchEnd(event) {
-        if (isManualScrolling) return;
+        let closestItem = null;
+        let minDistance = Infinity;
+        let closestIndex = -1;
 
-        const deltaY = touchEndY - touchStartY;
+        visibleItems.forEach((item, index) => {
+            const rect = item.getBoundingClientRect();
+            const itemCenter = rect.top + rect.height / 2;
+            const distance = Math.abs(containerCenter - itemCenter);
 
-        if (Math.abs(deltaY) > touchThreshold) {
-            event.preventDefault();
-            isManualScrolling = true;
-            setTimeout(() => { isManualScrolling = false; }, 300); // Throttle
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestItem = item;
+                closestIndex = index;
+            }
+        });
 
-            const direction = deltaY > 0 ? -1 : 1; // Up drag = Scroll Down (Index +)
-            let newIndex = currentActiveIndex + direction;
+        if (closestIndex !== -1 && closestIndex !== currentActiveIndex) {
+            // Update active item without scrolling (pass false)
+            setActiveItem(closestIndex, false);
+        }
+        function handleWheelScroll(event) {
+            if (isMobile()) return; // (MOD) Ignore wheel on mobile if any
 
-            if (currentActiveIndex === -1) newIndex = 0;
+            event.preventDefault(); // Stop native scroll
 
-            if (newIndex < 0) newIndex = 0;
-            if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+            if (isManualScrolling) return;
 
-            if (newIndex !== currentActiveIndex) {
-                setActiveItem(newIndex, true);
-            } else {
-                isManualScrolling = false;
+            const delta = event.deltaY;
+            if (Math.abs(delta) > 5) { // Threshold
+                isManualScrolling = true;
+                setTimeout(() => { isManualScrolling = false; }, 50); // Throttle
+
+                const direction = delta > 0 ? 1 : -1;
+                let newIndex = currentActiveIndex + direction;
+
+                if (currentActiveIndex === -1) newIndex = 0;
+
+                // Boundary checks
+                if (newIndex < 0) newIndex = 0;
+                if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+
+                if (newIndex !== currentActiveIndex) {
+                    setActiveItem(newIndex, true);
+                } else {
+                    isManualScrolling = false;
+                }
             }
         }
-    }
-
-    // Placeholder for old handleScroll if needed, or just remove it.
-    // We'll keep an empty function or just remove the reference in bindScrollListeners
-    function handleScroll() { }
-
-    function handleItemClick(event) {
         // 如果正在滾動，阻止點擊
         if (isManualScrolling) {
             event.preventDefault();

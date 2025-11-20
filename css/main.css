@@ -848,12 +848,18 @@ header {
       - CSS *不能* 再使用 'overflow: auto' 或 'scroll-snap-type'
     */
         .portfolio-container .center-column {
-            overflow-y: hidden;
-            /* (MOD) Enforce hidden for JS Hijacking */
+            overflow-y: auto;
+            /* (MOD) Restore native scroll for Scroll Snap */
             padding: 0;
             mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
-            /* (MOD) Add mask back */
-            scroll-snap-type: none;
+            scroll-snap-type: y mandatory;
+            /* (MOD) Enable Scroll Snap */
+            scrollbar-width: none;
+            /* Hide scrollbar */
+        }
+
+        .portfolio-container .center-column::-webkit-scrollbar {
+            display: none;
         }
 
         /* --- 結束 (REFACTOR_v10.1) --- */
@@ -864,9 +870,12 @@ header {
             /* (MOD) Unhide left column */
             height: auto;
             padding: 0 2rem;
-            margin-bottom: 1rem;
+            margin-bottom: 3rem;
+            /* (MOD) Match project.html margin */
             position: relative;
             z-index: 10;
+            gap: 2rem;
+            /* (MOD) Match project.html gap */
         }
 
         .portfolio-container .right-column {
@@ -884,19 +893,22 @@ header {
         }
 
         .portfolio-container .left-column-middle {
-            margin-top: 1rem;
+            margin-top: 0;
+            /* (MOD) Reset margin */
         }
 
         /* Adjust Name Block for Mobile */
         .name-block h1 {
-            font-size: 2.2rem;
+            /* font-size: 2.2rem; */
             /* (MOD) Smaller title */
-            margin-top: 0.5rem;
+            margin-top: 0;
         }
 
         .portfolio-container .info-divider-block {
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
+            margin-top: 1.5rem;
+            /* (MOD) Match project.html */
+            padding-top: 1rem;
+            /* (MOD) Match project.html */
         }
 
         .mobile-footer {
@@ -972,12 +984,16 @@ header {
         }
 
         .portfolio-container .project-list {
-            padding: 40vh 0;
+            padding: 45vh 0;
+            /* (MOD) Padding to allow centering first/last items */
         }
 
-        /* (REFACTOR_v10.1) 移除 CSS 滾動吸附 */
+        /* (REFACTOR_v10.1) 恢復 CSS 滾動吸附 */
         .portfolio-container .project-item {
-            scroll-snap-align: none;
+            scroll-snap-align: center;
+            /* (MOD) Snap to center */
+            scroll-snap-stop: always;
+            /* (MOD) Force stop at each item */
         }
 
         /* --- (FIX_v9.7) 移除手機版的 iOS 選擇器視覺效果 (除錯) --- */
