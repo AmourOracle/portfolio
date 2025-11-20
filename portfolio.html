@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 
 <head>
-    <meta charset="UTF-AR-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sywan - Visual Designer Portfolio</title>
 
@@ -29,10 +29,9 @@
         })(document);
     </script>
 
-
-
-    <!-- Swiper CSS -->
+    <!-- (STAGE 1) 引入 Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <link rel="stylesheet" href="css/main.css">
 </head>
 
@@ -82,12 +81,13 @@
             </div>
         </aside>
 
-        <!-- 中欄：作品列表 (Swiper Structure) -->
+        <!-- (STAGE 1) 重構中欄結構以適應 Swiper -->
         <section class="center-column">
-            <!-- Swiper -->
-            <div class="swiper mySwiper">
-                <div class="swiper-wrapper" id="projectList">
-                    <!-- Slides will be injected here by JS -->
+            <!-- Swiper 主要容器 -->
+            <div class="swiper portfolio-swiper" id="portfolioSwiper">
+                <!-- 必要的 Wrapper -->
+                <div class="swiper-wrapper" id="projectListWrapper">
+                    <!-- Slides 將由 JS 動態生成 -->
                 </div>
             </div>
         </section>
@@ -139,9 +139,10 @@
     </main>
 
 
+    <!-- (STAGE 1) 引入 Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <!-- 連結外部 JavaScript 檔案 -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="js/index.js"></script>
 </body>
 
