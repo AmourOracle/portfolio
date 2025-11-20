@@ -283,7 +283,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Desktop (Wheel)
         centerColumn.addEventListener('wheel', handleWheelScroll, { passive: false });
 
-        // Mobile (Touch) - (MOD) Disable hijacking on mobile, use native scroll
+        // Mobile (Touch)
+        // TRIGGER MECHANISM: Native Scroll + CSS Scroll Snap
+        // The 'scroll' event triggers 'handleScroll', which calculates the center item
+        // and updates the visual state (scale/opacity) via 'setActiveItem'.
         if (isMobile()) {
             centerColumn.addEventListener('scroll', handleScroll, { passive: true });
         } else {

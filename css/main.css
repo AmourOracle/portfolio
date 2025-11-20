@@ -836,8 +836,8 @@ header {
             grid-template-columns: 1fr;
             grid-template-rows: auto 1fr;
             /* (MOD) Auto for top info, 1fr for list */
-            padding: 6rem 0 0 0;
-            /* (MOD) Increase padding to avoid header overlap (was 4rem) */
+            padding: 2rem 0 0 0;
+            /* (MOD) Match project.html padding (was 6rem) */
             height: calc(100vh - 60px);
             /* (MOD) Subtract single footer height */
         }
@@ -994,16 +994,24 @@ header {
             /* (MOD) Snap to center */
             scroll-snap-stop: always;
             /* (MOD) Force stop at each item */
+
+            /* (MOD) iOS Picker Visuals */
+            opacity: 0.3;
+            transform: scale(0.85);
+            transition: opacity 0.3s ease-out, transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         /* --- (FIX_v9.7) 移除手機版的 iOS 選擇器視覺效果 (除錯) --- */
         /* 覆蓋基礎樣式，確保手機版移除特效 */
-        .portfolio-container .project-item {
+        /* (MOD_v11.11) Re-enable picker visuals */
+        /* .portfolio-container .project-item {
             opacity: 1;
             transform: none;
-        }
+        } */
 
         .portfolio-container .project-item.is-active {
+            opacity: 1;
+            transform: scale(1);
             /* .is-active 仍然有 .project-item a 的顏色變化 */
         }
 
