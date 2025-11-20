@@ -836,8 +836,8 @@ header {
             grid-template-columns: 1fr;
             grid-template-rows: auto 1fr;
             /* (MOD) Auto for top info, 1fr for list */
-            padding: 4rem 0 0 0;
-            /* (MOD) Increase padding to avoid header overlap */
+            padding: 6rem 0 0 0;
+            /* (MOD) Increase padding to avoid header overlap (was 4rem) */
             height: calc(100vh - 60px);
             /* (MOD) Subtract single footer height */
         }

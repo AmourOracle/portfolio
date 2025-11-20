@@ -347,34 +347,38 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update active item without scrolling (pass false)
             setActiveItem(closestIndex, false);
         }
-        function handleWheelScroll(event) {
-            if (isMobile()) return; // (MOD) Ignore wheel on mobile if any
+    }
 
-            event.preventDefault(); // Stop native scroll
+    function handleWheelScroll(event) {
+        if (isMobile()) return; // (MOD) Ignore wheel on mobile if any
 
-            if (isManualScrolling) return;
+        event.preventDefault(); // Stop native scroll
 
-            const delta = event.deltaY;
-            if (Math.abs(delta) > 5) { // Threshold
-                isManualScrolling = true;
-                setTimeout(() => { isManualScrolling = false; }, 50); // Throttle
+        if (isManualScrolling) return;
 
-                const direction = delta > 0 ? 1 : -1;
-                let newIndex = currentActiveIndex + direction;
+        const delta = event.deltaY;
+        if (Math.abs(delta) > 5) { // Threshold
+            isManualScrolling = true;
+            setTimeout(() => { isManualScrolling = false; }, 50); // Throttle
 
-                if (currentActiveIndex === -1) newIndex = 0;
+            const direction = delta > 0 ? 1 : -1;
+            let newIndex = currentActiveIndex + direction;
 
-                // Boundary checks
-                if (newIndex < 0) newIndex = 0;
-                if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+            if (currentActiveIndex === -1) newIndex = 0;
 
-                if (newIndex !== currentActiveIndex) {
-                    setActiveItem(newIndex, true);
-                } else {
-                    isManualScrolling = false;
-                }
+            // Boundary checks
+            if (newIndex < 0) newIndex = 0;
+            if (newIndex >= visibleItems.length) newIndex = visibleItems.length - 1;
+
+            if (newIndex !== currentActiveIndex) {
+                setActiveItem(newIndex, true);
+            } else {
+                isManualScrolling = false;
             }
         }
+    }
+
+    function handleItemClick(event) {
         // 如果正在滾動，阻止點擊
         if (isManualScrolling) {
             event.preventDefault();
