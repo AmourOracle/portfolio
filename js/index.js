@@ -162,33 +162,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const containerCenter = containerRect.top + containerRect.height / 2;
         const range = containerRect.height / 2; // Distance where effect fades out significantly
 
-        visibleItems.forEach(item => {
+        let closestItem = null;
+        let minDistance = Infinity;
+        let closestIndex = -1;
+
+        visibleItems.forEach((item, index) => {
             const itemRect = item.getBoundingClientRect();
             const itemCenter = itemRect.top + itemRect.height / 2;
             const distance = itemCenter - containerCenter;
+            const absDistance = Math.abs(distance);
+
+            // Track closest item for Active State
+            if (absDistance < minDistance) {
+                minDistance = absDistance;
+                closestItem = item;
+                closestIndex = index;
+            }
 
             // Normalize distance (-1 to 1)
             let ratio = distance / range;
 
-            // Clamp ratio for safety, though we use it for visuals
-            // We want the effect to continue slightly beyond the range for smoothness
-
             // Visual Calculations
-
             // 1. Rotation (Cylinder Effect)
-            // RotateX: -45deg (top) to 45deg (bottom)
-            // We clamp rotation to avoid flipping
             let rotateX = -ratio * 45;
             if (rotateX > 90) rotateX = 90;
             if (rotateX < -90) rotateX = -90;
 
             // 2. Scale (Depth Effect)
-            // Scale: 1 (center) to 0.8 (edges)
             const scale = Math.max(0.8, 1 - Math.abs(ratio) * 0.3);
 
             // 3. Opacity (Focus Effect)
-            // Opacity: 1 (center) to 0.3 (edges)
-            // We use a power curve for smoother falloff
             const opacity = Math.max(0.2, 1 - Math.pow(Math.abs(ratio), 1.5));
 
             // Apply Styles
@@ -200,51 +203,23 @@ document.addEventListener('DOMContentLoaded', () => {
             item.style.zIndex = zIndex;
         });
 
+        // Real-time Active State Update
+        // Update active item immediately if it changes, providing instant feedback
+        if (closestIndex !== -1 && closestIndex !== currentActiveIndex) {
+            setActiveItem(closestIndex);
+        }
+
         pickerLoopId = requestAnimationFrame(renderPickerLoop);
     }
 
     // Handle Logical Updates (Active State)
     function handleScroll() {
-        if (isScrolling) {
-            clearTimeout(isScrolling);
-        }
-
-        // Debounce slightly to avoid thrashing DOM during fast scrolls
-        // But keep it snappy enough for visual feedback
-        isScrolling = setTimeout(() => {
-            updateActiveItemOnScroll();
-        }, 50);
+        // (MOD) Logic moved to renderPickerLoop for real-time updates
+        // This function now only serves to ensure the loop is running if needed (it is always running)
     }
 
     function updateActiveItemOnScroll() {
-        if (!centerColumn) return;
-
-        const containerRect = centerColumn.getBoundingClientRect();
-        const containerCenter = containerRect.top + containerRect.height / 2;
-
-        let closestItem = null;
-        let minDistance = Infinity;
-        let closestIndex = -1;
-
-        visibleItems.forEach((item, index) => {
-            const rect = item.getBoundingClientRect();
-            const itemCenter = rect.top + rect.height / 2;
-            const distance = Math.abs(containerCenter - itemCenter);
-
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestItem = item;
-                closestIndex = index;
-            }
-        });
-
-        // Threshold for "Active": Must be reasonably close to center
-        // This prevents activating items when the list is scrolled way out of bounds (if possible)
-        if (closestItem && minDistance < containerRect.height / 4) {
-            if (closestIndex !== currentActiveIndex) {
-                setActiveItem(closestIndex);
-            }
-        }
+        // (MOD) Logic moved to renderPickerLoop
     }
 
     function setActiveItem(index) {

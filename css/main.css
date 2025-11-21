@@ -757,7 +757,8 @@ header {
     aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
-    z-index: 2000;
+    z-index: 5;
+    /* (MOD) Lower z-index to sit behind active item (which is ~100) */
     pointer-events: none;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     overflow: hidden;
@@ -985,7 +986,8 @@ header {
 
         .portfolio-container .project-item {
             scroll-snap-align: center;
-            scroll-snap-stop: normal;
+            scroll-snap-stop: always;
+            /* (MOD) Force stop at every item */
         }
 
 
