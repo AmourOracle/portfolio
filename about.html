@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sywan - About</title>
-    
+
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" sizes="any">
     <link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png" sizes="180x180">
 
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
+        rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
-      (function(d) {
-        var config = {
-          kitId: 'hcg4voj',
-          scriptTimeout: 3000,
-          async: true
-        },
-        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
-      })(document);
+        (function (d) {
+            var config = {
+                kitId: 'hcg4voj',
+                scriptTimeout: 3000,
+                async: true
+            },
+                h = d.documentElement, t = setTimeout(function () { h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive"; }, config.scriptTimeout), tk = d.createElement("script"), f = false, s = d.getElementsByTagName("script")[0], a; h.className += " wf-loading"; tk.src = 'https://use.typekit.net/' + config.kitId + '.js'; tk.async = true; tk.onload = tk.onreadystatechange = function () { a = this.readyState; if (f || a && a != "complete" && a != "loaded") return; f = true; clearTimeout(t); try { Typekit.load(config) } catch (e) { } }; s.parentNode.insertBefore(tk, s)
+        })(document);
     </script>
-    
+
     <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
     <link rel="stylesheet" href="css/main.css">
 </head>
+
 <body>
     <header>
         <a href="portfolio.html" class="logo">SYWAN</a>
@@ -38,10 +42,10 @@
       - 這與 v9.x 的 project.html 和 portfolio.html 保持一致
     -->
     <main class="middle-container about-layout">
-        
+
         <!-- 左欄：靜態資訊 -->
         <aside class="left-column">
-            
+
             <!-- 標題 (頂部) -->
             <div class="left-column-top">
                 <div class="name-block">
@@ -49,20 +53,23 @@
                     <h1>Sywan</h1>
                 </div>
             </div>
-            
+
             <!-- 資訊 (中部) -->
             <div class="left-column-middle">
                 <div class="info-divider-block">
                     <span class="label">BIO</span>
-                    <p>A visual designer based in Taiwan, focusing on creating compelling brand identities and digital experiences.</p>
+                    <p>A visual designer based in Taiwan, focusing on creating compelling brand identities and digital
+                        experiences.</p>
                 </div>
-                
+
                 <div class="info-divider-block">
                     <span class="label">CONTACT</span>
                     <p style="word-break: break-all;">
-                        <a href="mailto:email@example.com" style="color: var(--text-color); text-decoration: none;">email@example.com</a>
+                        <a href="mailto:email@example.com"
+                            style="color: var(--text-color); text-decoration: none;">email@example.com</a>
                         <br><br>
-                        <a href="#" target="_blank" style="color: var(--text-color); text-decoration: none;">Instagram</a>
+                        <a href="#" target="_blank"
+                            style="color: var(--text-color); text-decoration: none;">Instagram</a>
                         <br>
                         <a href="#" target="_blank" style="color: var(--text-color); text-decoration: none;">Behance</a>
                     </p>
@@ -78,7 +85,7 @@
                 <a href="portfolio.html" class="back-button-block">
                     <span class="arrow">&larr;</span> Back
                 </a>
-                
+
                 <!-- (MOD_v11.0) 
                   - About 頁面不需要 Next 按鈕
                   - CSS 將在 .about-layout 中自動隱藏此按鈕的空間
@@ -88,13 +95,14 @@
 
         <!-- 右欄：靜態 About 內容 -->
         <section class="project-content-column about-content">
-            
+
             <div class="about-intro-text">
-                <p>GUIDED BY A DEEP UNDERSTANDING OF PEOPLE, DEVELOPING EFFECTIVE COMMUNICATION STRATEGIES THAT TURN IDEAS INTO SUCCESS STORIES</p>
+                <p>GUIDED BY A DEEP UNDERSTANDING OF PEOPLE, DEVELOPING EFFECTIVE COMMUNICATION STRATEGIES THAT TURN
+                    IDEAS INTO SUCCESS STORIES</p>
             </div>
-            
+
             <div class="about-details-grid">
-                
+
                 <div class="grid-item">
                     <span class="grid-label">EXPERIENCE</span>
                     <p>
@@ -151,5 +159,8 @@
       - 導航按鈕現在位於 .left-column 中
     -->
 
+    <!-- (ADD_v17.1) 引入 JS 以觸發進場動畫 -->
+    <script src="js/about.js"></script>
 </body>
+
 </html>
