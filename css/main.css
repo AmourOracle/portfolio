@@ -315,8 +315,8 @@ header {
 
     mask-image: linear-gradient(to bottom,
             transparent 0%,
-            black 30%,
-            black 70%,
+            black 40%,
+            black 60%,
             transparent 100%);
 
     /* (MOD) Scroll Snap Implementation */
@@ -1009,7 +1009,8 @@ header {
        - JS (v11.4) 會動態計算置中位置
     */
         .random-preview-popup {
-            width: 200px;
+            width: 140px;
+            /* (MOD) Reduced by 30% (200px -> 140px) */
             aspect-ratio: 1 / 1;
             /* 手機版改為 1:1 */
         }
