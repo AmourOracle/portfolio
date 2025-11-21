@@ -39,7 +39,6 @@
 
     <!-- (MOD_v11.0) 
       - HTML 結構重構，`main` 標籤使用 `middle-container` 和 `about-layout`
-      - 這與 v9.x 的 project.html 和 portfolio.html 保持一致
     -->
     <main class="middle-container about-layout">
 
@@ -76,20 +75,11 @@
                 </div>
             </div>
 
-            <!-- (MOD_v11.0) 
-              - 導航按鈕區塊 (`.left-column-bottom`) 
-              - 已移至 `<aside class="left-column">` 內部
-              - 並且 class 已從 `.project-nav-bottom` 統一為 `.left-column-bottom`
-            -->
+            <!-- 導航按鈕區塊 -->
             <div class="left-column-bottom">
                 <a href="portfolio.html" class="back-button-block">
                     <span class="arrow">&larr;</span> Back
                 </a>
-
-                <!-- (MOD_v11.0) 
-                  - About 頁面不需要 Next 按鈕
-                  - CSS 將在 .about-layout 中自動隱藏此按鈕的空間
-                -->
             </div>
         </aside>
 
@@ -154,13 +144,22 @@
         </section>
     </main>
 
-    <!-- (MOD_v11.0) 
-      - 移除了 v9.9 錯誤引入的 fixed footer
-      - 導航按鈕現在位於 .left-column 中
+    <!-- 
+        (MOD_v17.2) 將 About 頁面的進場邏輯直接內嵌於此
+        理由：避免因 js/about.js 檔案路徑錯誤或未建立資料夾導致頁面空白。
+        功能：在頁面載入後自動添加 .is-loaded class 以觸發 CSS 動畫。
     -->
-
-    <!-- (ADD_v17.1) 引入 JS 以觸發進場動畫 -->
-    <script src="js/about.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainContainer = document.querySelector('.middle-container');
+            if (mainContainer) {
+                // 小延遲確保 CSS Transition 準備就緒
+                setTimeout(() => {
+                    mainContainer.classList.add('is-loaded');
+                }, 50);
+            }
+        });
+    </script>
 </body>
 
 </html>
