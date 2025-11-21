@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const galleryContainer = document.getElementById('galleryContainer');
     const panContainer = document.getElementById('pan-container');
+    // (ADD_v16.0) 取得 UI 容器以觸發動畫
+    const uiContainer = document.querySelector('.middle-container');
 
     // 檢查容器是否存在
     if (!galleryContainer || !panContainer) {
@@ -9,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- (FIX v8.1) 將畫布常數移至頂層 ---
-    // 讓 renderDesktopCanvas 和 initPanZoom 都能存取
     const CANVAS_WIDTH = 5000;
     const CANVAS_HEIGHT = 5000;
     // --- 結束 (FIX v8.1) ---
@@ -44,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(projects => {
             // 3. (MOD v8.0) 彙整 *所有* 專案的圖片
-            // 移除 'Photography' 篩選
             const allImages = projects.flatMap(project => [
                 ...project.images.map(url => ({ url, title: project.title })),
                 { url: project.coverImage, title: project.title } // 也加入封面圖
@@ -56,8 +56,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // 4. (MOD_v10.1) 根據裝置類型渲染畫布
-            // 移除 isMobile() 判斷，強制所有裝置都使用無限畫布
             renderDesktopCanvas(allImages);
+
+            // (ADD_v16.0) 觸發進場動畫
+            if (uiContainer) {
+                setTimeout(() => {
+                    uiContainer.classList.add('is-loaded');
+                }, 100);
+            }
         })
         .catch(error => {
             console.error('Error fetching gallery data:', error);

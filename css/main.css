@@ -11,6 +11,12 @@
     --font-zh: "momochidori", sans-serif;
     --font-main: var(--font-en), var(--font-zh);
     --font-mono: var(--font-en), var(--font-zh);
+
+    /* Animation Variables (ADD_v16.0) */
+    --anim-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    /* Apple-style exponential ease */
+    --anim-duration: 1.2s;
+    --anim-y-offset: 40px;
 }
 
 
@@ -222,40 +228,132 @@ header {
     grid-template-rows: 1fr;
 }
 
-/* Entrance Animation */
-.portfolio-container .left-column,
+/* =========================================
+   (MOD_v16.0) Cinematic Entrance Animation
+   重構了進場動畫，使用模糊、位移與指數緩動
+   ========================================= */
+
+/* 1. 定義需要動畫的元素初始狀態 */
+/* 左欄位內的細項 */
+.portfolio-container .left-column .name-block,
+.portfolio-container .left-column .info-divider-block,
+.portfolio-container .left-column .contact-links,
+.middle-container .left-column>div,
+/* For project/about/gallery pages */
+/* 中欄位 (列表或內容) */
 .portfolio-container .center-column,
+.middle-container .project-content-column,
+.about-content,
+/* 右欄位 (分類) */
 .portfolio-container .right-column {
     opacity: 0;
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transform: translateY(var(--anim-y-offset));
+    filter: blur(10px);
+    /* 初始模糊 */
+    transition:
+        opacity var(--anim-duration) var(--anim-ease),
+        transform var(--anim-duration) var(--anim-ease),
+        filter var(--anim-duration) var(--anim-ease);
+    will-change: transform, opacity, filter;
 }
 
-.portfolio-container .left-column,
-.portfolio-container .right-column {
-    transform: translateY(20px);
-}
-
-.portfolio-container .center-column {
-    transform: translateY(40px);
-}
-
-.portfolio-container.is-loaded .left-column,
+/* 2. 觸發狀態 (.is-loaded) */
+/* JS (index.js, project.js, gallery.js) 會在資料載入後
+   給容器加上 .is-loaded class
+*/
+.portfolio-container.is-loaded .left-column .name-block,
+.portfolio-container.is-loaded .left-column .info-divider-block,
+.portfolio-container.is-loaded .left-column .contact-links,
 .portfolio-container.is-loaded .center-column,
-.portfolio-container.is-loaded .right-column {
+.portfolio-container.is-loaded .right-column,
+/* Inner Pages Trigger */
+.middle-container.is-loaded .left-column>div,
+.middle-container.is-loaded .project-content-column,
+.middle-container.is-loaded .about-content {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
 }
 
-.portfolio-container.is-loaded .left-column {
+/* 3. 錯落延遲 (Staggered Delays) */
+
+/* 順序 1: 標題 (最快) */
+.portfolio-container.is-loaded .name-block,
+.middle-container.is-loaded .left-column-top {
     transition-delay: 0.1s;
 }
 
-.portfolio-container.is-loaded .right-column {
+/* 順序 2: 簡介/資訊 (稍慢) */
+.portfolio-container.is-loaded .info-divider-block:nth-of-type(1),
+.middle-container.is-loaded .left-column-middle {
     transition-delay: 0.2s;
 }
 
-.portfolio-container.is-loaded .center-column {
+/* 順序 3: 第二塊資訊 (再慢) */
+.portfolio-container.is-loaded .info-divider-block:nth-of-type(2) {
     transition-delay: 0.3s;
+}
+
+/* 順序 4: 連結/底部按鈕 (更慢) */
+.portfolio-container.is-loaded .contact-links,
+.middle-container.is-loaded .left-column-bottom {
+    transition-delay: 0.4s;
+}
+
+/* 順序 5: 中間主要內容 (列表/圖片) */
+.portfolio-container.is-loaded .center-column,
+.middle-container.is-loaded .project-content-column,
+.middle-container.is-loaded .about-content {
+    transition-delay: 0.3s;
+    /* 與資訊塊同步或稍慢，視感官而定 */
+}
+
+/* 順序 6: 右側分類導航 (最後) */
+.portfolio-container.is-loaded .right-column {
+    transition-delay: 0.5s;
+}
+
+
+/* =========================================
+   (ADD_v16.0) About Page Animation Fallback
+   因為 about.html 沒有專屬 JS，我們使用 Keyframes 自動播放
+   ========================================= */
+@keyframes fadeInUpBlur {
+    0% {
+        opacity: 0;
+        transform: translateY(40px);
+        filter: blur(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* 只有在 about-layout 下，且沒有 .is-loaded 機制時自動播放 */
+.about-layout:not(.is-loaded) .left-column>div,
+.about-layout:not(.is-loaded) .about-content {
+    animation: fadeInUpBlur var(--anim-duration) var(--anim-ease) forwards;
+    opacity: 0;
+    /* Start hidden */
+}
+
+.about-layout:not(.is-loaded) .left-column-top {
+    animation-delay: 0.1s;
+}
+
+.about-layout:not(.is-loaded) .left-column-middle {
+    animation-delay: 0.2s;
+}
+
+.about-layout:not(.is-loaded) .left-column-bottom {
+    animation-delay: 0.4s;
+}
+
+.about-layout:not(.is-loaded) .about-content {
+    animation-delay: 0.3s;
 }
 
 
