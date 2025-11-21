@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderProjectList(filterType) {
         projectList.innerHTML = '';
         visibleItems = [];
+        currentActiveIndex = -1; // (MOD) Reset active index to force update
 
         let filteredProjects = [];
         if (filterType === 'all') {

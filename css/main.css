@@ -987,7 +987,20 @@ header {
         .portfolio-container .project-item {
             scroll-snap-align: center;
             scroll-snap-stop: always;
-            /* (MOD) Force stop at every item */
+            /* (MOD) Allow text wrapping and reduce height */
+            white-space: normal;
+            min-height: 60px;
+            padding: 0.5rem 0;
+            text-align: center;
+            /* Ensure text is centered if wrapped */
+        }
+
+        /* (MOD) Adjust font size for mobile */
+        .portfolio-container .project-item a {
+            font-size: clamp(1.5rem, 8vw, 2.5rem);
+            line-height: 1.2;
+            white-space: normal;
+            /* Ensure link text wraps */
         }
 
 
