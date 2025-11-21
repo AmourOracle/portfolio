@@ -12,11 +12,14 @@
     --font-main: var(--font-en), var(--font-zh);
     --font-mono: var(--font-en), var(--font-zh);
 
-    /* Animation Variables (ADD_v16.0) */
+    /* Animation Variables (MOD_v17.0: 優化參數) */
     --anim-ease: cubic-bezier(0.16, 1, 0.3, 1);
     /* Apple-style exponential ease */
     --anim-duration: 1.2s;
-    --anim-y-offset: 40px;
+    --anim-y-offset: 60px;
+    /* 增加位移距離，讓滑入感更強烈 */
+    --anim-stagger-step: 0.05s;
+    /* 每一項的延遲間隔 */
 }
 
 
@@ -229,132 +232,193 @@ header {
 }
 
 /* =========================================
-   (MOD_v16.0) Cinematic Entrance Animation
-   重構了進場動畫，使用模糊、位移與指數緩動
+   (MOD_v17.0) Cascading Entrance Animation System
+   層次化進場動畫系統：
+   1. 移除父容器的整體動畫，改為針對子元素 (Children) 進行動畫。
+   2. 針對列表項目 (List Items) 與圖片 (Images) 實作 nth-child 延遲。
    ========================================= */
 
-/* 1. 定義需要動畫的元素初始狀態 */
-/* 左欄位內的細項 */
-.portfolio-container .left-column .name-block,
-.portfolio-container .left-column .info-divider-block,
-.portfolio-container .left-column .contact-links,
-.middle-container .left-column>div,
-/* For project/about/gallery pages */
-/* 中欄位 (列表或內容) */
-.portfolio-container .center-column,
-.middle-container .project-content-column,
-.about-content,
-/* 右欄位 (分類) */
-.portfolio-container .right-column {
+/* 1. 定義動畫的基本狀態 (State: Hidden) */
+/* Left Column Items */
+.left-column .name-block,
+.left-column .info-divider-block,
+.left-column .contact-links,
+.left-column .back-button-block,
+.left-column .next-project-block,
+/* Center/Content Items (Index: Text inside Items, Project: Images) */
+.project-item a,
+.project-item .project-category,
+.project-content-column img,
+.project-content-column p,
+.about-content .about-intro-text,
+.about-content .grid-item,
+/* Right Column Items */
+.right-column li {
     opacity: 0;
     transform: translateY(var(--anim-y-offset));
     filter: blur(10px);
-    /* 初始模糊 */
+    will-change: transform, opacity, filter;
+    /* 預設 Transition，讓離開時也有動畫 (可選) */
     transition:
         opacity var(--anim-duration) var(--anim-ease),
         transform var(--anim-duration) var(--anim-ease),
         filter var(--anim-duration) var(--anim-ease);
-    will-change: transform, opacity, filter;
 }
 
-/* 2. 觸發狀態 (.is-loaded) */
-/* JS (index.js, project.js, gallery.js) 會在資料載入後
-   給容器加上 .is-loaded class
-*/
-.portfolio-container.is-loaded .left-column .name-block,
-.portfolio-container.is-loaded .left-column .info-divider-block,
-.portfolio-container.is-loaded .left-column .contact-links,
-.portfolio-container.is-loaded .center-column,
-.portfolio-container.is-loaded .right-column,
-/* Inner Pages Trigger */
-.middle-container.is-loaded .left-column>div,
-.middle-container.is-loaded .project-content-column,
-.middle-container.is-loaded .about-content {
+/* 2. 觸發狀態 (State: Visible) - 當 .is-loaded 被 JS 加入後 */
+.is-loaded .left-column .name-block,
+.is-loaded .left-column .info-divider-block,
+.is-loaded .left-column .contact-links,
+.is-loaded .left-column .back-button-block,
+.is-loaded .left-column .next-project-block,
+.is-loaded .project-item a,
+.is-loaded .project-item .project-category,
+.is-loaded .project-content-column img,
+.is-loaded .project-content-column p,
+.is-loaded .about-content .about-intro-text,
+.is-loaded .about-content .grid-item,
+.is-loaded .right-column li {
     opacity: 1;
     transform: translateY(0);
     filter: blur(0);
 }
 
-/* 3. 錯落延遲 (Staggered Delays) */
+/* 3. 詳細的錯落延遲 (Detailed Staggering) */
 
-/* 順序 1: 標題 (最快) */
-.portfolio-container.is-loaded .name-block,
-.middle-container.is-loaded .left-column-top {
-    transition-delay: 0.1s;
+/* --- 左側資訊欄 (Left Column) --- */
+.is-loaded .name-block {
+    transition-delay: 0.05s;
 }
 
-/* 順序 2: 簡介/資訊 (稍慢) */
-.portfolio-container.is-loaded .info-divider-block:nth-of-type(1),
-.middle-container.is-loaded .left-column-middle {
+.is-loaded .info-divider-block:nth-of-type(1) {
+    transition-delay: 0.15s;
+}
+
+.is-loaded .info-divider-block:nth-of-type(2) {
+    transition-delay: 0.25s;
+}
+
+.is-loaded .back-button-block {
+    transition-delay: 0.35s;
+}
+
+.is-loaded .next-project-block {
+    transition-delay: 0.45s;
+}
+
+.is-loaded .contact-links {
+    transition-delay: 0.55s;
+}
+
+/* --- 中間列表 (Index Page - Project Items) --- */
+/* 我們針對每個 Item 內部的連結與分類做延遲，而非 li 本身 (避免衝突 JS 3D Transform) */
+/* 使用 nth-child 模擬瀑布流 */
+.is-loaded .project-item:nth-child(1) a,
+.is-loaded .project-item:nth-child(1) .project-category {
+    transition-delay: 0.10s;
+}
+
+.is-loaded .project-item:nth-child(2) a,
+.is-loaded .project-item:nth-child(2) .project-category {
+    transition-delay: 0.15s;
+}
+
+.is-loaded .project-item:nth-child(3) a,
+.is-loaded .project-item:nth-child(3) .project-category {
+    transition-delay: 0.20s;
+}
+
+.is-loaded .project-item:nth-child(4) a,
+.is-loaded .project-item:nth-child(4) .project-category {
+    transition-delay: 0.25s;
+}
+
+.is-loaded .project-item:nth-child(5) a,
+.is-loaded .project-item:nth-child(5) .project-category {
+    transition-delay: 0.30s;
+}
+
+.is-loaded .project-item:nth-child(6) a,
+.is-loaded .project-item:nth-child(6) .project-category {
+    transition-delay: 0.35s;
+}
+
+.is-loaded .project-item:nth-child(7) a,
+.is-loaded .project-item:nth-child(7) .project-category {
+    transition-delay: 0.40s;
+}
+
+.is-loaded .project-item:nth-child(8) a,
+.is-loaded .project-item:nth-child(8) .project-category {
+    transition-delay: 0.45s;
+}
+
+.is-loaded .project-item:nth-child(9) a,
+.is-loaded .project-item:nth-child(9) .project-category {
+    transition-delay: 0.50s;
+}
+
+.is-loaded .project-item:nth-child(n+10) a,
+.is-loaded .project-item:nth-child(n+10) .project-category {
+    transition-delay: 0.55s;
+}
+
+/* --- 中間內容 (Project Details Page) --- */
+/* 圖片與文字段落的錯落 */
+.is-loaded .project-content-column img:nth-of-type(1) {
     transition-delay: 0.2s;
 }
 
-/* 順序 3: 第二塊資訊 (再慢) */
-.portfolio-container.is-loaded .info-divider-block:nth-of-type(2) {
+.is-loaded .project-content-column img:nth-of-type(2) {
     transition-delay: 0.3s;
 }
 
-/* 順序 4: 連結/底部按鈕 (更慢) */
-.portfolio-container.is-loaded .contact-links,
-.middle-container.is-loaded .left-column-bottom {
+.is-loaded .project-content-column img:nth-of-type(3) {
     transition-delay: 0.4s;
 }
 
-/* 順序 5: 中間主要內容 (列表/圖片) */
-.portfolio-container.is-loaded .center-column,
-.middle-container.is-loaded .project-content-column,
-.middle-container.is-loaded .about-content {
-    transition-delay: 0.3s;
-    /* 與資訊塊同步或稍慢，視感官而定 */
+.is-loaded .project-content-column img:nth-of-type(n+4) {
+    transition-delay: 0.5s;
 }
 
-/* 順序 6: 右側分類導航 (最後) */
-.portfolio-container.is-loaded .right-column {
+/* --- 關於頁面 (About Page) --- */
+.is-loaded .about-intro-text {
+    transition-delay: 0.2s;
+}
+
+.is-loaded .about-details-grid .grid-item:nth-child(1) {
+    transition-delay: 0.3s;
+}
+
+.is-loaded .about-details-grid .grid-item:nth-child(2) {
+    transition-delay: 0.4s;
+}
+
+.is-loaded .about-details-grid .grid-item:nth-child(3) {
     transition-delay: 0.5s;
+}
+
+.is-loaded .about-details-grid .grid-item:nth-child(4) {
+    transition-delay: 0.6s;
+}
+
+/* --- 右側導航 (Right Column) --- */
+.is-loaded .right-column li:nth-child(1) {
+    transition-delay: 0.6s;
+}
+
+.is-loaded .right-column li:nth-child(2) {
+    transition-delay: 0.65s;
+}
+
+.is-loaded .right-column li:nth-child(3) {
+    transition-delay: 0.7s;
 }
 
 
 /* =========================================
-   (ADD_v16.0) About Page Animation Fallback
-   因為 about.html 沒有專屬 JS，我們使用 Keyframes 自動播放
+   End of Animation System
    ========================================= */
-@keyframes fadeInUpBlur {
-    0% {
-        opacity: 0;
-        transform: translateY(40px);
-        filter: blur(10px);
-    }
-
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-        filter: blur(0);
-    }
-}
-
-/* 只有在 about-layout 下，且沒有 .is-loaded 機制時自動播放 */
-.about-layout:not(.is-loaded) .left-column>div,
-.about-layout:not(.is-loaded) .about-content {
-    animation: fadeInUpBlur var(--anim-duration) var(--anim-ease) forwards;
-    opacity: 0;
-    /* Start hidden */
-}
-
-.about-layout:not(.is-loaded) .left-column-top {
-    animation-delay: 0.1s;
-}
-
-.about-layout:not(.is-loaded) .left-column-middle {
-    animation-delay: 0.2s;
-}
-
-.about-layout:not(.is-loaded) .left-column-bottom {
-    animation-delay: 0.4s;
-}
-
-.about-layout:not(.is-loaded) .about-content {
-    animation-delay: 0.3s;
-}
 
 
 /* Contact Links */
@@ -451,13 +515,15 @@ header {
     gap: 0.75rem;
 
     opacity: 0.4;
+    /* 預設 Opacity 由 JS Loop 控制，但我們可以用 CSS 控制內部元素 */
 
     padding: 0.5rem 0;
     cursor: pointer;
     box-sizing: border-box;
     white-space: nowrap;
-    transition: opacity 0.3s ease;
-    /* Only opacity transition here, transform handled by JS */
+
+    /* (MOD_v17.0) 移除 transition: opacity，因為現在由內部元素負責進場，外部由 JS 控制 */
+    /* transition: opacity 0.3s ease; */
 
     /* (MOD) Scroll Snap Alignment */
     scroll-snap-align: center;
@@ -486,6 +552,8 @@ header {
 
 .project-item.is-active .project-category {
     color: var(--primary-color);
+    /* opacity: 0; */
+    /* (MOD) 讓分類標籤保持顯示，或依需求隱藏 */
     opacity: 0;
 }
 
@@ -496,7 +564,8 @@ header {
     color: #999;
     text-decoration: none;
     padding: 0;
-    transition: color 0.4s ease;
+    /* transition: color 0.4s ease; */
+    /* (MOD) 讓進場動畫負責 transition */
     line-height: 1.1;
 
     /* 防止連結預設跳轉，由 JS 控制點擊邏輯 */
@@ -654,6 +723,12 @@ header {
     width: 100%;
     height: auto;
     margin-bottom: 2rem;
+    /* (MOD_v17.0) 確保圖片初始狀態隱藏，由上方 Animation System 控制 */
+    opacity: 0;
+}
+
+.is-loaded .project-content-column img {
+    opacity: 1;
 }
 
 /* --- About Page Static Content Styles --- */
