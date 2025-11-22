@@ -1312,6 +1312,7 @@ header {
 
         /* (FIX_v9.9) 顯示 *內頁* (subpage) 的 fixed footer */
         /* (MOD_v11.0) 恢復 v9.9 的手機版 fixed footer 邏輯 */
+        /* (MOD_v17.5) 修正手機版內頁 Footer 置中問題: 隱藏左側，強制右側置中 */
         body:not(.portfolio-scroll-lock) .main-footer.subpage-footer {
             display: flex;
             position: fixed;
@@ -1321,7 +1322,8 @@ header {
             height: 60px;
             padding: 0 2rem;
             box-sizing: border-box;
-            justify-content: space-between;
+            justify-content: center;
+            /* Changed from space-between */
             align-items: center;
             background-color: var(--background-color);
             z-index: 1000;
@@ -1330,10 +1332,15 @@ header {
 
         .subpage-footer .footer-right {
             display: flex;
+            width: 100%;
+            /* Added */
+            justify-content: center;
+            /* Added */
         }
 
         .subpage-footer .footer-left {
-            display: flex;
+            display: none;
+            /* Changed from flex */
         }
 
         /* (MOD_v17.4) 移除隱藏內頁 Footer 連結的限制 */
