@@ -1102,11 +1102,11 @@ header {
             overflow: hidden;
         }
 
-        /* (MOD_v17.7) 手機版 Category 樣式 */
+        /* (MOD_v17.8) 手機版 Category 樣式 - 間距縮減 50% */
         .portfolio-container .project-category {
             text-align: center;
-            margin-bottom: 0.2rem;
-            /* 與標題的間距 */
+            margin-bottom: 0.1rem;
+            /* Reduced from 0.2rem */
             font-size: 0.8rem;
             opacity: 0.6;
             /* 預設稍微淡一點 */
@@ -1114,11 +1114,11 @@ header {
             /* 確保顯示 */
         }
 
-        /* (MOD_v17.7) 強制 Active 狀態下 Category 顯示 (覆蓋全域隱藏設定) */
+        /* (MOD_v17.8) 強制 Active 狀態下 Category 隱藏 */
         .portfolio-container .project-item.is-active .project-category {
-            opacity: 1;
-            color: var(--secondary-color);
-            /* 或保持原色 */
+            opacity: 0;
+            /* Changed from 1 back to 0 */
+            transition: opacity 0.3s ease;
         }
 
         /* (MOD_v17.6) Mobile Project Text */
@@ -1135,29 +1135,26 @@ header {
             /* 確保文字置中 */
         }
 
-        /* (ADD_v17.6) Marquee Animation Class */
+        /* (MOD_v17.8) Marquee Animation Class - Continuous Left Movement */
         /* 當 JS 偵測到文字過長且為 Active 狀態時，會加入此 Class */
         .project-item.is-active a.marquee-text {
             text-overflow: clip;
             /* 移除 ... */
-            animation: marquee-scroll 4s linear infinite alternate;
+            animation: marquee-scroll 8s linear infinite;
+            /* Continuous, slower */
+            padding-left: 0;
+            /* Reset */
         }
 
+        /* (MOD_v17.8) 持續向左移動 (Enter from Right, Exit to Left) */
         @keyframes marquee-scroll {
-            0% {
-                transform: translateX(0);
+            from {
+                transform: translateX(100%);
             }
 
-            20% {
-                transform: translateX(0);
+            to {
+                transform: translateX(-100%);
             }
-
-            /* 停留一下 */
-            100% {
-                transform: translateX(-25%);
-            }
-
-            /* 向左捲動，數值可依需求微調 */
         }
 
 
