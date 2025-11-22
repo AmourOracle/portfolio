@@ -879,7 +879,7 @@ header {
 /* --- Random Preview Popup --- */
 .random-preview-popup {
     position: fixed;
-    width: 200px;
+    width: 400px;
     aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
