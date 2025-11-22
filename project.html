@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project</title> <!-- 標題將由 JS 更新 -->
-    
+
     <!-- (Request 2 - 英文) 載入 DM Mono 字體 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&display=swap"
+        rel="stylesheet">
 
     <!-- ADD: (Request 1 - 中文) 載入 Typekit 中文字體 -->
     <script>
-      (function(d) {
-        var config = {
-          kitId: 'hcg4voj',
-          scriptTimeout: 3000,
-          async: true
-        },
-        h=d.documentElement,t=setTimeout(function(){h.className=h.className.replace(/\bwf-loading\b/g,"")+" wf-inactive";},config.scriptTimeout),tk=d.createElement("script"),f=false,s=d.getElementsByTagName("script")[0],a;h.className+=" wf-loading";tk.src='https://use.typekit.net/'+config.kitId+'.js';tk.async=true;tk.onload=tk.onreadystatechange=function(){a=this.readyState;if(f||a&&a!="complete"&&a!="loaded")return;f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
-      })(document);
+        (function (d) {
+            var config = {
+                kitId: 'hcg4voj',
+                scriptTimeout: 3000,
+                async: true
+            },
+                h = d.documentElement, t = setTimeout(function () { h.className = h.className.replace(/\bwf-loading\b/g, "") + " wf-inactive"; }, config.scriptTimeout), tk = d.createElement("script"), f = false, s = d.getElementsByTagName("script")[0], a; h.className += " wf-loading"; tk.src = 'https://use.typekit.net/' + config.kitId + '.js'; tk.async = true; tk.onload = tk.onreadystatechange = function () { a = this.readyState; if (f || a && a != "complete" && a != "loaded") return; f = true; clearTimeout(t); try { Typekit.load(config) } catch (e) { } }; s.parentNode.insertBefore(tk, s)
+        })(document);
     </script>
-    
+
     <!-- 連結外部 CSS 檔案 (必須在字體載入之後) -->
     <link rel="stylesheet" href="css/main.css">
 </head>
+
 <body>
     <header>
         <a href="portfolio.html" class="logo">SYWAN</a>
@@ -36,7 +40,7 @@
     -->
     <main class="middle-container project-layout">
         <aside class="left-column">
-            
+
             <!-- 專案標題 (頂部) -->
             <div class="left-column-top">
                 <div class="name-block">
@@ -44,7 +48,7 @@
                     <h1 id="projectTitle">Loading...</h1>
                 </div>
             </div>
-            
+
             <!-- 專案資訊 (中部) -->
             <div class="left-column-middle">
                 <!-- (v9.x) BIO 區塊預設隱藏 -->
@@ -52,7 +56,7 @@
                     <span class="label">BIO</span>
                     <p id="projectBio">Loading project description...</p>
                 </div>
-                
+
                 <div class="info-divider-block">
                     <span class="label">DOCS</span>
                     <p id="projectInfo">Loading project details...</p>
@@ -68,7 +72,7 @@
                 <a href="portfolio.html" class="back-button-block">
                     <span class="arrow">&larr;</span> Back
                 </a>
-                
+
                 <a href="#" id="nextProjectLink" class="next-project-block">
                     <div class="next-project-text-wrapper">
                         <span id="nextProjectCategory" class="label">NEXT PROJECT</span>
@@ -86,12 +90,21 @@
         </section>
     </main>
 
-    <!-- (MOD_v11.0) 
-      - 移除了 v9.9 錯誤引入的 fixed footer
-      - 導航按鈕現在位於 .left-column 中
-    -->
+    <!-- (ADD_v17.4) 統一內頁 Footer (僅手機版顯示) -->
+    <footer class="main-footer subpage-footer">
+        <div class="footer-left"></div>
+        <div class="footer-right">
+            <ul class="mobile-contact-links">
+                <li><a href="about.html">Me</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="#" target="_blank">Instagram</a></li>
+                <li><a href="mailto:email@example.com">Email</a></li>
+            </ul>
+        </div>
+    </footer>
 
     <!-- 連結外部 JavaScript 檔案 -->
     <script src="js/project.js"></script>
 </body>
+
 </html>

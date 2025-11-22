@@ -1336,10 +1336,14 @@ header {
             display: flex;
         }
 
+        /* (MOD_v17.4) 移除隱藏內頁 Footer 連結的限制 */
+        /* 註解掉以下規則，讓 About 與 Gallery 頁面也能顯示底部導航 */
+        /*
         .about-layout~.subpage-footer .footer-right,
         .gallery-layout~.subpage-footer .footer-right {
             display: none;
         }
+        */
 
 
         .main-footer #desktopContactLinks {

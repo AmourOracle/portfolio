@@ -144,16 +144,26 @@
         </section>
     </main>
 
+    <!-- (ADD_v17.4) 統一內頁 Footer (僅手機版顯示) -->
+    <footer class="main-footer subpage-footer">
+        <div class="footer-left"></div>
+        <div class="footer-right">
+            <ul class="mobile-contact-links">
+                <li><a href="about.html">Me</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="#" target="_blank">Instagram</a></li>
+                <li><a href="mailto:email@example.com">Email</a></li>
+            </ul>
+        </div>
+    </footer>
+
     <!-- 
         (MOD_v17.2) 將 About 頁面的進場邏輯直接內嵌於此
-        理由：避免因 js/about.js 檔案路徑錯誤或未建立資料夾導致頁面空白。
-        功能：在頁面載入後自動添加 .is-loaded class 以觸發 CSS 動畫。
     -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const mainContainer = document.querySelector('.middle-container');
             if (mainContainer) {
-                // 小延遲確保 CSS Transition 準備就緒
                 setTimeout(() => {
                     mainContainer.classList.add('is-loaded');
                 }, 50);
