@@ -15,8 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Labels & Blocks
     const previewLabelCategory = document.getElementById('previewLabelCategory');
 
-    // (MOD_v17.0) 移除不再使用的舊 ID 引用 (previewLabelNo, previewLabelInfo_Default 等)
-    // 現在結構已固定為 DOCS 和 INFO
+    // (MOD_v17.0) 移除不再使用的舊 ID 引用
 
     // Random Preview
     const randomPreviewPopup = document.getElementById('randomPreviewPopup');
@@ -237,21 +236,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeItem = visibleItems[index];
 
         // --- (FIX_v17.0) 核心修復邏輯：清理舊狀態 ---
-        // 先移除所有項目的 Active 狀態，並"重置" DOM 結構
         visibleItems.forEach(item => {
             item.classList.remove('is-active');
 
-            // 獲取 <a> 標籤
             const link = item.querySelector('a');
-
-            // 如果它之前是跑馬燈狀態，必須將它還原為純文字
             if (link && link.classList.contains('marquee-active')) {
                 link.classList.remove('marquee-active');
 
-                // (FIX) 從父層 LI 讀取原始標題，這是最安全的資料來源
+                // 從 LI 讀取原始標題還原
                 const originalTitle = item.getAttribute('data-title');
                 if (originalTitle) {
-                    link.textContent = originalTitle; // 重置為純文字，清除所有 span
+                    link.textContent = originalTitle;
                 }
             }
         });
@@ -259,20 +254,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // 設定新的 Active 項目
         activeItem.classList.add('is-active');
 
-        // --- (FIX_v17.0) 核心修復邏輯：安全地啟動跑馬燈 ---
-        if (isMobile()) {
-            const link = activeItem.querySelector('a');
+        // --- (MOD_v17.1) 核心優化：全平台跑馬燈 (移除 isMobile 限制) ---
+        // 這裡不再檢查 isMobile()，只要標題寬度溢出，就啟動跑馬燈
+        const link = activeItem.querySelector('a');
+        const originalTitle = activeItem.getAttribute('data-title');
 
-            // (FIX) 再次強調：從 LI 讀取資料，絕對不要從 <a> 讀取 (因為 <a> 可能已被修改)
-            const originalTitle = activeItem.getAttribute('data-title');
-
-            // 檢查是否溢出 (scrollWidth > clientWidth)
-            if (link && originalTitle && link.scrollWidth > link.clientWidth) {
-                // 設置跑馬燈 HTML 結構
-                // 使用 padding-right 代替 gap (依據 main.css 的設定)
-                link.innerHTML = `<span class="track-content">${originalTitle}</span><span class="track-content">${originalTitle}</span>`;
-                link.classList.add('marquee-active');
-            }
+        // 檢查是否溢出 (Desktop 需依賴 CSS max-width 限制才能觸發)
+        if (link && originalTitle && link.scrollWidth > link.clientWidth) {
+            // 設置跑馬燈 HTML 結構
+            link.innerHTML = `<span class="track-content">${originalTitle}</span><span class="track-content">${originalTitle}</span>`;
+            link.classList.add('marquee-active');
         }
 
         // Update Left Column Info
@@ -326,19 +317,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (previewTitleElement) previewTitleElement.textContent = title;
 
-        // (MOD_v17.0) 重新映射資料欄位
-        // DOCS Block -> 顯示 Bio
+        // (MOD_v17.0) 資料映射更新
         if (previewBioElement) previewBioElement.textContent = bio;
-        // INFO Block -> 顯示 Info (Role/Year)
         if (previewInfoElement) previewInfoElement.innerHTML = info;
 
-        // 顯示 Category
         if (previewLabelCategory) {
             previewLabelCategory.style.display = 'inline-block';
             previewLabelCategory.textContent = category;
         }
 
-        // 移除隱藏 (如果之前被隱藏)
         const docsBlock = document.getElementById('previewBlockDocs');
         if (docsBlock) docsBlock.classList.remove('hide-section');
 
