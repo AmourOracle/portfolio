@@ -102,15 +102,11 @@ header {
     flex-shrink: 0;
 }
 
-/* (MOD_v17.7) 嚴格執行固定高度策略
-   1. 改回 height (而非 min-height)，確保區塊位置絕對固定
-   2. 統一全站 (Portfolio, Project, About) 左上區塊高度
-*/
+/* 嚴格執行固定高度策略，確保全站佈局一致 */
 .portfolio-container .left-column-top,
 .about-layout .left-column-top,
 .project-layout .left-column-top {
     height: calc(50vh - 60px);
-    /* 移除 flex-grow，確保不被撐開 */
 }
 
 .left-column-middle {
@@ -157,18 +153,17 @@ header {
     text-align: left;
 }
 
-/* (MOD_v17.7) 大幅縮小標題字級以適應固定高度
-   原數值: clamp(3rem, 10vw, 7rem)
-   前次嘗試: clamp(2.4rem, 8vw, 5.6rem)
-   新數值: clamp(2rem, 5vw, 4.5rem) -> 確保長標題在 Desktop 不會溢出
+/* (MOD_v17.8) 標題字級放大 15%
+   原數值: clamp(2rem, 5vw, 4.5rem)
+   新數值: clamp(2.3rem, 5.75vw, 5.2rem)
 */
 .name-block h1 {
-    font-size: clamp(2rem, 5vw, 4.5rem);
+    font-size: clamp(2.3rem, 5.75vw, 5.2rem);
     font-weight: 700;
     margin: 0;
     color: var(--primary-color);
 
-    /* 微調行高，稍微緊湊一點以節省垂直空間 */
+    /* 維持緊湊行高，避免撐開高度 */
     line-height: 1.05;
 
     transition: opacity 0.3s ease-in-out;
@@ -526,7 +521,6 @@ header {
 
     overflow: hidden;
     text-overflow: clip;
-    /* 確保不出現 "..." */
 
     -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
     mask-image: linear-gradient(to right, black 85%, transparent 100%);
