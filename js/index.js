@@ -7,15 +7,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Left Column Info
     const previewTitleElement = document.getElementById('previewTitle');
-    const previewBioElement = document.getElementById('previewBio');
-    const previewInfoElement = document.getElementById('previewInfo');
+
+    // (MOD_v17.0) 對應新的 HTML ID
+    const previewBioElement = document.getElementById('previewBio');   // Inside DOCS block
+    const previewInfoElement = document.getElementById('previewInfo'); // Inside INFO block
 
     // Labels & Blocks
-    const previewLabelNo = document.getElementById('previewLabelNo');
     const previewLabelCategory = document.getElementById('previewLabelCategory');
-    const previewBlockBio = document.getElementById('previewBlockBio');
-    const previewLabelInfo_Default = document.getElementById('previewLabelInfo_Default');
-    const previewLabelDocs_Project = document.getElementById('previewLabelDocs_Project');
+
+    // (MOD_v17.0) 移除不再使用的舊 ID 引用 (previewLabelNo, previewLabelInfo_Default 等)
+    // 現在結構已固定為 DOCS 和 INFO
 
     // Random Preview
     const randomPreviewPopup = document.getElementById('randomPreviewPopup');
@@ -31,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentFilter = 'all';
     let currentActiveIndex = -1;
     let pickerLoopId = null;
-    let isScrolling = false;
 
     // --- Helper Functions ---
     function getRandomFloat(min, max) {
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderProjectList(filterType) {
         projectList.innerHTML = '';
         visibleItems = [];
-        currentActiveIndex = -1; // (MOD) Reset active index to force update
+        currentActiveIndex = -1; // Reset active index
 
         let filteredProjects = [];
         if (filterType === 'all') {
@@ -113,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         li.className = 'project-item';
 
+        // 綁定完整資料至 LI (這是資料的唯一真理來源)
         li.setAttribute('data-id', project.id);
         li.setAttribute('data-index', index);
         li.setAttribute('data-category', project.category);
@@ -128,11 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Click Event for Navigation
         li.addEventListener('click', (e) => {
-            // If item is already active, navigate
             if (li.classList.contains('is-active')) {
                 window.location.href = `project.html?id=${project.id}`;
             } else {
-                // If not active, scroll to it
                 e.preventDefault();
                 li.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
@@ -161,9 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const containerRect = centerColumn.getBoundingClientRect();
 
-        // (MOD_v17.6) 修正中心點計算
-        // Mobile: 使用螢幕中心，確保與視覺焦點一致
-        // Desktop: 保持容器中心
+        // 計算中心點
         let containerCenter;
         if (isMobile()) {
             containerCenter = window.innerHeight / 2;
@@ -183,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const distance = itemCenter - containerCenter;
             const absDistance = Math.abs(distance);
 
-            // Track closest item for Active State
+            // Track closest item
             if (absDistance < minDistance) {
                 minDistance = absDistance;
                 closestItem = item;
@@ -193,23 +190,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // Normalize distance (-1 to 1)
             let ratio = distance / range;
 
-            // (MOD_v17.6) 分離 Desktop 與 Mobile 的視覺效果
+            // Apply Visual Transforms
             if (isMobile()) {
-                // Mobile Transform Logic
-                // 1. Scale: 放大效果 (1.0 -> 1.2)
+                // Mobile: Scale & Opacity Only
                 const mobileScale = Math.max(1.0, 1.2 - Math.abs(ratio) * 0.5);
-
-                // (MOD_v17.7) 移除 TranslateX 左移邏輯
-                // 3. Opacity
                 const opacity = Math.max(0.3, 1 - Math.pow(Math.abs(ratio), 1.5));
 
-                // 僅應用 Scale 和 Opacity
                 item.style.transform = `scale(${mobileScale})`;
                 item.style.opacity = opacity;
                 item.style.zIndex = Math.round(100 - Math.abs(ratio) * 100);
-
             } else {
-                // Desktop 3D Cylinder Effect (Existing)
+                // Desktop: 3D Cylinder Effect
                 let rotateX = -ratio * 45;
                 if (rotateX > 90) rotateX = 90;
                 if (rotateX < -90) rotateX = -90;
@@ -231,7 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
         pickerLoopId = requestAnimationFrame(renderPickerLoop);
     }
 
-    // Handle Logical Updates (Active State)
     function handleScroll() {
         // Logic managed by loop
     }
@@ -246,27 +236,40 @@ document.addEventListener('DOMContentLoaded', () => {
         currentActiveIndex = index;
         const activeItem = visibleItems[index];
 
-        // Update Classes
+        // --- (FIX_v17.0) 核心修復邏輯：清理舊狀態 ---
+        // 先移除所有項目的 Active 狀態，並"重置" DOM 結構
         visibleItems.forEach(item => {
             item.classList.remove('is-active');
-            // (MOD_v17.9) 清理跑馬燈效果
+
+            // 獲取 <a> 標籤
             const link = item.querySelector('a');
+
+            // 如果它之前是跑馬燈狀態，必須將它還原為純文字
             if (link && link.classList.contains('marquee-active')) {
                 link.classList.remove('marquee-active');
-                const originalTitle = link.getAttribute('data-title');
-                if (originalTitle) link.textContent = originalTitle;
+
+                // (FIX) 從父層 LI 讀取原始標題，這是最安全的資料來源
+                const originalTitle = item.getAttribute('data-title');
+                if (originalTitle) {
+                    link.textContent = originalTitle; // 重置為純文字，清除所有 span
+                }
             }
         });
 
+        // 設定新的 Active 項目
         activeItem.classList.add('is-active');
 
-        // (MOD_v17.9) 檢查是否需要跑馬燈 (僅 Mobile)
+        // --- (FIX_v17.0) 核心修復邏輯：安全地啟動跑馬燈 ---
         if (isMobile()) {
             const link = activeItem.querySelector('a');
-            const originalTitle = link.getAttribute('data-title');
 
-            if (link.scrollWidth > link.clientWidth) {
-                // (FIX_v18.0) 使用 padding 替代 gap
+            // (FIX) 再次強調：從 LI 讀取資料，絕對不要從 <a> 讀取 (因為 <a> 可能已被修改)
+            const originalTitle = activeItem.getAttribute('data-title');
+
+            // 檢查是否溢出 (scrollWidth > clientWidth)
+            if (link && originalTitle && link.scrollWidth > link.clientWidth) {
+                // 設置跑馬燈 HTML 結構
+                // 使用 padding-right 代替 gap (依據 main.css 的設定)
                 link.innerHTML = `<span class="track-content">${originalTitle}</span><span class="track-content">${originalTitle}</span>`;
                 link.classList.add('marquee-active');
             }
@@ -322,23 +325,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const coverImage = activeItem.getAttribute('data-cover-image');
 
         if (previewTitleElement) previewTitleElement.textContent = title;
+
+        // (MOD_v17.0) 重新映射資料欄位
+        // DOCS Block -> 顯示 Bio
         if (previewBioElement) previewBioElement.textContent = bio;
+        // INFO Block -> 顯示 Info (Role/Year)
         if (previewInfoElement) previewInfoElement.innerHTML = info;
 
-        if (previewLabelNo && previewLabelCategory) {
-            previewLabelNo.style.display = 'none';
+        // 顯示 Category
+        if (previewLabelCategory) {
             previewLabelCategory.style.display = 'inline-block';
             previewLabelCategory.textContent = category;
         }
 
-        if (previewLabelInfo_Default && previewLabelDocs_Project) {
-            previewLabelInfo_Default.style.display = 'none';
-            previewLabelDocs_Project.style.display = 'inline-block';
-        }
-
-        if (previewBlockBio) {
-            previewBlockBio.classList.add('hide-section');
-        }
+        // 移除隱藏 (如果之前被隱藏)
+        const docsBlock = document.getElementById('previewBlockDocs');
+        if (docsBlock) docsBlock.classList.remove('hide-section');
 
         updateRandomPreview(coverImage);
     }
@@ -361,27 +363,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let top, left;
             if (isMobile()) {
-                // (MOD_v17.2) 手機版預覽圖位置邏輯再優化 (Strict Safe Zones)
-                // 避免遮擋 Header (0-10vh), Active Item (35-60vh), Footer (90-100vh)
-
                 const isTopZone = Math.random() > 0.5;
-
                 if (isTopZone) {
-                    // 上方安全區: 12vh ~ 25vh (原本 15-30, 稍微上移避免太靠近中間)
                     top = getRandomFloat(12, 25);
                 } else {
-                    // 下方安全區: 60vh ~ 72vh (關鍵修正: 原本 70-85 太低會碰到 footer)
-                    // 說明: 手機上 footer 大約佔據 90vh 以下的空間
-                    // 圖片高度約 10-15vh，若 top=72vh，底部約 87vh，安全。
                     top = getRandomFloat(60, 72);
                 }
-
-                // 水平位置保持隨機 (10vw - 40vw) 避免太靠右邊緣
                 left = getRandomFloat(10, 40);
-
                 randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;
             } else {
-                // Desktop 邏輯保持不變
                 top = getRandomFloat(10, 60);
                 left = getRandomFloat(45, 70);
                 randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;

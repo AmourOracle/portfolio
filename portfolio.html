@@ -44,26 +44,30 @@
         <aside class="left-column">
             <div class="left-column-top">
                 <div class="name-block">
-                    <span id="previewLabelNo" class="label">NO.</span>
-                    <span id="previewLabelCategory" class="label" style="display: none;">CATEGORY</span>
+                    <!-- (MOD_v17.0) 簡化標題邏輯，主要顯示 Category -->
+                    <span id="previewLabelCategory" class="label">CATEGORY</span>
                     <h1 id="previewTitle">Sywan</h1>
                 </div>
             </div>
 
             <div class="left-column-middle">
-                <div id="previewBlockBio" class="info-divider-block">
-                    <span id="previewLabelInfo" class="label">BIO</span>
-                    <span id="previewLabelDocs" class="label" style="display: none;">DOCS</span>
+                <!-- (MOD_v17.0) 
+                     架構重組：上方顯示 DOCS (對應 Bio)，下方顯示 INFO (對應 Info)
+                     與 About 頁面結構對齊
+                -->
+
+                <!-- 上方區塊：DOCS (顯示專案的 Bio) -->
+                <div id="previewBlockDocs" class="info-divider-block">
+                    <span class="label">DOCS</span>
                     <p id="previewBio">A visual designer based in Taiwan, focusing on creating compelling brand
                         identities and digital experiences.</p>
                 </div>
-                <div class="info-divider-block">
 
-                    <span id="previewLabelInfo_Default" class="label">INFO</span>
-                    <span id="previewLabelDocs_Project" class="label" style="display: none;">DOCS</span>
+                <!-- 下方區塊：INFO (顯示專案的 Role/Year) -->
+                <div id="previewBlockInfo" class="info-divider-block">
+                    <span class="label">INFO</span>
                     <p id="previewInfo">This space is reserved for future content or additional information about a
                         project.</p>
-
                 </div>
             </div>
 
