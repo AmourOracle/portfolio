@@ -86,14 +86,33 @@ document.addEventListener('DOMContentLoaded', () => {
         panContainer.style.width = `${CANVAS_WIDTH}px`;
         panContainer.style.height = `${CANVAS_HEIGHT}px`;
 
+        // (MOD_v17.1) 定義集中分佈的參數
+        // 目標：讓圖片生成在畫布比較中間的區域，避免邊緣留白太多導致初始畫面空白
+        const centerX = CANVAS_WIDTH / 2;
+        const centerY = CANVAS_HEIGHT / 2;
+        // 擴散半徑 (在此範圍內生成圖片)
+        const spreadX = 1500; // 左右各 1500px (總寬 3000px 的活動區)
+        const spreadY = 1500;
+
         images.forEach((imgData, index) => {
             const item = document.createElement('div');
             item.className = 'gallery-item';
 
             // --- 計算隨機樣式 (使用 px) ---
             const width = getRandomFloat(300, 600); // 圖片寬度 (px)
-            const top = getRandomFloat(0, CANVAS_HEIGHT - (width * 1.2)); // 預留高度
-            const left = getRandomFloat(0, CANVAS_WIDTH - width); // 預留寬度
+
+            // (MOD_v17.1) 修改位置計算邏輯：集中於中心
+            // 舊邏輯: 0 ~ CANVAS_HEIGHT (全域隨機)
+            // 新邏輯: (Center - Spread) ~ (Center + Spread)
+            let top = getRandomFloat(centerY - spreadY, centerY + spreadY);
+            let left = getRandomFloat(centerX - spreadX, centerX + spreadX);
+
+            // 邊界檢查：確保圖片不會超出畫布邊緣
+            if (top < 0) top = 0;
+            if (left < 0) left = 0;
+            if (top + width > CANVAS_HEIGHT) top = CANVAS_HEIGHT - width;
+            if (left + width > CANVAS_WIDTH) left = CANVAS_WIDTH - width;
+
             const rotate = getRandomFloat(-8, 8); // 旋轉
             const zIndex = getRandomInt(1, images.length);
 

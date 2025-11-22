@@ -375,10 +375,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let top, left;
             if (isMobile()) {
-                top = getRandomFloat(30, 50);
+                // (MOD_v17.1) 手機版預覽圖位置邏輯優化
+                // 避免出現在螢幕正中央 (30vh - 70vh) 遮擋 Active Project
+                // 隨機決定是出現在「上方區塊」還是「下方區塊」
+                const isTopZone = Math.random() > 0.5;
+
+                if (isTopZone) {
+                    // 上方區塊: 10vh ~ 30vh
+                    top = getRandomFloat(10, 30);
+                } else {
+                    // 下方區塊: 70vh ~ 85vh
+                    top = getRandomFloat(70, 85);
+                }
+
+                // 水平位置保持隨機
                 left = getRandomFloat(10, 30);
+
                 randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;
             } else {
+                // Desktop 邏輯保持不變
                 top = getRandomFloat(10, 60);
                 left = getRandomFloat(45, 70);
                 randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;

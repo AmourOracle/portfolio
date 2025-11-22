@@ -454,10 +454,15 @@ header {
     overflow: hidden;
     height: 100%;
 
+    /* (MOD_v17.1) 調整 Mask 漸層參數
+       由 0%->40% 和 60%->100% (極寬的淡入淡出，容易導致不清晰或視覺不均)
+       改為 0%->15% 和 85%->100% (更窄的淡入淡出，保留中間大部分清晰區域)
+       確保上下數值對稱
+    */
     mask-image: linear-gradient(to bottom,
             transparent 0%,
-            black 40%,
-            black 60%,
+            black 15%,
+            black 85%,
             transparent 100%);
 
     /* (MOD) Scroll Snap Implementation */
@@ -1120,7 +1125,7 @@ header {
         /* (MOD_v17.9) Mobile Project Text */
         .portfolio-container .project-item a {
             font-size: clamp(1.5rem, 8vw, 2.5rem);
-            line-height: 1;
+            line-height: 1.1;
             margin-top: 4px;
             white-space: nowrap;
             text-overflow: ellipsis;
