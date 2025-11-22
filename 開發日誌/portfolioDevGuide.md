@@ -1,109 +1,122 @@
-# 專案開發指南與進度記錄 (v15)
+# 專案開發指南與進度記錄 (v16)
 
-本文件統整了 Portfolio 專案的最終架構、核心流程、技術細節與注意事項。
+本文件統整了 Portfolio 專案的最終架構、核心流程、技術細節與注意事項。此版本 (v16) 代表了專案在互動手感、移動端體驗與程式碼架構上的成熟穩定狀態。
 
-## 1. 專案目前進度 (Project Status v15)
+## 1. 專案目前進度 (Project Status v16)
 
-目前專案已達到 **v15 穩定版本**。在此版本中，我們**完全移除了 Swiper.js**，回歸並優化了自定義的 JavaScript 滾動邏輯，以實現最精確的 "iOS Picker" 手感。
+目前專案已達到 **v16 正式版本**。此版本確立了 "Native Scroll + Custom Visuals" 的核心互動邏輯，並針對移動端進行了深度優化。
 
-*   **桌面版 (Desktop)**: 恢復 Custom JS 驅動的 3D 滾輪效果，配合 CSS Scroll Snap 實現精確停頓。
-*   **手機版 (Mobile)**: 修復了滾動與佈局問題，實現了與桌面版一致的 3D 滾輪體驗，並優化了文字排版與遮罩視覺。
-*   **Gallery**: 全螢幕無限畫布體驗流暢。
+*   **核心互動 (The Picker)**: 捨棄第三方庫 (Swiper.js)，採用原生 CSS Scroll Snap 結合 JS 3D 運算，實現了極致的 "iOS Alarm Picker" 滾動手感。
+*   **移動端體驗 (Mobile)**: 解決了手機版滾動卡頓、佈局錯亂問題，並實現了與桌面版一致的 3D 滾輪視覺體驗。
+*   **畫廊系統 (Gallery)**: 穩定的全螢幕無限畫布，支援慣性拖曳 (Inertia) 與平滑縮放 (Zoom)。
+*   **視覺表現**: 導入了 "Cascading Entrance Animation" (層次化進場動畫系統)，提升頁面切換質感。
 
 ---
 
 ## 2. 專案結構 (Project Structure)
 
-專案採用 **HTML/CSS/JS 分離** 的架構，所有頁面共用同一個 `main.css` 以確保樣式一致性。
+專案採用 **Vanilla HTML/CSS/JS** 架構，無複雜建置工具，強調輕量與效能。
 
 ```text
 /
-├── index.html       # 入口頁 (負責轉導至 portfolio.html)
-├── portfolio.html   # [主頁] 專案列表 (核心互動頁面 - Custom JS Picker)
-├── project.html     # [內頁] 專案詳細內容模板
+├── index.html       # 入口頁 (Redirect -> portfolio.html)
+├── portfolio.html   # [主頁] 專案列表 (核心互動頁面 - Custom Picker)
+├── project.html     # [內頁] 專案詳細內容模板 (URL Params 驅動)
 ├── about.html       # [內頁] 關於我
-├── gallery.html     # [內頁] 無限畫布畫廊
+├── gallery.html     # [內頁] 無限畫布畫廊 (Canvas-like Interaction)
 ├── data/
-│   └── projects.json # 核心資料庫 (JSON 格式)
+│   └── projects.json # 核心資料庫 (JSON 格式，包含所有專案資訊)
 ├── css/
-│   └── main.css      # 全站樣式表 (包含 RWD 設定)
+│   └── main.css      # 全站樣式表 (CSS Variables, Grid, Scroll Snap, Animations)
 └── js/
-    ├── index.js      # portfolio.html 的核心邏輯 (Custom Picker Loop, 篩選)
-    ├── project.js    # project.html 的內容渲染邏輯
-    └── gallery.js    # gallery.html 的 Canvas 繪圖與互動邏輯
+    ├── index.js      # portfolio.html 核心邏輯 (Picker Loop, Filter, State Sync)
+    ├── project.js    # project.html 渲染邏輯 (Fetch Data, Render Content)
+    └── gallery.js    # gallery.html 互動邏輯 (Pan, Zoom, Inertia)
 ```
 
 ---
 
-## 3. 核心流程與互動機制 (Core Flow & Interaction)
+## 3. 核心流程與互動機制 (Core Processes)
 
-### A. 專案列表滾動 (Portfolio Scrolling - v15 Refactor)
+### A. 專案列表滾動 (The Picker Mechanism)
+這是本專案最核心的互動體驗，位於 `portfolio.html`。
 
-在此版本中，我們放棄了第三方庫 (Swiper)，改用 **Native Scroll + Custom JS Visuals** 的混合模式。
+1.  **物理層 (Physics)**:
+    *   使用 CSS `overflow-y: scroll` 搭配 `scroll-snap-type: y mandatory`。
+    *   **效果**: 提供原生作業系統級別的流暢滾動與精確停頓 (Snap)，這是 JS 模擬無法比擬的。
+    *   **手機版**: 確保 `scroll-snap-stop: always` (或瀏覽器預設行為) 防止快速滑動時跳過項目。
 
-*   **核心機制**:
-    *   **物理層**: 使用原生 CSS `overflow-y: scroll` 搭配 `scroll-snap-type: y mandatory` 處理滾動與停頓。這保證了最流暢的原生觸控/滾輪手感。
-    *   **視覺層**: 使用 JS `requestAnimationFrame` 循環 (`renderPickerLoop`)，實時計算每個項目與中心的距離，並應用 3D 變形 (`rotateX`, `scale`, `opacity`)。
+2.  **視覺層 (Visuals)**:
+    *   **Loop**: `js/index.js` 中的 `renderPickerLoop` 透過 `requestAnimationFrame` 持續運行。
+    *   **計算**: 實時計算每個 `project-item` 與視窗中心線的距離。
+    *   **變形**: 根據距離應用 CSS 3D Transform:
+        *   `rotateX`: 模擬圓柱體旋轉 (-90deg to 90deg)。
+        *   `scale`: 模擬景深 (中心最大，邊緣縮小)。
+        *   `opacity`: 模擬聚焦 (中心不透明，邊緣半透明)。
 
-*   **桌面版**:
-    *   **手感**: 滾動時有明確的物理停頓感 (Snap)，視覺上呈現 3D 圓柱體效果。
-    *   **篩選**: 切換 Filter 時會強制重置 Active Index，確保預覽圖更新。
+3.  **狀態同步 (State Sync)**:
+    *   Loop 內同時判斷 "哪個項目離中心最近" (Closest Item)。
+    *   一旦最近項目改變，立即觸發 `setActiveItem`，更新左側資訊欄 (Title, Bio, Info) 與背景預覽圖。
 
-*   **手機版**:
-    *   **防跳躍**: CSS 加入 `scroll-snap-stop: always`，強制滾動必須停在每一個項目，防止快速滑動時跳過項目。
-    *   **佈局**: 文字允許換行 (`white-space: normal`)，字級動態縮放，以適應長標題。
+### B. 專案內頁渲染 (Project Detail Rendering)
+位於 `project.html`，採用動態渲染模式。
 
-### B. 畫廊體驗 (Gallery Experience)
-*   **機制**: **全螢幕 Canvas + 固定 UI**。
-*   **互動**: 支援滑鼠拖曳 (Pan) 與滾輪縮放 (Zoom)。
-*   **防護**: 透過 `body.gallery-scroll-lock` 鎖定原生滾動。
+1.  **路由**: 讀取 URL 參數 `?id=xxx`。
+2.  **資料**: Fetch `data/projects.json`，尋找對應 ID 的物件。
+3.  **渲染**:
+    *   填入 Title, Bio, Info。
+    *   動態生成 `<img>` 標籤插入內容區。
+    *   **Next Project**: 隨機挑選一個非當前專案作為 "Next Project" 連結。
+4.  **動畫**: 資料載入完成後，添加 `.is-loaded` class 觸發 CSS 進場動畫。
 
-### C. 預覽視窗 (Preview Popup)
-*   **觸發**: 當專案位於視窗中央 (Active) 時觸發。
-*   **位置**: 隨機浮動位置，但有邊界檢查。
-*   **手機版優化 (v15)**:
-    *   尺寸縮小至 140px (原 200px)。
-    *   Z-Index 調整至文字下方，避免遮擋資訊。
+### C. 無限畫廊 (Infinite Gallery)
+位於 `gallery.html`，模擬 Canvas 的操作體驗。
 
----
-
-## 4. v15 改動紀錄 (Change Log v15)
-
-### 為什麼移除 Swiper.js?
-在 v11~v14 的嘗試中，我們發現 Swiper.js 雖然功能強大，但在模擬 "iOS Alarm Picker" (鬧鐘選擇器) 的特定手感上存在限制：
-1.  **Free Mode vs Snap**: Swiper 的 `freeMode` 雖流暢但缺乏明確的 "卡頓感" (Ratchet feel)；而標準模式 (`snap`) 又過於僵硬。
-2.  **3D 效果同步**: Swiper 的 `coverflow` 效果難以完全客製化為我們需要的 "圓柱體旋轉" 曲線。
-3.  **結論**: 回歸 "原生 CSS Scroll Snap (負責物理) + JS (負責視覺)" 的方案，能提供最佳的客製化手感與效能。
-
-### 解決方案與修復
-1.  **Mobile Scrolling Fix**:
-    *   **問題**: 手機版無法滾動或版面錯亂。
-    *   **原因**: 舊版 CSS 遺留了 `overflow: hidden` 與 `scroll-snap-type: none` 的覆蓋屬性。
-    *   **解法**: 移除這些覆蓋，讓手機版繼承桌面版的滾動邏輯。加入 `scroll-snap-stop: always` 防止滑動跳項。
-
-2.  **Mobile Visuals**:
-    *   **Mask**: 調整列表遮罩漸層 (`30%/70%` -> `40%/60%`)，增加淡出範圍，提升質感。
-    *   **Layout**: 優化手機版文字排版，避免長標題被切斷。
-
-3.  **Desktop Filter Bug**:
-    *   **問題**: 切換篩選器後，若 Index 沒變，預覽圖不會更新。
-    *   **解法**: 在 `renderProjectList` 中強制重置 `currentActiveIndex = -1`。
+1.  **架構**: 一個超大容器 (`#pan-container`, 5000x5000px) 放置於視窗內。
+2.  **操作**:
+    *   **Pan**: 監聽 `mousedown` / `touchstart` 計算位移 (`transform: translate`)。
+    *   **Zoom**: 監聽 `wheel` 計算縮放 (`transform: scale`)，並以游標為中心進行校正。
+    *   **Inertia**: 拖曳結束後，根據最後速度 (`velocityX/Y`) 應用摩擦力 (`FRICTION`) 進行慣性滑行。
+3.  **圖片佈局**: JS 隨機計算每張圖片的位置 (top, left)、旋轉角度與 Z-Index，形成散落效果。
 
 ---
 
-## 5. 開發注意事項 (Technical Notes)
+## 4. 技術細節 (Technical Details)
 
 ### CSS 架構
-*   **`main.css`**: 是唯一的樣式來源。
-*   **`.center-column`**: 核心滾動容器。必須保持 `overflow-y: scroll` 與 `scroll-snap-type` 才能運作。
+*   **Variables**: 使用 `:root` 定義全站色票 (`--primary-color`, `--secondary-color`) 與字體。
+*   **Scroll Snap**: 關鍵屬性 `scroll-snap-align: center` (Item) 與 `scroll-snap-type: y mandatory` (Container)。
+*   **Masking**: 使用 `mask-image` (linear-gradient) 在列表上下邊緣製造淡出效果。
 
-### JavaScript 邏輯
-*   **`renderPickerLoop`**: 這是視覺核心。它以 60fps 運行，負責所有 3D 變形與 Active 狀態檢測。
-*   **Active State**: 現在是實時 (Real-time) 計算的，而非依賴 Scroll 事件的 Debounce，這確保了快速滾動時的高光同步率。
+### 進場動畫系統 (Cascading Entrance)
+*   **機制**: 定義 `.is-loaded` 狀態下的元素樣式 (Opacity 1, Transform 0)。
+*   **錯落感**: 使用 `nth-child` 選擇器為列表項目與圖片設定遞增的 `transition-delay` (0.1s, 0.15s, 0.2s...)，創造瀑布流般的進場效果。
+
+### JavaScript 優化
+*   **RequestAnimationFrame**: 所有的視覺更新 (Picker Loop, Gallery Inertia) 皆透過 rAF 執行，確保 60fps 流暢度。
+*   **Event Delegation**: 篩選器 (Filter) 使用事件委派，減少 Event Listeners 數量。
+*   **Passive Listeners**: 滾動監聽使用 `{ passive: true }` 優化效能。
 
 ---
 
-## 6. 未來優化方向 (Future Roadmap)
+## 5. 注意事項與維護 (Precautions & Maintenance)
 
-1.  **模組化**: 考慮將 `renderPickerLoop` 封裝為獨立 Class。
-2.  **效能**: 目前 `visibleItems.forEach` 在每一幀都會執行，若項目過多 (100+) 可能需優化 (如只計算視口內項目)。目前項目數 (<50) 效能無虞。
+1.  **圖片資源**:
+    *   確保 `data/projects.json` 中的圖片路徑正確。
+    *   建議對圖片進行壓縮與 Lazy Loading (Gallery 已實作 `loading="lazy"`)。
+
+2.  **移動端適配 (Mobile)**:
+    *   **滾動鎖定**: `body.portfolio-scroll-lock` 用於防止背景滾動，但在部分 iOS Safari 版本可能需要額外處理 (如 `touch-action: none`)。
+    *   **瀏覽器導航列**: CSS `100vh` 在手機上可能會被網址列遮擋，建議使用 `dvh` (Dynamic Viewport Height) 或 JS 計算視窗高度。
+
+3.  **效能監控**:
+    *   目前 Picker Loop 對所有 `visibleItems` 進行計算。若專案數量超過 100+，建議優化 Loop 邏輯 (僅計算視窗內的項目) 以節省 CPU 資源。
+
+4.  **擴充性**:
+    *   若需新增頁面，請遵循 `main.css` 的變數規範與 Grid 佈局系統。
+    *   新增專案只需更新 `projects.json`，無需修改 HTML。
+
+---
+
+**Version**: v16.0
+**Last Updated**: 2025-11-22
