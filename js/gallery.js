@@ -146,7 +146,10 @@ document.addEventListener('DOMContentLoaded', () => {
      * 初始化畫布的互動事件
      */
     function initPanZoom() {
-        let scale = 1;
+        // (MOD_v17.2) 調整初始縮放比例
+        // 手機版: 0.6 (讓視野更廣，看到更多散落的圖片)
+        // 桌面版: 1.0
+        let scale = isMobile() ? 0.6 : 1;
         let panX = 0;
         let panY = 0;
 
@@ -165,7 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
         /** 更新畫布的 transform 樣式 */
         function updateTransform() {
             // (建議 B) 限制縮放範圍 (User Request: limit zoom range)
-            scale = Math.max(0.5, Math.min(1.5, scale));
+            // (MOD_v17.2) 手機版允許縮得更小一點以便瀏覽
+            const minScale = isMobile() ? 0.3 : 0.5;
+            scale = Math.max(minScale, Math.min(1.5, scale));
 
             // (建議 A) 限制平移範圍 (避免畫布完全移出視窗)
             const bounds = galleryContainer.getBoundingClientRect();
@@ -382,6 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 初始定位 (將畫布中心大致對準視窗中心)
         const initialBounds = galleryContainer.getBoundingClientRect();
         // (FIX v8.1) 變數已移至頂層
+        // 這裡會自動使用上方定義的初始 scale (0.6 or 1) 來計算居中位置
         panX = (initialBounds.width - CANVAS_WIDTH * scale) / 2;
         panY = (initialBounds.height - CANVAS_HEIGHT * scale) / 2;
         updateTransform();
