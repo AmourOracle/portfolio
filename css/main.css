@@ -960,15 +960,14 @@ header {
             height: calc(100vh - 60px);
         }
 
-        /* (MOD_v17.6) Center Column Adjustment for Mobile
-           新增 scroll-padding-bottom 來修正物理滾動停頓點
-           讓項目能真正停在視覺中央 (抵消 header 造成的 60px 偏移)
+        /* (MOD_v17.7) 修正手機版容器 Padding 
+           改為左右對稱 (0 2rem)，確保內容絕對置中
         */
         .portfolio-container .center-column {
             overflow-y: scroll;
             scroll-snap-type: y mandatory;
-            padding: 0 1rem 0 2rem;
-            /* (ADD) 關鍵修正: 讓 Snap 區域底部內縮 60px，迫使內容向上偏移 */
+            padding: 0 2rem;
+            /* Symmetric Padding for perfect centering */
             scroll-padding-bottom: 60px;
         }
 
@@ -1079,33 +1078,61 @@ header {
             padding: 45vh 0;
         }
 
-        /* (MOD_v17.6) Mobile Project Item Refinement */
+        /* (MOD_v17.7) Mobile Project Item Layout Refinement 
+           1. 使用 Flex Column 讓 Category 堆疊在 Title 上方
+           2. 強制置中對齊
+        */
         .portfolio-container .project-item {
             scroll-snap-align: center;
             scroll-snap-stop: always;
-            /* (MOD) 強制單行不換行，高度固定 */
-            white-space: nowrap;
-            min-height: 60px;
+            min-height: 80px;
+            /* 稍微增加高度以容納兩行 */
             padding: 0.5rem 0;
-            /* (MOD) 改為靠左對齊，為了跑馬燈效果起始點 */
-            text-align: left;
+
+            /* Stack layout */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* 水平置中子元素 */
+            text-align: center;
+            /* 文字置中 */
+
+            white-space: nowrap;
             overflow: hidden;
-            /* 隱藏溢出 */
+        }
+
+        /* (MOD_v17.7) 手機版 Category 樣式 */
+        .portfolio-container .project-category {
+            text-align: center;
+            margin-bottom: 0.2rem;
+            /* 與標題的間距 */
+            font-size: 0.8rem;
+            opacity: 0.6;
+            /* 預設稍微淡一點 */
             display: block;
-            /* 確保 overflow 生效 */
+            /* 確保顯示 */
+        }
+
+        /* (MOD_v17.7) 強制 Active 狀態下 Category 顯示 (覆蓋全域隱藏設定) */
+        .portfolio-container .project-item.is-active .project-category {
+            opacity: 1;
+            color: var(--secondary-color);
+            /* 或保持原色 */
         }
 
         /* (MOD_v17.6) Mobile Project Text */
         .portfolio-container .project-item a {
             font-size: clamp(1.5rem, 8vw, 2.5rem);
             line-height: 1.2;
-            /* (MOD) 單行設定 */
             white-space: nowrap;
             text-overflow: ellipsis;
             /* 未選中時顯示 ... */
             overflow: hidden;
             display: block;
             width: 100%;
+            text-align: center;
+            /* 確保文字置中 */
         }
 
         /* (ADD_v17.6) Marquee Animation Class */

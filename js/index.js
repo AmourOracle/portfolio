@@ -160,8 +160,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!centerColumn) return;
 
         const containerRect = centerColumn.getBoundingClientRect();
-        const containerCenter = containerRect.top + containerRect.height / 2;
-        const range = containerRect.height / 2; // Distance where effect fades out significantly
+
+        // (MOD_v17.6) 修正中心點計算
+        // Mobile: 使用螢幕中心，確保與視覺焦點一致
+        // Desktop: 保持容器中心
+        let containerCenter;
+        if (isMobile()) {
+            containerCenter = window.innerHeight / 2;
+        } else {
+            containerCenter = containerRect.top + containerRect.height / 2;
+        }
+
+        const range = containerRect.height / 2;
 
         let closestItem = null;
         let minDistance = Infinity;
@@ -183,29 +193,45 @@ document.addEventListener('DOMContentLoaded', () => {
             // Normalize distance (-1 to 1)
             let ratio = distance / range;
 
-            // Visual Calculations
-            // 1. Rotation (Cylinder Effect)
-            let rotateX = -ratio * 45;
-            if (rotateX > 90) rotateX = 90;
-            if (rotateX < -90) rotateX = -90;
+            // (MOD_v17.6) 分離 Desktop 與 Mobile 的視覺效果
+            if (isMobile()) {
+                // Mobile Transform Logic
+                // 1. Scale: 放大效果 (1.0 -> 1.2)
+                const mobileScale = Math.max(1.0, 1.2 - Math.abs(ratio) * 0.5);
 
-            // 2. Scale (Depth Effect)
-            const scale = Math.max(0.8, 1 - Math.abs(ratio) * 0.3);
+                // (MOD_v17.7) 移除 TranslateX 左移邏輯
+                // 理由：使用者希望完全置中，左移會破壞置中平衡
+                /*
+                let translateX = 0;
+                if (Math.abs(ratio) < 0.3) {
+                    translateX = -20 * (1 - (Math.abs(ratio) / 0.3));
+                }
+                */
 
-            // 3. Opacity (Focus Effect)
-            const opacity = Math.max(0.2, 1 - Math.pow(Math.abs(ratio), 1.5));
+                // 3. Opacity
+                const opacity = Math.max(0.3, 1 - Math.pow(Math.abs(ratio), 1.5));
 
-            // Apply Styles
-            item.style.transform = `perspective(1000px) rotateX(${rotateX}deg) scale(${scale})`;
-            item.style.opacity = opacity;
+                // 僅應用 Scale 和 Opacity
+                item.style.transform = `scale(${mobileScale})`;
+                item.style.opacity = opacity;
+                item.style.zIndex = Math.round(100 - Math.abs(ratio) * 100);
 
-            // Z-Index: Center items should be on top
-            const zIndex = Math.round(100 - Math.abs(ratio) * 100);
-            item.style.zIndex = zIndex;
+            } else {
+                // Desktop 3D Cylinder Effect (Existing)
+                let rotateX = -ratio * 45;
+                if (rotateX > 90) rotateX = 90;
+                if (rotateX < -90) rotateX = -90;
+
+                const scale = Math.max(0.8, 1 - Math.abs(ratio) * 0.3);
+                const opacity = Math.max(0.2, 1 - Math.pow(Math.abs(ratio), 1.5));
+
+                item.style.transform = `perspective(1000px) rotateX(${rotateX}deg) scale(${scale})`;
+                item.style.opacity = opacity;
+                item.style.zIndex = Math.round(100 - Math.abs(ratio) * 100);
+            }
         });
 
         // Real-time Active State Update
-        // Update active item immediately if it changes, providing instant feedback
         if (closestIndex !== -1 && closestIndex !== currentActiveIndex) {
             setActiveItem(closestIndex);
         }
@@ -215,12 +241,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle Logical Updates (Active State)
     function handleScroll() {
-        // (MOD) Logic moved to renderPickerLoop for real-time updates
-        // This function now only serves to ensure the loop is running if needed (it is always running)
+        // Logic managed by loop
     }
 
     function updateActiveItemOnScroll() {
-        // (MOD) Logic moved to renderPickerLoop
+        // Logic managed by loop
     }
 
     function setActiveItem(index) {
@@ -230,8 +255,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeItem = visibleItems[index];
 
         // Update Classes
-        visibleItems.forEach(item => item.classList.remove('is-active'));
+        visibleItems.forEach(item => {
+            item.classList.remove('is-active');
+            // (MOD_v17.6) 移除跑馬燈 class
+            const link = item.querySelector('a');
+            if (link) link.classList.remove('marquee-text');
+        });
+
         activeItem.classList.add('is-active');
+
+        // (MOD_v17.6) 檢查是否需要跑馬燈 (僅 Mobile)
+        if (isMobile()) {
+            const link = activeItem.querySelector('a');
+            // 簡單判斷：如果文字長度大於一定字元，或者使用 scrollWidth > clientWidth
+            // 由於 scale 變形可能影響 clientWidth 計算，這裡使用簡易字元長度判斷或直接套用
+            // 為確保長標題一定能看到，我們直接對 Active 項目套用 marquee 規則
+            // CSS 中會處理動畫
+            if (link) link.classList.add('marquee-text');
+        }
 
         // Update Left Column Info
         updateActiveContent(activeItem);
