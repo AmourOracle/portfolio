@@ -247,7 +247,7 @@ header {
     filter: blur(0);
 }
 
-/* Staggering Delays (Keep existing logic) */
+/* Staggering Delays */
 .is-loaded .name-block {
     transition-delay: 0.05s;
 }
@@ -448,43 +448,57 @@ header {
     max-height: 15rem;
     display: flex;
     align-items: center;
+
+    /* (MOD_v17.2) 增加 Gap 過渡動畫 */
     gap: 0.75rem;
+    transition: gap 0.4s ease;
+
     opacity: 0.4;
-    padding: 0.5rem 0;
+    /* (MOD_v17.2) 增加上下 Padding，防止大字體垂直方向被裁切 */
+    padding: 0.8rem 0;
+
     cursor: pointer;
     box-sizing: border-box;
     white-space: nowrap;
     scroll-snap-align: center;
     touch-action: pan-y;
 
-    /* (MOD_v17.1) Desktop 寬度限制：確保內容過長時能被 Marquee 偵測到 */
     max-width: 100%;
     overflow: hidden;
-    /* 隱藏溢出內容 */
 }
 
 .project-item.hide {
     display: none;
 }
 
+/* (MOD_v17.2) Active 狀態下移除 Gap，讓跑馬燈佔滿全寬 */
+.project-item.is-active {
+    opacity: 1;
+    gap: 0;
+}
+
 .project-category {
     font-family: var(--font-mono);
     font-size: 0.8rem;
     color: #999;
+
+    /* (MOD_v17.2) 增加寬度相關的過渡動畫 */
     min-width: 100px;
-    transition: color 0.4s ease, opacity 0.4s ease;
+    transition: color 0.4s ease, opacity 0.4s ease, min-width 0.4s ease, max-width 0.4s ease, margin 0.4s ease;
+
     text-align: right;
     flex-shrink: 0;
-    /* 避免分類被壓縮 */
 }
 
-.project-item.is-active {
-    opacity: 1;
-}
-
+/* (MOD_v17.2) Active 狀態下摺疊 Category，釋放空間給跑馬燈 */
 .project-item.is-active .project-category {
     color: var(--primary-color);
     opacity: 0;
+    min-width: 0;
+    max-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
 }
 
 .project-item a {
@@ -496,43 +510,30 @@ header {
     padding: 0;
     line-height: 1.1;
     pointer-events: none;
-
-    /* (MOD_v17.1) Desktop 連結樣式增強 */
     max-width: 100%;
-    /* 限制連結寬度為容器寬度 */
     overflow: hidden;
-    /* 隱藏溢出 */
     text-overflow: ellipsis;
-    /* 預設使用刪節號 */
 }
 
 .project-item.is-active a {
     color: var(--primary-color);
 }
 
-/* --- (MOD_v17.1) 全平台跑馬燈樣式 (Moved from Mobile Query) --- */
-/* 當 JS 偵測到 active item 文字過長時，會加上 .marquee-active class
-   這段樣式現在對 Desktop 也生效
-*/
+/* --- 全平台跑馬燈樣式 --- */
 .project-item a.marquee-active {
     display: inline-flex;
-    /* 讓容器寬度隨內容延伸 */
     text-overflow: clip;
-    /* 移除刪節號，讓文字流動 */
     animation: marquee-scroll 10s linear infinite;
     padding-left: 0;
     justify-content: flex-start;
     text-align: left;
     width: auto;
-    /* 允許寬度超過父容器 */
     max-width: none;
-    /* 解除 max-width 限制以允許滾動 */
 }
 
 .project-item a.marquee-active span.track-content {
     flex-shrink: 0;
     padding-right: 3rem;
-    /* 文字間距 */
 }
 
 @keyframes marquee-scroll {
@@ -1091,8 +1092,6 @@ header {
         width: 100%;
         text-align: center;
     }
-
-    /* (MOD_v17.1) 跑馬燈樣式已移至全域，此處不再需要重複定義 */
 
     .random-preview-popup {
         width: 200px;
