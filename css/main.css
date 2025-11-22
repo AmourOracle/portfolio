@@ -1102,29 +1102,33 @@ header {
             overflow: hidden;
         }
 
-        /* (MOD_v17.8) 手機版 Category 樣式 - 間距縮減 50% */
+        /* (MOD_v17.9) 手機版 Category 樣式 - 間距再優化 */
         .portfolio-container .project-category {
             text-align: center;
-            margin-bottom: 0.1rem;
-            /* Reduced from 0.2rem */
+            /* 強制移除可能存在的間距 */
+            margin-bottom: 0;
+            padding-bottom: 0;
+            line-height: 1;
+            /* 緊湊行高 */
             font-size: 0.8rem;
             opacity: 0.6;
-            /* 預設稍微淡一點 */
             display: block;
-            /* 確保顯示 */
         }
 
-        /* (MOD_v17.8) 強制 Active 狀態下 Category 隱藏 */
+        /* (MOD_v17.9) 強制 Active 狀態下 Category 隱藏 */
         .portfolio-container .project-item.is-active .project-category {
             opacity: 0;
-            /* Changed from 1 back to 0 */
+            /* (Req 3) 回復隱藏 */
             transition: opacity 0.3s ease;
         }
 
-        /* (MOD_v17.6) Mobile Project Text */
+        /* (MOD_v17.9) Mobile Project Text */
         .portfolio-container .project-item a {
             font-size: clamp(1.5rem, 8vw, 2.5rem);
-            line-height: 1.2;
+            line-height: 1;
+            /* (Req 2) 縮小行高以減少視覺間距 */
+            margin-top: 4px;
+            /* 極小的間距 */
             white-space: nowrap;
             text-overflow: ellipsis;
             /* 未選中時顯示 ... */
@@ -1135,26 +1139,38 @@ header {
             /* 確保文字置中 */
         }
 
-        /* (MOD_v17.8) Marquee Animation Class - Continuous Left Movement */
-        /* 當 JS 偵測到文字過長且為 Active 狀態時，會加入此 Class */
-        .project-item.is-active a.marquee-text {
+        /* (MOD_v17.9) Marquee Animation Class - Seamless Loop */
+        /* 需要配合 JS 的 DOM 複製 */
+        .portfolio-container .project-item a.marquee-active {
+            display: flex;
+            /* 啟用 Flex 讓複製的文字橫向排列 */
+            gap: 2rem;
+            /* 兩段文字間的空隙 */
+            width: fit-content;
+            /* 讓容器寬度隨內容撐開 */
             text-overflow: clip;
-            /* 移除 ... */
-            animation: marquee-scroll 8s linear infinite;
-            /* Continuous, slower */
+            /* (Req 1) 從 0% 往左移到 -50% (或是剛好移過一段文字+間距的距離) */
+            animation: marquee-scroll 10s linear infinite;
             padding-left: 0;
-            /* Reset */
+            /* 確保初始對齊 */
+            justify-content: flex-start;
+            text-align: left;
         }
 
-        /* (MOD_v17.8) 持續向左移動 (Enter from Right, Exit to Left) */
+        /* (MOD_v17.9) 無縫左移 */
+        /* 假設 JS 會複製一份文字，結構變為 [Text][Gap][Text] */
+        /* 動畫從 0 (顯示第一個 Text) 移動到 -50% (顯示第二個 Text 的開頭) */
+        /* 由於 gap 的存在，精確計算需要 calc */
         @keyframes marquee-scroll {
-            from {
-                transform: translateX(100%);
+            0% {
+                transform: translateX(0);
             }
 
-            to {
-                transform: translateX(-100%);
+            100% {
+                transform: translateX(calc(-50% - 1rem));
             }
+
+            /* -50% 寬度 - 半個 gap */
         }
 
 

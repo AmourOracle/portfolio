@@ -257,21 +257,32 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update Classes
         visibleItems.forEach(item => {
             item.classList.remove('is-active');
-            // (MOD_v17.6) 移除跑馬燈 class
+            // (MOD_v17.9) 清理跑馬燈效果：還原原始文字，避免重複累積
             const link = item.querySelector('a');
-            if (link) link.classList.remove('marquee-text');
+            if (link && link.classList.contains('marquee-active')) {
+                link.classList.remove('marquee-active');
+                // 從 data-title 還原，或只保留第一個 span 的內容
+                const originalTitle = link.getAttribute('data-title');
+                if (originalTitle) link.textContent = originalTitle;
+            }
         });
 
         activeItem.classList.add('is-active');
 
-        // (MOD_v17.6) 檢查是否需要跑馬燈 (僅 Mobile)
+        // (MOD_v17.9) 檢查是否需要跑馬燈 (僅 Mobile)
         if (isMobile()) {
             const link = activeItem.querySelector('a');
-            // 簡單判斷：如果文字長度大於一定字元，或者使用 scrollWidth > clientWidth
-            // 由於 scale 變形可能影響 clientWidth 計算，這裡使用簡易字元長度判斷或直接套用
-            // 為確保長標題一定能看到，我們直接對 Active 項目套用 marquee 規則
-            // CSS 中會處理動畫
-            if (link) link.classList.add('marquee-text');
+            const originalTitle = link.getAttribute('data-title');
+
+            // 檢查文字是否溢出 (scrollWidth > clientWidth)
+            // 為了準確判斷，先確保它是單行顯示狀態
+            if (link.scrollWidth > link.clientWidth) {
+                // (Req 1) 無縫跑馬燈邏輯：複製文字
+                // 將內容改為：<span class="track-content">Title</span><span class="track-content">Title</span>
+                // CSS 會讓它變成 Flex Row
+                link.innerHTML = `<span class="track-content">${originalTitle}</span><span class="track-content">${originalTitle}</span>`;
+                link.classList.add('marquee-active');
+            }
         }
 
         // Update Left Column Info
