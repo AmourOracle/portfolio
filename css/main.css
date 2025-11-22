@@ -454,11 +454,15 @@ header {
     overflow: hidden;
     height: 100%;
 
-    /* (MOD_v17.1) 調整 Mask 漸層參數
-       由 0%->40% 和 60%->100% (極寬的淡入淡出，容易導致不清晰或視覺不均)
-       改為 0%->15% 和 85%->100% (更窄的淡入淡出，保留中間大部分清晰區域)
-       確保上下數值對稱
-    */
+    /* (MOD_v17.4) 修復遮罩在手機/iOS上不明顯的問題 - 全域修復 */
+    /* 1. 加入 -webkit-mask-image 以支援 iOS Safari */
+    /* 2. Desktop 預設保持 85% */
+    -webkit-mask-image: linear-gradient(to bottom,
+            transparent 0%,
+            black 15%,
+            black 85%,
+            transparent 100%);
+
     mask-image: linear-gradient(to bottom,
             transparent 0%,
             black 15%,
@@ -875,7 +879,7 @@ header {
 /* --- Random Preview Popup --- */
 .random-preview-popup {
     position: fixed;
-    width: 440px;
+    width: 200px;
     aspect-ratio: 16 / 9;
     background-color: #222;
     border: 1px solid var(--divider-color);
@@ -972,6 +976,19 @@ header {
             scroll-snap-type: y mandatory;
             padding: 0 2rem;
             scroll-padding-bottom: 60px;
+
+            /* (MOD_v17.4) Mobile Mask Override */
+            /* 針對手機版要求，將底部淡出點提早至 50% */
+            -webkit-mask-image: linear-gradient(to bottom,
+                    transparent 0%,
+                    black 15%,
+                    black 50%,
+                    transparent 100%);
+            mask-image: linear-gradient(to bottom,
+                    transparent 0%,
+                    black 15%,
+                    black 50%,
+                    transparent 100%);
         }
 
         .portfolio-container .center-column::-webkit-scrollbar {
@@ -1171,9 +1188,22 @@ header {
 
         .random-preview-popup {
             width: 200px;
-            /* (MOD_v17.2) 手機版尺寸增大，原本為 140px */
             aspect-ratio: 16 / 9;
-            /* 確保比例一致 */
+            background-color: #222;
+            border: 1px solid var(--divider-color);
+            z-index: 5;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+
+            opacity: 0;
+            transform-origin: center center;
+
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+            top: 0;
+            left: 0;
+            transform: translate(50vw, 50vh) scale(0.5);
         }
     }
 
