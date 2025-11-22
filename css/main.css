@@ -449,12 +449,10 @@ header {
     display: flex;
     align-items: center;
 
-    /* (MOD_v17.2) 增加 Gap 過渡動畫 */
     gap: 0.75rem;
     transition: gap 0.4s ease;
 
     opacity: 0.4;
-    /* (MOD_v17.2) 增加上下 Padding，防止大字體垂直方向被裁切 */
     padding: 0.8rem 0;
 
     cursor: pointer;
@@ -471,7 +469,6 @@ header {
     display: none;
 }
 
-/* (MOD_v17.2) Active 狀態下移除 Gap，讓跑馬燈佔滿全寬 */
 .project-item.is-active {
     opacity: 1;
     gap: 0;
@@ -482,7 +479,6 @@ header {
     font-size: 0.8rem;
     color: #999;
 
-    /* (MOD_v17.2) 增加寬度相關的過渡動畫 */
     min-width: 100px;
     transition: color 0.4s ease, opacity 0.4s ease, min-width 0.4s ease, max-width 0.4s ease, margin 0.4s ease;
 
@@ -490,7 +486,6 @@ header {
     flex-shrink: 0;
 }
 
-/* (MOD_v17.2) Active 狀態下摺疊 Category，釋放空間給跑馬燈 */
 .project-item.is-active .project-category {
     color: var(--primary-color);
     opacity: 0;
@@ -501,7 +496,13 @@ header {
     overflow: hidden;
 }
 
+/* (MOD_v17.3) Anchor Tag Style Refinement */
 .project-item a {
+    /* 重要: 設定 flex: 1 確保它會填滿 li 的剩餘空間 */
+    flex: 1;
+    /* 重要: min-width: 0 是 Flexbox 中允許縮小的關鍵，避免子元素撐開容器 */
+    min-width: 0;
+
     display: block;
     font-size: clamp(2rem, 6vw, 4.5rem);
     font-weight: 700;
@@ -510,28 +511,36 @@ header {
     padding: 0;
     line-height: 1.1;
     pointer-events: none;
-    max-width: 100%;
+
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .project-item.is-active a {
     color: var(--primary-color);
+    /* 當是 Active 時，我們確保它也是 Block 佈局，但讓內部的 .marquee-track 來處理寬度 */
 }
 
-/* --- 全平台跑馬燈樣式 --- */
-.project-item a.marquee-active {
+/* --- 全平台跑馬燈樣式 (Inner Track) --- */
+/* 這是新的樣式，應用於 JS 注入的 div */
+.marquee-track {
     display: inline-flex;
-    text-overflow: clip;
+    white-space: nowrap;
     animation: marquee-scroll 10s linear infinite;
     padding-left: 0;
-    justify-content: flex-start;
-    text-align: left;
+
+    /* 確保 track 不受外層限制，可以自由延伸 */
     width: auto;
     max-width: none;
 }
 
-.project-item a.marquee-active span.track-content {
+/* 當 a 標籤有 .marquee-active 時，我們取消它的 text-overflow 機制，讓 track 顯示 */
+.project-item a.marquee-active {
+    text-overflow: clip;
+    /* 這裡不需要 display: inline-flex，保持 block/flex-item 即可 */
+}
+
+.track-content {
     flex-shrink: 0;
     padding-right: 3rem;
 }

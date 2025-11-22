@@ -7,15 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Left Column Info
     const previewTitleElement = document.getElementById('previewTitle');
-
-    // (MOD_v17.0) 對應新的 HTML ID
-    const previewBioElement = document.getElementById('previewBio');   // Inside DOCS block
-    const previewInfoElement = document.getElementById('previewInfo'); // Inside INFO block
+    const previewBioElement = document.getElementById('previewBio');
+    const previewInfoElement = document.getElementById('previewInfo');
 
     // Labels & Blocks
     const previewLabelCategory = document.getElementById('previewLabelCategory');
-
-    // (MOD_v17.0) 移除不再使用的舊 ID 引用
 
     // Random Preview
     const randomPreviewPopup = document.getElementById('randomPreviewPopup');
@@ -112,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         li.className = 'project-item';
 
-        // 綁定完整資料至 LI (這是資料的唯一真理來源)
+        // 綁定完整資料至 LI
         li.setAttribute('data-id', project.id);
         li.setAttribute('data-index', index);
         li.setAttribute('data-category', project.category);
@@ -126,7 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
             <a href="project.html?id=${project.id}" onclick="event.preventDefault()">${project.title}</a>
         `;
 
-        // Click Event for Navigation
         li.addEventListener('click', (e) => {
             if (li.classList.contains('is-active')) {
                 window.location.href = `project.html?id=${project.id}`;
@@ -139,13 +134,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return li;
     }
 
-    // --- 3. Scroll & Picker Logic (The Core) ---
+    // --- 3. Scroll & Picker Logic ---
     function bindScrollListeners() {
         if (!centerColumn) return;
-
         centerColumn.addEventListener('scroll', handleScroll, { passive: true });
-
-        // Start the visual loop
         startPickerLoop();
     }
 
@@ -158,8 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!centerColumn) return;
 
         const containerRect = centerColumn.getBoundingClientRect();
-
-        // 計算中心點
         let containerCenter;
         if (isMobile()) {
             containerCenter = window.innerHeight / 2;
@@ -168,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const range = containerRect.height / 2;
-
         let closestItem = null;
         let minDistance = Infinity;
         let closestIndex = -1;
@@ -179,41 +168,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const distance = itemCenter - containerCenter;
             const absDistance = Math.abs(distance);
 
-            // Track closest item
             if (absDistance < minDistance) {
                 minDistance = absDistance;
                 closestItem = item;
                 closestIndex = index;
             }
 
-            // Normalize distance (-1 to 1)
             let ratio = distance / range;
 
-            // Apply Visual Transforms
             if (isMobile()) {
-                // Mobile: Scale & Opacity Only
                 const mobileScale = Math.max(1.0, 1.2 - Math.abs(ratio) * 0.5);
                 const opacity = Math.max(0.3, 1 - Math.pow(Math.abs(ratio), 1.5));
-
                 item.style.transform = `scale(${mobileScale})`;
                 item.style.opacity = opacity;
                 item.style.zIndex = Math.round(100 - Math.abs(ratio) * 100);
             } else {
-                // Desktop: 3D Cylinder Effect
                 let rotateX = -ratio * 45;
                 if (rotateX > 90) rotateX = 90;
                 if (rotateX < -90) rotateX = -90;
-
                 const scale = Math.max(0.8, 1 - Math.abs(ratio) * 0.3);
                 const opacity = Math.max(0.2, 1 - Math.pow(Math.abs(ratio), 1.5));
-
                 item.style.transform = `perspective(1000px) rotateX(${rotateX}deg) scale(${scale})`;
                 item.style.opacity = opacity;
                 item.style.zIndex = Math.round(100 - Math.abs(ratio) * 100);
             }
         });
 
-        // Real-time Active State Update
         if (closestIndex !== -1 && closestIndex !== currentActiveIndex) {
             setActiveItem(closestIndex);
         }
@@ -221,13 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
         pickerLoopId = requestAnimationFrame(renderPickerLoop);
     }
 
-    function handleScroll() {
-        // Logic managed by loop
-    }
-
-    function updateActiveItemOnScroll() {
-        // Logic managed by loop
-    }
+    function handleScroll() { }
+    function updateActiveItemOnScroll() { }
 
     function setActiveItem(index) {
         if (index < 0 || index >= visibleItems.length) return;
@@ -235,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentActiveIndex = index;
         const activeItem = visibleItems[index];
 
-        // --- (FIX_v17.0) 核心修復邏輯：清理舊狀態 ---
         visibleItems.forEach(item => {
             item.classList.remove('is-active');
 
@@ -243,7 +217,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (link && link.classList.contains('marquee-active')) {
                 link.classList.remove('marquee-active');
 
-                // 從 LI 讀取原始標題還原
                 const originalTitle = item.getAttribute('data-title');
                 if (originalTitle) {
                     link.textContent = originalTitle;
@@ -251,22 +224,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 設定新的 Active 項目
         activeItem.classList.add('is-active');
 
-        // --- (MOD_v17.1) 核心優化：全平台跑馬燈 (移除 isMobile 限制) ---
-        // 這裡不再檢查 isMobile()，只要標題寬度溢出，就啟動跑馬燈
         const link = activeItem.querySelector('a');
         const originalTitle = activeItem.getAttribute('data-title');
 
-        // 檢查是否溢出 (Desktop 需依賴 CSS max-width 限制才能觸發)
         if (link && originalTitle && link.scrollWidth > link.clientWidth) {
-            // 設置跑馬燈 HTML 結構
-            link.innerHTML = `<span class="track-content">${originalTitle}</span><span class="track-content">${originalTitle}</span>`;
+            // (MOD_v17.2) 結構優化：加入 .marquee-track 作為移動層
+            // 外層 link 負責 layout 和 overflow:hidden
+            // 內層 marquee-track 負責 animation
+            link.innerHTML = `<div class="marquee-track"><span class="track-content">${originalTitle}</span><span class="track-content">${originalTitle}</span></div>`;
             link.classList.add('marquee-active');
         }
 
-        // Update Left Column Info
         updateActiveContent(activeItem);
     }
 
@@ -275,33 +245,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const handleFilter = (event) => {
             const targetLink = event.target.closest('a[data-filter]');
             if (!targetLink) return;
-
             event.preventDefault();
             const newFilter = targetLink.getAttribute('data-filter');
-
             if (newFilter === currentFilter) return;
             currentFilter = newFilter;
-
             updateFilterUI(newFilter);
             renderProjectList(newFilter);
         };
-
-        if (categoryNavElement) {
-            categoryNavElement.addEventListener('click', handleFilter);
-        }
-        if (mobileFooterElement) {
-            mobileFooterElement.addEventListener('click', handleFilter);
-        }
+        if (categoryNavElement) categoryNavElement.addEventListener('click', handleFilter);
+        if (mobileFooterElement) mobileFooterElement.addEventListener('click', handleFilter);
     }
 
     function updateFilterUI(activeFilter) {
         const allLinks = document.querySelectorAll('a[data-filter]');
         allLinks.forEach(link => {
-            if (link.getAttribute('data-filter') === activeFilter) {
-                link.classList.add('active');
-            } else {
-                link.classList.remove('active');
-            }
+            if (link.getAttribute('data-filter') === activeFilter) link.classList.add('active');
+            else link.classList.remove('active');
         });
     }
 
@@ -316,8 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const coverImage = activeItem.getAttribute('data-cover-image');
 
         if (previewTitleElement) previewTitleElement.textContent = title;
-
-        // (MOD_v17.0) 資料映射更新
         if (previewBioElement) previewBioElement.textContent = bio;
         if (previewInfoElement) previewInfoElement.innerHTML = info;
 
@@ -347,15 +304,11 @@ document.addEventListener('DOMContentLoaded', () => {
             randomPreviewImage.src = imageSrc;
             const scale = getRandomFloat(0.9, 1.3);
             const rotate = getRandomFloat(-15, 15);
-
             let top, left;
             if (isMobile()) {
                 const isTopZone = Math.random() > 0.5;
-                if (isTopZone) {
-                    top = getRandomFloat(12, 25);
-                } else {
-                    top = getRandomFloat(60, 72);
-                }
+                if (isTopZone) top = getRandomFloat(12, 25);
+                else top = getRandomFloat(60, 72);
                 left = getRandomFloat(10, 40);
                 randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;
             } else {
