@@ -1,11 +1,11 @@
 [
   {
-    "id": "kinetic-poster",
+    "id": "amouroracle",
     "number": "01",
-    "title": "Kinetic Poster",
-    "category": "Visual",
-    "bio": "An experimental typography project exploring motion and form. Capturing the dynamic energy of urban life through animated letterforms.",
-    "info": "Role: Art Direction, Motion Design<br>Year: 2024",
+    "title": "AmourOracle 品牌視覺規劃",
+    "category": "Identity",
+    "bio": "AmourOracle 是一個專注於聆聽、撰寫、分享的個人品牌。",
+    "info": "Role: Art Direction, Graphic Design<br>Year: 2025",
     "coverImage": "https://placehold.co/180x320/222222/ffffff?text=Kinetic",
     "images": [
       "https://placehold.co/1200x800/222222/ffffff?text=Kinetic+Poster+01",
@@ -57,7 +57,7 @@
     "id": "still-life-photo",
     "number": "05",
     "title": "Still Life",
-    "category": "Photography",
+    "category": "Visual",
     "bio": "A photography series that explores the beauty in everyday objects. The collection plays with light, shadow, and composition to create painterly images.",
     "info": "Role: Photography, Art Direction<br>Year: 2022",
     "coverImage": "https://placehold.co/180x320/1a1a1a/ffffff?text=Still",
