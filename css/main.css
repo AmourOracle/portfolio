@@ -12,7 +12,7 @@
     --font-main: var(--font-en), var(--font-zh);
     --font-mono: var(--font-en), var(--font-zh);
 
-    /* Animation Variables (MOD_v17.0: 優化參數) */
+    /* Animation Variables */
     --anim-ease: cubic-bezier(0.16, 1, 0.3, 1);
     --anim-duration: 1.2s;
     --anim-y-offset: 60px;
@@ -102,9 +102,15 @@ header {
     flex-shrink: 0;
 }
 
+/* (MOD_v17.7) 嚴格執行固定高度策略
+   1. 改回 height (而非 min-height)，確保區塊位置絕對固定
+   2. 統一全站 (Portfolio, Project, About) 左上區塊高度
+*/
 .portfolio-container .left-column-top,
-.about-layout .left-column-top {
+.about-layout .left-column-top,
+.project-layout .left-column-top {
     height: calc(50vh - 60px);
+    /* 移除 flex-grow，確保不被撐開 */
 }
 
 .left-column-middle {
@@ -151,12 +157,20 @@ header {
     text-align: left;
 }
 
+/* (MOD_v17.7) 大幅縮小標題字級以適應固定高度
+   原數值: clamp(3rem, 10vw, 7rem)
+   前次嘗試: clamp(2.4rem, 8vw, 5.6rem)
+   新數值: clamp(2rem, 5vw, 4.5rem) -> 確保長標題在 Desktop 不會溢出
+*/
 .name-block h1 {
-    font-size: clamp(3rem, 10vw, 7rem);
+    font-size: clamp(2rem, 5vw, 4.5rem);
     font-weight: 700;
     margin: 0;
     color: var(--primary-color);
-    line-height: 1.1;
+
+    /* 微調行高，稍微緊湊一點以節省垂直空間 */
+    line-height: 1.05;
+
     transition: opacity 0.3s ease-in-out;
     word-break: break-word;
 }
@@ -496,7 +510,7 @@ header {
     overflow: hidden;
 }
 
-/* (MOD_v17.4) Anchor Tag Style Refinement with Mask */
+/* Anchor Tag Style Refinement with Mask */
 .project-item a {
     flex: 1;
     min-width: 0;
@@ -510,13 +524,10 @@ header {
     line-height: 1.1;
     pointer-events: none;
 
-    /* (MOD_v17.4) 方案 B: 使用 Mask 製作邊緣淡出效果，取代省略號 (...) */
     overflow: hidden;
     text-overflow: clip;
     /* 確保不出現 "..." */
 
-    /* 定義淡出遮罩：從左側(黑色/不透明)到右側(透明) */
-    /* 設定透明度過渡區為 85% 到 100% */
     -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
     mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
@@ -536,7 +547,6 @@ header {
     max-width: none;
 }
 
-/* 當跑馬燈啟動時，文字會向左捲動，遮罩依然有效，讓文字在離開容器時淡出 */
 .project-item a.marquee-active {
     text-overflow: clip;
 }
@@ -1097,7 +1107,7 @@ header {
         margin-top: 4px;
         white-space: nowrap;
 
-        /* (FIX_v17.5) Mobile: Remove ellipsis and add mask */
+        /* Mobile: Remove ellipsis and add mask */
         text-overflow: clip;
         overflow: hidden;
 
