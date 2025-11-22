@@ -361,22 +361,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let top, left;
             if (isMobile()) {
-                // (MOD_v17.2) 手機版預覽圖位置邏輯再優化
-                // 1. 避開中央操作區 (30vh - 70vh)
-                // 2. 避開 Header (0-12vh) 與 Footer (88-100vh)
-                // 隨機決定是出現在「上方安全區」還是「下方安全區」
+                // (MOD_v17.2) 手機版預覽圖位置邏輯再優化 (Strict Safe Zones)
+                // 避免遮擋 Header (0-10vh), Active Item (35-60vh), Footer (90-100vh)
+
                 const isTopZone = Math.random() > 0.5;
 
                 if (isTopZone) {
-                    // 上方安全區: 15vh ~ 30vh (避開 Header)
-                    top = getRandomFloat(15, 30);
+                    // 上方安全區: 12vh ~ 25vh (原本 15-30, 稍微上移避免太靠近中間)
+                    top = getRandomFloat(12, 25);
                 } else {
-                    // 下方安全區: 70vh ~ 85vh (避開 Footer)
-                    top = getRandomFloat(70, 85);
+                    // 下方安全區: 60vh ~ 72vh (關鍵修正: 原本 70-85 太低會碰到 footer)
+                    // 說明: 手機上 footer 大約佔據 90vh 以下的空間
+                    // 圖片高度約 10-15vh，若 top=72vh，底部約 87vh，安全。
+                    top = getRandomFloat(60, 72);
                 }
 
-                // 水平位置保持隨機
-                left = getRandomFloat(10, 30);
+                // 水平位置保持隨機 (10vw - 40vw) 避免太靠右邊緣
+                left = getRandomFloat(10, 40);
 
                 randomPreviewPopup.style.transform = `translate(${left}vw, ${top}vh) rotate(${rotate}deg) scale(${scale})`;
             } else {

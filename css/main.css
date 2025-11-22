@@ -1170,8 +1170,10 @@ header {
 
 
         .random-preview-popup {
-            width: 140px;
-            aspect-ratio: 1 / 1;
+            width: 200px;
+            /* (MOD_v17.2) 手機版尺寸增大，原本為 140px */
+            aspect-ratio: 16 / 9;
+            /* 確保比例一致 */
         }
     }
 
