@@ -280,6 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // (Req 1) 無縫跑馬燈邏輯：複製文字
                 // 將內容改為：<span class="track-content">Title</span><span class="track-content">Title</span>
                 // CSS 會讓它變成 Flex Row
+                // (FIX_v18.0) 使用 padding 替代 gap 以便計算
                 link.innerHTML = `<span class="track-content">${originalTitle}</span><span class="track-content">${originalTitle}</span>`;
                 link.classList.add('marquee-active');
             }

@@ -484,6 +484,7 @@ header {
 
 
 /* Project Item */
+/* (FIX_v18.0) Desktop Gap Setting */
 .project-item {
     min-height: 80px;
     height: auto;
@@ -492,6 +493,7 @@ header {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    /* Desktop Gap */
 
     opacity: 0.4;
     padding: 0.5rem 0;
@@ -960,14 +962,10 @@ header {
             height: calc(100vh - 60px);
         }
 
-        /* (MOD_v17.7) 修正手機版容器 Padding 
-           改為左右對稱 (0 2rem)，確保內容絕對置中
-        */
         .portfolio-container .center-column {
             overflow-y: scroll;
             scroll-snap-type: y mandatory;
             padding: 0 2rem;
-            /* Symmetric Padding for perfect centering */
             scroll-padding-bottom: 60px;
         }
 
@@ -1078,25 +1076,25 @@ header {
             padding: 45vh 0;
         }
 
-        /* (MOD_v17.7) Mobile Project Item Layout Refinement 
+        /* (MOD_v18.0) Mobile Project Item Layout Refinement 
            1. 使用 Flex Column 讓 Category 堆疊在 Title 上方
            2. 強制置中對齊
+           3. 重要: gap 設為 0 以消除多餘間距
         */
         .portfolio-container .project-item {
             scroll-snap-align: center;
             scroll-snap-stop: always;
             min-height: 80px;
-            /* 稍微增加高度以容納兩行 */
             padding: 0.5rem 0;
 
-            /* Stack layout */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            /* 水平置中子元素 */
             text-align: center;
-            /* 文字置中 */
+
+            /* (FIX_v18.0) 消除 gap */
+            gap: 0;
 
             white-space: nowrap;
             overflow: hidden;
@@ -1105,11 +1103,9 @@ header {
         /* (MOD_v17.9) 手機版 Category 樣式 - 間距再優化 */
         .portfolio-container .project-category {
             text-align: center;
-            /* 強制移除可能存在的間距 */
             margin-bottom: 0;
             padding-bottom: 0;
             line-height: 1;
-            /* 緊湊行高 */
             font-size: 0.8rem;
             opacity: 0.6;
             display: block;
@@ -1118,7 +1114,6 @@ header {
         /* (MOD_v17.9) 強制 Active 狀態下 Category 隱藏 */
         .portfolio-container .project-item.is-active .project-category {
             opacity: 0;
-            /* (Req 3) 回復隱藏 */
             transition: opacity 0.3s ease;
         }
 
@@ -1126,51 +1121,46 @@ header {
         .portfolio-container .project-item a {
             font-size: clamp(1.5rem, 8vw, 2.5rem);
             line-height: 1;
-            /* (Req 2) 縮小行高以減少視覺間距 */
             margin-top: 4px;
-            /* 極小的間距 */
             white-space: nowrap;
             text-overflow: ellipsis;
-            /* 未選中時顯示 ... */
             overflow: hidden;
             display: block;
             width: 100%;
             text-align: center;
-            /* 確保文字置中 */
         }
 
-        /* (MOD_v17.9) Marquee Animation Class - Seamless Loop */
-        /* 需要配合 JS 的 DOM 複製 */
+        /* (MOD_v18.0) Seamless Marquee - 使用 inline-flex 與 padding 實作 */
         .portfolio-container .project-item a.marquee-active {
-            display: flex;
-            /* 啟用 Flex 讓複製的文字橫向排列 */
-            gap: 2rem;
-            /* 兩段文字間的空隙 */
-            width: fit-content;
-            /* 讓容器寬度隨內容撐開 */
+            display: inline-flex;
+            /* 讓容器寬度隨內容延伸 */
             text-overflow: clip;
-            /* (Req 1) 從 0% 往左移到 -50% (或是剛好移過一段文字+間距的距離) */
             animation: marquee-scroll 10s linear infinite;
             padding-left: 0;
-            /* 確保初始對齊 */
             justify-content: flex-start;
             text-align: left;
+            /* 確保文字從左側開始流動 */
+            width: auto;
+            /* 允許寬度超過父容器 */
         }
 
-        /* (MOD_v17.9) 無縫左移 */
-        /* 假設 JS 會複製一份文字，結構變為 [Text][Gap][Text] */
-        /* 動畫從 0 (顯示第一個 Text) 移動到 -50% (顯示第二個 Text 的開頭) */
-        /* 由於 gap 的存在，精確計算需要 calc */
+        /* (ADD_v18.0) Marquee Spans */
+        .portfolio-container .project-item a.marquee-active span.track-content {
+            flex-shrink: 0;
+            /* 防止文字被壓縮 */
+            padding-right: 3rem;
+            /* 設定文字間距，替代 gap，方便計算 */
+        }
+
+        /* (MOD_v18.0) 無縫左移 - 移動 50% (因為有兩份文字) */
         @keyframes marquee-scroll {
             0% {
                 transform: translateX(0);
             }
 
             100% {
-                transform: translateX(calc(-50% - 1rem));
+                transform: translateX(-50%);
             }
-
-            /* -50% 寬度 - 半個 gap */
         }
 
 
