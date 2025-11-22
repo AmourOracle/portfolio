@@ -496,11 +496,9 @@ header {
     overflow: hidden;
 }
 
-/* (MOD_v17.3) Anchor Tag Style Refinement */
+/* (MOD_v17.4) Anchor Tag Style Refinement with Mask */
 .project-item a {
-    /* 重要: 設定 flex: 1 確保它會填滿 li 的剩餘空間 */
     flex: 1;
-    /* 重要: min-width: 0 是 Flexbox 中允許縮小的關鍵，避免子元素撐開容器 */
     min-width: 0;
 
     display: block;
@@ -512,32 +510,35 @@ header {
     line-height: 1.1;
     pointer-events: none;
 
+    /* (MOD_v17.4) 方案 B: 使用 Mask 製作邊緣淡出效果，取代省略號 (...) */
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: clip;
+    /* 確保不出現 "..." */
+
+    /* 定義淡出遮罩：從左側(黑色/不透明)到右側(透明) */
+    /* 設定透明度過渡區為 85% 到 100% */
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
 
 .project-item.is-active a {
     color: var(--primary-color);
-    /* 當是 Active 時，我們確保它也是 Block 佈局，但讓內部的 .marquee-track 來處理寬度 */
 }
 
 /* --- 全平台跑馬燈樣式 (Inner Track) --- */
-/* 這是新的樣式，應用於 JS 注入的 div */
 .marquee-track {
     display: inline-flex;
     white-space: nowrap;
     animation: marquee-scroll 10s linear infinite;
     padding-left: 0;
 
-    /* 確保 track 不受外層限制，可以自由延伸 */
     width: auto;
     max-width: none;
 }
 
-/* 當 a 標籤有 .marquee-active 時，我們取消它的 text-overflow 機制，讓 track 顯示 */
+/* 當跑馬燈啟動時，文字會向左捲動，遮罩依然有效，讓文字在離開容器時淡出 */
 .project-item a.marquee-active {
     text-overflow: clip;
-    /* 這裡不需要 display: inline-flex，保持 block/flex-item 即可 */
 }
 
 .track-content {
