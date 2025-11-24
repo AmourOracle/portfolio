@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!projects || projects.length === 0) throw new Error("No projects found.");
 
             // (MOD_v17.5) 在存入全域變數前，先隨機打亂資料順序
-            // 這滿足了 "每次重新讀取頁面時隨機刷新 Project list" 的需求
             allProjectsData = shuffleArray(projects);
 
             // Initial Render
@@ -245,10 +244,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const originalTitle = activeItem.getAttribute('data-title');
 
         if (link && originalTitle && link.scrollWidth > link.clientWidth) {
-            // (MOD_v17.2) 結構優化：加入 .marquee-track 作為移動層
-            // 外層 link 負責 layout 和 overflow:hidden
-            // 內層 marquee-track 負責 animation
-            link.innerHTML = `<div class="marquee-track"><span class="track-content">${originalTitle}</span><span class="track-content">${originalTitle}</span></div>`;
+            // (MOD_v17.7) 跑馬燈視覺風格化
+            // 1. 拆解標題 (Name + Type)
+            // 2. 注入裝飾性 HTML 結構 (Borders, Symbols)
+
+            let contentHtml = '';
+            const lastSpaceIndex = originalTitle.lastIndexOf(' ');
+
+            if (lastSpaceIndex !== -1) {
+                // 有空白：拆分為 "主標題" 和 "類型"
+                const name = originalTitle.substring(0, lastSpaceIndex);
+                const type = originalTitle.substring(lastSpaceIndex + 1);
+                // HTML: 粗體名字 + 圓角框類型
+                contentHtml = `<span class="t-name">${name}</span><span class="t-type">${type}</span>`;
+            } else {
+                // 無空白：僅顯示名字
+                contentHtml = `<span class="t-name">${originalTitle}</span>`;
+            }
+
+            // 分隔符號 (特殊符號，如 ❋ 或 ✦)
+            const separatorHtml = `<span class="t-sep">❋</span>`;
+
+            // 組合跑馬燈結構：內容 + 分隔 + 內容 + 分隔 (確保無縫循環)
+            link.innerHTML = `
+                <div class="marquee-track">
+                    <span class="track-content">${contentHtml}</span>
+                    ${separatorHtml}
+                    <span class="track-content">${contentHtml}</span>
+                    ${separatorHtml}
+                </div>
+            `;
             link.classList.add('marquee-active');
         }
 

@@ -539,14 +539,60 @@ header {
     max-width: none;
 }
 
+/* (ADD_v17.7) 跑馬燈內部元素的排版微調 */
+.marquee-track .track-content {
+    display: inline-flex;
+    align-items: center;
+    /* 確保主標題和類型Tag垂直置中 */
+}
+
+/* (ADD_v17.7) 跑馬燈視覺設計樣式 */
+.t-name {
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.t-type {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.5em;
+    /* 字級縮小 */
+    letter-spacing: 1px;
+
+    /* 圓角框樣式 (Pill Shape) */
+    border: 1px solid #555;
+    padding: 4px 12px;
+    border-radius: 50px;
+
+    /* 位置調整 */
+    margin-left: 15px;
+    vertical-align: middle;
+    position: relative;
+    top: -4px;
+    /* 微調垂直位置以對齊粗體字 */
+
+    color: var(--secondary-color);
+    white-space: nowrap;
+}
+
+.t-sep {
+    margin: 0 3vw;
+    /* 分隔符號間距 */
+    font-weight: 300;
+    color: #444;
+    font-family: var(--font-mono);
+}
+
+
 .project-item a.marquee-active {
     text-overflow: clip;
 }
 
-.track-content {
+/* 移除舊的 track-content 設定，改由 flex 控制 */
+/* .track-content {
     flex-shrink: 0;
-    padding-right: 3rem;
-}
+    padding-right: 3rem; 
+} */
 
 @keyframes marquee-scroll {
     0% {
