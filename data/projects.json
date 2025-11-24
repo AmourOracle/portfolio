@@ -1,69 +1,64 @@
 [
   {
     "id": "amouroracle",
-    "number": "01",
     "title": "AmourOracle品牌視覺規劃",
     "category": "Identity",
     "bio": "AmourOracle 是一個專注於聆聽、撰寫、分享的個人品牌。",
-    "info": "Art Direction, Graphic Design<br>2025",
-    "coverImage": "https://placehold.co/180x320/222222/ffffff?text=Kinetic",
+    "info": "Role: Art Direction, Graphic Design<br>Year: 2025",
+    "coverImage": "./assets/images/amouroracle_cover.jpg",
     "images": [
-      "https://placehold.co/1200x800/222222/ffffff?text=Kinetic+Poster+01",
-      "https://placehold.co/1200x800/333333/ffffff?text=Kinetic+Poster+02",
-      "https://placehold.co/1200x1600/222222/ffffff?text=Kinetic+Poster+03"
+      "./assets/images/amouroracle_01.jpg",
+      "./assets/images/amouroracle_02.jpg",
+      "./assets/images/amouroracle_03.jpg"
     ]
   },
   {
     "id": "aura-branding",
-    "number": "02",
     "title": "1111活動攻略頁面",
     "category": "Visual",
     "bio": "1111活動攻略頁面",
-    "info": "Layout Design<br>2025",
-    "coverImage": "https://placehold.co/180x320/5a5a5a/ffffff?text=Aura",
+    "info": "Role: Layout Design<br>Year: 2025",
+    "coverImage": "./assets/images/aura_cover.jpg",
     "images": [
-      "https://placehold.co/1200x800/5a5a5a/ffffff?text=Aura+Branding+01",
-      "https://placehold.co/1200x800/6b6b6b/ffffff?text=Aura+Branding+02"
+      "./assets/images/aura_01.jpg",
+      "./assets/images/aura_02.jpg"
     ]
   },
   {
-    "id": "商品銷售頁面(蛋白香酥脆辛咖喱風味) feat. 朱雀咖喱",
-    "number": "03",
-    "title": "Nomad Editorial",
+    "id": "product_proteinchips_spicycarry",
+    "title": "商品銷售頁(蛋白香酥脆) feat. 朱雀咖喱",
     "category": "Visual",
-    "bio": "商品銷售頁面(蛋白香酥脆辛咖喱風味) feat. 朱雀咖喱",
-    "info": "Editorial Design, Layout<br>2023",
-    "coverImage": "https://placehold.co/180x320/2a3b4c/ffffff?text=Nomad",
+    "bio": "商品銷售頁(蛋白香酥脆) feat. 朱雀咖喱",
+    "info": "Role: Editorial Design, Layout<br>Year: 2023",
+    "coverImage": "./assets/images/nomad_cover.jpg",
     "images": [
-      "https://placehold.co/1200x800/2a3b4c/ffffff?text=Nomad+01",
-      "https://placehold.co/1200x800/3c4d5e/ffffff?text=Nomad+02",
-      "https://placehold.co/1200x800/4e5f70/ffffff?text=Nomad+03"
+      "./assets/images/nomad_01.jpg",
+      "./assets/images/nomad_02.jpg",
+      "./assets/images/nomad_03.jpg"
     ]
   },
   {
     "id": "coda-music-app",
-    "number": "04",
     "title": "Coda Music App",
     "category": "Visual",
     "bio": "UI/UX design for a music discovery application. The interface is designed to be intuitive, personalized, and visually engaging for music lovers.",
-    "info": "UI/UX Design, Prototyping<br>2024",
-    "coverImage": "https://placehold.co/180x320/4a2a4a/ffffff?text=Coda",
+    "info": "Role: UI/UX Design, Prototyping<br>Year: 2024",
+    "coverImage": "./assets/images/coda_cover.jpg",
     "images": [
-      "https://placehold.co/1200x900/4a2a4a/ffffff?text=Coda+App+Screen+1",
-      "https://placehold.co/1200x900/5b3b5b/ffffff?text=Coda+App+Screen+2"
+      "./assets/images/coda_01.jpg",
+      "./assets/images/coda_02.jpg"
     ]
   },
   {
     "id": "still-life-photo",
-    "number": "05",
     "title": "Still Life",
     "category": "Visual",
     "bio": "A photography series that explores the beauty in everyday objects. The collection plays with light, shadow, and composition to create painterly images.",
-    "info": "Photography, Art Direction<br>2022",
-    "coverImage": "https://placehold.co/180x320/1a1a1a/ffffff?text=Still",
+    "info": "Role: Photography, Art Direction<br>Year: 2022",
+    "coverImage": "./assets/images/still_cover.jpg",
     "images": [
-      "https://placehold.co/1200x1500/1a1a1a/ffffff?text=Still+Life+I",
-      "https://placehold.co/1200x1500/2b2b2b/ffffff?text=Still+Life+II"
+      "./assets/images/still_01.jpg",
+      "./assets/images/still_02.jpg"
     ]
   }
 ]
