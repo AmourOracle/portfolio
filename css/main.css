@@ -212,7 +212,8 @@ header {
 
 /* --- INDEX Page Styles --- */
 .portfolio-container {
-    grid-template-columns: 28.57% 1fr 10vw;
+    /* (MOD_v17.5) 縮減右欄寬度 10%：從 10vw 調整為 9vw */
+    grid-template-columns: 28.57% 1fr 9vw;
     grid-template-rows: 1fr;
 }
 

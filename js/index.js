@@ -37,6 +37,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return window.innerWidth <= 768;
     }
 
+    /**
+     * (ADD_v17.5) Fisher-Yates Shuffle Algorithm
+     * 用於隨機打亂陣列順序
+     */
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            // 交換元素
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
     // --- 1. Initial Data Fetch ---
     fetch('./data/projects.json')
         .then(response => {
@@ -46,7 +59,9 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(projects => {
             if (!projects || projects.length === 0) throw new Error("No projects found.");
 
-            allProjectsData = projects;
+            // (MOD_v17.5) 在存入全域變數前，先隨機打亂資料順序
+            // 這滿足了 "每次重新讀取頁面時隨機刷新 Project list" 的需求
+            allProjectsData = shuffleArray(projects);
 
             // Initial Render
             renderProjectList('all');

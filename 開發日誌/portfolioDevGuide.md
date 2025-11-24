@@ -1,14 +1,14 @@
-# 專案開發指南與進度記錄 (v16)
+# 專案開發指南與進度記錄 (v17)
 
-本文件統整了 Portfolio 專案的最終架構、核心流程、技術細節與注意事項。此版本 (v16) 代表了專案在互動手感、移動端體驗與程式碼架構上的成熟穩定狀態。
+本文件統整了 Portfolio 專案的最終架構、核心流程、技術細節與注意事項。此版本 (v17) 代表了專案在互動手感、移動端體驗與程式碼架構上的成熟穩定狀態。
 
-## 1. 專案目前進度 (Project Status v16)
+## 1. 專案目前進度 (Project Status v17)
 
-目前專案已達到 **v16 正式版本**。此版本確立了 "Native Scroll + Custom Visuals" 的核心互動邏輯，並針對移動端進行了深度優化。
+目前專案已達到 **v17 正式版本**。此版本確立了 "Native Scroll + Custom Visuals" 的核心互動邏輯，並針對移動端進行了深度優化。
 
 *   **核心互動 (The Picker)**: 捨棄第三方庫 (Swiper.js)，採用原生 CSS Scroll Snap 結合 JS 3D 運算，實現了極致的 "iOS Alarm Picker" 滾動手感。
 *   **移動端體驗 (Mobile)**: 解決了手機版滾動卡頓、佈局錯亂問題，並實現了與桌面版一致的 3D 滾輪視覺體驗。
-*   **畫廊系統 (Gallery)**: 穩定的全螢幕無限畫布，支援慣性拖曳 (Inertia) 與平滑縮放 (Zoom)。
+*   **畫廊系統 (Gallery)**: 穩定的全螢幕無限畫布，支援慣性拖曳 (Inertia) 與平滑縮放 (Zoom)，並優化了圖片分佈邏輯。
 *   **視覺表現**: 導入了 "Cascading Entrance Animation" (層次化進場動畫系統)，提升頁面切換質感。
 
 ---
@@ -57,6 +57,7 @@
 3.  **狀態同步 (State Sync)**:
     *   Loop 內同時判斷 "哪個項目離中心最近" (Closest Item)。
     *   一旦最近項目改變，立即觸發 `setActiveItem`，更新左側資訊欄 (Title, Bio, Info) 與背景預覽圖。
+    *   **跑馬燈 (Marquee)**: 當標題過長時，動態插入 `.marquee-track` 結構實現無縫滾動 (v17.2)。
 
 ### B. 專案內頁渲染 (Project Detail Rendering)
 位於 `project.html`，採用動態渲染模式。
@@ -66,7 +67,7 @@
 3.  **渲染**:
     *   填入 Title, Bio, Info。
     *   動態生成 `<img>` 標籤插入內容區。
-    *   **Next Project**: 隨機挑選一個非當前專案作為 "Next Project" 連結。
+    *   **Next Project**: 隨機挑選一個非當前專案作為 "Next Project" 連結 (v16+)。
 4.  **動畫**: 資料載入完成後，添加 `.is-loaded` class 觸發 CSS 進場動畫。
 
 ### C. 無限畫廊 (Infinite Gallery)
@@ -77,7 +78,10 @@
     *   **Pan**: 監聽 `mousedown` / `touchstart` 計算位移 (`transform: translate`)。
     *   **Zoom**: 監聽 `wheel` 計算縮放 (`transform: scale`)，並以游標為中心進行校正。
     *   **Inertia**: 拖曳結束後，根據最後速度 (`velocityX/Y`) 應用摩擦力 (`FRICTION`) 進行慣性滑行。
-3.  **圖片佈局**: JS 隨機計算每張圖片的位置 (top, left)、旋轉角度與 Z-Index，形成散落效果。
+3.  **圖片佈局 (v17.1)**:
+    *   採用 **Centralized Distribution** (集中分佈) 策略。
+    *   圖片生成在畫布中心點 (2500, 2500) 周圍 +/- 1500px 的範圍內，避免邊緣過多留白。
+    *   手機版初始縮放比例調整為 0.6 以展示更多內容。
 
 ---
 
@@ -106,8 +110,9 @@
     *   建議對圖片進行壓縮與 Lazy Loading (Gallery 已實作 `loading="lazy"`)。
 
 2.  **移動端適配 (Mobile)**:
-    *   **滾動鎖定**: `body.portfolio-scroll-lock` 用於防止背景滾動，但在部分 iOS Safari 版本可能需要額外處理 (如 `touch-action: none`)。
-    *   **瀏覽器導航列**: CSS `100vh` 在手機上可能會被網址列遮擋，建議使用 `dvh` (Dynamic Viewport Height) 或 JS 計算視窗高度。
+    *   **滾動鎖定**: `body.portfolio-scroll-lock` 用於防止背景滾動。
+    *   **瀏覽器導航列**: CSS `100vh` 在手機上可能會被網址列遮擋，目前使用 `calc(100vh - 60px)` 配合 `position: fixed` header 處理。
+    *   **Footer**: 手機版 Footer 連結順序已調整為 Me, Gallery, Instagram, Email (v17.3)。
 
 3.  **效能監控**:
     *   目前 Picker Loop 對所有 `visibleItems` 進行計算。若專案數量超過 100+，建議優化 Loop 邏輯 (僅計算視窗內的項目) 以節省 CPU 資源。
@@ -118,5 +123,5 @@
 
 ---
 
-**Version**: v16.0
-**Last Updated**: 2025-11-22
+**Version**: v17.0
+**Last Updated**: 2025-11-23
