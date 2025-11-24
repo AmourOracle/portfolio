@@ -5,7 +5,7 @@
     "title": "AmourOracle品牌視覺規劃",
     "category": "Identity",
     "bio": "AmourOracle 是一個專注於聆聽、撰寫、分享的個人品牌。",
-    "info": "Role: Art Direction, Graphic Design<br>Year: 2025",
+    "info": "Art Direction, Graphic Design<br>2025",
     "coverImage": "https://placehold.co/180x320/222222/ffffff?text=Kinetic",
     "images": [
       "https://placehold.co/1200x800/222222/ffffff?text=Kinetic+Poster+01",
@@ -19,7 +19,7 @@
     "title": "1111活動攻略頁面",
     "category": "Visual",
     "bio": "1111活動攻略頁面",
-    "info": "Role: Layout Design<br>Year: 2025",
+    "info": "Layout Design<br>2025",
     "coverImage": "https://placehold.co/180x320/5a5a5a/ffffff?text=Aura",
     "images": [
       "https://placehold.co/1200x800/5a5a5a/ffffff?text=Aura+Branding+01",
@@ -27,12 +27,12 @@
     ]
   },
   {
-    "id": "nomad-editorial",
+    "id": "商品銷售頁面(蛋白香酥脆辛咖喱風味) feat. 朱雀咖喱",
     "number": "03",
     "title": "Nomad Editorial",
     "category": "Visual",
-    "bio": "Editorial design for a travel magazine. The layout focuses on immersive photography and clean, legible typography to tell compelling stories.",
-    "info": "Role: Editorial Design, Layout<br>Year: 2023",
+    "bio": "商品銷售頁面(蛋白香酥脆辛咖喱風味) feat. 朱雀咖喱",
+    "info": "Editorial Design, Layout<br>2023",
     "coverImage": "https://placehold.co/180x320/2a3b4c/ffffff?text=Nomad",
     "images": [
       "https://placehold.co/1200x800/2a3b4c/ffffff?text=Nomad+01",
@@ -46,7 +46,7 @@
     "title": "Coda Music App",
     "category": "Visual",
     "bio": "UI/UX design for a music discovery application. The interface is designed to be intuitive, personalized, and visually engaging for music lovers.",
-    "info": "Role: UI/UX Design, Prototyping<br>Year: 2024",
+    "info": "UI/UX Design, Prototyping<br>2024",
     "coverImage": "https://placehold.co/180x320/4a2a4a/ffffff?text=Coda",
     "images": [
       "https://placehold.co/1200x900/4a2a4a/ffffff?text=Coda+App+Screen+1",
@@ -59,7 +59,7 @@
     "title": "Still Life",
     "category": "Visual",
     "bio": "A photography series that explores the beauty in everyday objects. The collection plays with light, shadow, and composition to create painterly images.",
-    "info": "Role: Photography, Art Direction<br>Year: 2022",
+    "info": "Photography, Art Direction<br>2022",
     "coverImage": "https://placehold.co/180x320/1a1a1a/ffffff?text=Still",
     "images": [
       "https://placehold.co/1200x1500/1a1a1a/ffffff?text=Still+Life+I",

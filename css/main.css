@@ -74,7 +74,8 @@ header {
 .portfolio-container,
 .middle-container {
     display: grid;
-    gap: 2rem;
+    /* (MOD_v17.6) 縮減欄位間距: 2rem -> 1.25rem */
+    gap: 1.25rem;
     height: calc(100vh - 60px);
     padding: 0 4rem 60px 4rem;
     box-sizing: border-box;
@@ -153,19 +154,13 @@ header {
     text-align: left;
 }
 
-/* (MOD_v17.8) 標題字級放大 15%
-   原數值: clamp(2rem, 5vw, 4.5rem)
-   新數值: clamp(2.3rem, 5.75vw, 5.2rem)
-*/
+/* (MOD_v17.8) 標題字級放大 15% */
 .name-block h1 {
     font-size: clamp(2.3rem, 5.75vw, 5.2rem);
     font-weight: 700;
     margin: 0;
     color: var(--primary-color);
-
-    /* 維持緊湊行高，避免撐開高度 */
     line-height: 1.05;
-
     transition: opacity 0.3s ease-in-out;
     word-break: break-word;
 }
@@ -212,7 +207,7 @@ header {
 
 /* --- INDEX Page Styles --- */
 .portfolio-container {
-    /* (MOD_v17.5) 縮減右欄寬度 10%：從 10vw 調整為 9vw */
+    /* (MOD_v17.5) 右欄寬度維持 9vw */
     grid-template-columns: 28.57% 1fr 9vw;
     grid-template-rows: 1fr;
 }
@@ -429,7 +424,8 @@ header {
 
 /* --- Center Column --- */
 .center-column {
-    padding: 0 1rem 0 2rem;
+    /* (MOD_v17.6) 縮減內距: padding-right 從 1rem 降為 0.5rem，使文字更靠近右側邊界 */
+    padding: 0 0.5rem 0 2rem;
     box-sizing: border-box;
     overflow: hidden;
     height: 100%;
@@ -523,8 +519,9 @@ header {
     overflow: hidden;
     text-overflow: clip;
 
-    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
-    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    /* (MOD_v17.6) 延後 Mask 漸層開始點: 85% -> 93%，減少右側視覺留白 */
+    -webkit-mask-image: linear-gradient(to right, black 93%, transparent 100%);
+    mask-image: linear-gradient(to right, black 93%, transparent 100%);
 }
 
 .project-item.is-active a {
