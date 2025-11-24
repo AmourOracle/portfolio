@@ -244,9 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const originalTitle = activeItem.getAttribute('data-title');
 
         if (link && originalTitle && link.scrollWidth > link.clientWidth) {
-            // (MOD_v17.8) 跑馬燈視覺風格化更新
-            // 1. 支援全形空白 (\u3000) 切割
-            // 2. 結構保持 Name + Type，樣式由 CSS 控制
+            // (MOD_v17.8/v17.9) 跑馬燈視覺風格化更新
+            // 支援全形空白切割，並分離括號元素
 
             let contentHtml = '';
 
@@ -255,10 +254,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (match) {
                 // 有空白：拆分為 "主標題" 和 "類型"
-                const name = match[1]; // 第一個群組
-                const type = match[2]; // 第二個群組
-                // HTML: 粗體名字 + 類型 (括號樣式由 CSS ::before/::after 處理)
-                contentHtml = `<span class="t-name">${name}</span><span class="t-type">${type}</span>`;
+                const name = match[1];
+                const type = match[2];
+
+                // (MOD_v17.9) 關鍵修改：將括號 ( ) 獨立為 .t-paren 元素
+                // 結構：Name + 左括號 + Type + 右括號
+                contentHtml = `<span class="t-name">${name}</span><span class="t-paren" style="margin-left: 10px;">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
             } else {
                 // 無空白：僅顯示名字
                 contentHtml = `<span class="t-name">${originalTitle}</span>`;

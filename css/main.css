@@ -552,46 +552,42 @@ header {
     color: var(--primary-color);
 }
 
-/* (MOD_v17.8) 視覺風格重構: 去除 Pill Shape，改為細長括號風格 */
+/* (MOD_v17.9) 極細括號風格化: 括號樣式 (.t-paren) */
+.t-paren {
+    /* 字級繼承父層 (與主標題 .t-name 同大) */
+    font-size: 1em;
+
+    /* 極細字重 (若字體不支援 100，則瀏覽器會使用最細可用字重) */
+    font-weight: 100;
+
+    /* 強制使用系統字體以獲得更細的渲染效果，或保持一致性 */
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    color: var(--secondary-color);
+    opacity: 0.6;
+    /* 增加透明度以強化"細"的感覺 */
+    vertical-align: middle;
+}
+
+/* (MOD_v17.9) 極細括號風格化: 內容樣式 (.t-type) */
 .t-type {
     font-family: var(--font-mono);
     font-weight: 400;
     font-size: 0.5em;
-    /* 保持較小的字級 */
+    /* 保持小字級 */
     letter-spacing: 0.05em;
-    /* 稍微增加字距 */
 
-    /* 移除邊框和圓角 */
-    border: none;
-    padding: 0;
-    border-radius: 0;
-
-    /* 位置調整 */
-    margin-left: 15px;
-    vertical-align: middle;
-    position: relative;
-    top: -4px;
-    /* 對齊粗體字 */
+    /* 移除之前的偽元素 (::before/::after 已被 .t-paren 取代) */
 
     color: var(--secondary-color);
     white-space: nowrap;
     opacity: 0.8;
-    /* 稍微淡化，不搶視覺 */
-}
 
-/* (ADD_v17.8) 使用 CSS 偽元素加入細長括號 */
-.t-type::before {
-    content: '(';
-    margin-right: 4px;
-    font-weight: 300;
-    opacity: 0.7;
-}
-
-.t-type::after {
-    content: ')';
-    margin-left: 4px;
-    font-weight: 300;
-    opacity: 0.7;
+    /* 垂直對齊調整: 讓小字懸浮於大括號中間 */
+    vertical-align: middle;
+    display: inline-block;
+    transform: translateY(-0.25em);
+    /* 微調向上 */
 }
 
 .t-sep {
