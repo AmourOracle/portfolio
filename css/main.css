@@ -560,8 +560,8 @@ header {
     /* 極細字重 (若字體不支援 100，則瀏覽器會使用最細可用字重) */
     font-weight: 100;
 
-    /* 強制使用系統字體以獲得更細的渲染效果，或保持一致性 */
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /* (MOD_v18.0) 使用專案已引入的 DM Mono 字體 */
+    font-family: var(--font-mono);
 
     color: var(--secondary-color);
     opacity: 0.6;
@@ -586,8 +586,8 @@ header {
     /* 垂直對齊調整: 讓小字懸浮於大括號中間 */
     vertical-align: middle;
     display: inline-block;
-    transform: translateY(-0.25em);
-    /* 微調向上 */
+    /* (MOD_v18.0) 移除位移，讓 vertical-align: middle 自然對齊 */
+    /* transform: translateY(-0.25em); */
 }
 
 .t-sep {

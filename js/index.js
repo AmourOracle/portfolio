@@ -259,7 +259,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // (MOD_v17.9) 關鍵修改：將括號 ( ) 獨立為 .t-paren 元素
                 // 結構：Name + 左括號 + Type + 右括號
-                contentHtml = `<span class="t-name">${name}</span><span class="t-paren" style="margin-left: 10px;">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
+                // (MOD_v18.0) 移除行內樣式，樣式交由 CSS 統一管理
+                contentHtml = `<span class="t-name">${name}</span><span class="t-paren">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
             } else {
                 // 無空白：僅顯示名字
                 contentHtml = `<span class="t-name">${originalTitle}</span>`;
@@ -317,7 +318,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const info = activeItem.getAttribute('data-info');
         const coverImage = activeItem.getAttribute('data-cover-image');
 
-        if (previewTitleElement) previewTitleElement.textContent = title;
+        // (MOD_v18.0) 左側標題同步跑馬燈的視覺效果
+        if (previewTitleElement) {
+            // 使用相同的 Regex 拆分標題
+            const match = title.match(/^(.*)[\s\u3000]+(.*)$/);
+            if (match) {
+                const name = match[1];
+                const type = match[2];
+                // 建構帶有括號和小字的 HTML 結構
+                // 注意：這裡不使用 .t-name，因為左側標題的樣式已經由 #previewTitle 和 h1 定義
+                previewTitleElement.innerHTML = `${name} <span class="t-paren">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
+            } else {
+                // 沒有空白，直接顯示原始標題
+                previewTitleElement.textContent = title;
+            }
+        }
+
         if (previewBioElement) previewBioElement.textContent = bio;
         if (previewInfoElement) previewInfoElement.innerHTML = info;
 
