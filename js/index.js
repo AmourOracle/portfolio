@@ -244,28 +244,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const originalTitle = activeItem.getAttribute('data-title');
 
         if (link && originalTitle && link.scrollWidth > link.clientWidth) {
-            // (MOD_v17.7) 跑馬燈視覺風格化
-            // 1. 拆解標題 (Name + Type)
-            // 2. 注入裝飾性 HTML 結構 (Borders, Symbols)
+            // (MOD_v17.8) 跑馬燈視覺風格化更新
+            // 1. 支援全形空白 (\u3000) 切割
+            // 2. 結構保持 Name + Type，樣式由 CSS 控制
 
             let contentHtml = '';
-            const lastSpaceIndex = originalTitle.lastIndexOf(' ');
 
-            if (lastSpaceIndex !== -1) {
+            // 使用 Regex 抓取：(任意文字) + (一個以上的空白或全形空白) + (剩餘文字)
+            const match = originalTitle.match(/^(.*)[\s\u3000]+(.*)$/);
+
+            if (match) {
                 // 有空白：拆分為 "主標題" 和 "類型"
-                const name = originalTitle.substring(0, lastSpaceIndex);
-                const type = originalTitle.substring(lastSpaceIndex + 1);
-                // HTML: 粗體名字 + 圓角框類型
+                const name = match[1]; // 第一個群組
+                const type = match[2]; // 第二個群組
+                // HTML: 粗體名字 + 類型 (括號樣式由 CSS ::before/::after 處理)
                 contentHtml = `<span class="t-name">${name}</span><span class="t-type">${type}</span>`;
             } else {
                 // 無空白：僅顯示名字
                 contentHtml = `<span class="t-name">${originalTitle}</span>`;
             }
 
-            // 分隔符號 (特殊符號，如 ❋ 或 ✦)
+            // 分隔符號 (特殊符號)
             const separatorHtml = `<span class="t-sep">❋</span>`;
 
-            // 組合跑馬燈結構：內容 + 分隔 + 內容 + 分隔 (確保無縫循環)
+            // 組合跑馬燈結構
             link.innerHTML = `
                 <div class="marquee-track">
                     <span class="track-content">${contentHtml}</span>

@@ -552,27 +552,46 @@ header {
     color: var(--primary-color);
 }
 
+/* (MOD_v17.8) 視覺風格重構: 去除 Pill Shape，改為細長括號風格 */
 .t-type {
     font-family: var(--font-mono);
     font-weight: 400;
     font-size: 0.5em;
-    /* 字級縮小 */
-    letter-spacing: 1px;
+    /* 保持較小的字級 */
+    letter-spacing: 0.05em;
+    /* 稍微增加字距 */
 
-    /* 圓角框樣式 (Pill Shape) */
-    border: 1px solid #555;
-    padding: 4px 12px;
-    border-radius: 50px;
+    /* 移除邊框和圓角 */
+    border: none;
+    padding: 0;
+    border-radius: 0;
 
     /* 位置調整 */
     margin-left: 15px;
     vertical-align: middle;
     position: relative;
     top: -4px;
-    /* 微調垂直位置以對齊粗體字 */
+    /* 對齊粗體字 */
 
     color: var(--secondary-color);
     white-space: nowrap;
+    opacity: 0.8;
+    /* 稍微淡化，不搶視覺 */
+}
+
+/* (ADD_v17.8) 使用 CSS 偽元素加入細長括號 */
+.t-type::before {
+    content: '(';
+    margin-right: 4px;
+    font-weight: 300;
+    opacity: 0.7;
+}
+
+.t-type::after {
+    content: ')';
+    margin-left: 4px;
+    font-weight: 300;
+    opacity: 0.7;
 }
 
 .t-sep {
@@ -587,12 +606,6 @@ header {
 .project-item a.marquee-active {
     text-overflow: clip;
 }
-
-/* 移除舊的 track-content 設定，改由 flex 控制 */
-/* .track-content {
-    flex-shrink: 0;
-    padding-right: 3rem; 
-} */
 
 @keyframes marquee-scroll {
     0% {
