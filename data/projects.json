@@ -1,6 +1,6 @@
 [
   {
-    "id": "amouroracle",
+    "id": "branding_amouroracle",
     "title": "AmourOracle 品牌視覺規劃",
     "category": "Identity",
     "bio": "AmourOracle 是一個專注於聆聽、撰寫、分享的個人品牌。",
@@ -13,8 +13,8 @@
     ]
   },
   {
-    "id": "aura-branding",
-    "title": "1111活動總覽 活動攻略頁面",
+    "id": "landingpage_1111_gopower",
+    "title": "1111購物節活動攻略 總覽頁面",
     "category": "Visual",
     "bio": "1111活動攻略頁面",
     "info": "Role: Layout Design<br>Year: 2025",
@@ -25,7 +25,7 @@
     ]
   },
   {
-    "id": "product_proteinchips_spicycarry",
+    "id": "productpage_proteinchips_spicycarry",
     "title": "ProteinChips蛋白香酥脆 商品銷售頁",
     "category": "Visual",
     "bio": "商品銷售頁(蛋白香酥脆) feat. 朱雀咖喱",
@@ -38,8 +38,8 @@
     ]
   },
   {
-    "id": "coda-music-app",
-    "title": "Coda Music App",
+    "id": "landingpage_1212_gopower",
+    "title": "1212經典賞活動攻略 總覽頁面",
     "category": "Visual",
     "bio": "UI/UX design for a music discovery application. The interface is designed to be intuitive, personalized, and visually engaging for music lovers.",
     "info": "Role: UI/UX Design, Prototyping<br>Year: 2024",

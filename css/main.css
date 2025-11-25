@@ -165,20 +165,28 @@ header {
     word-break: break-word;
 }
 
-/* (ADD_v18.1) 左側標題專用樣式覆寫: 解決換行後的對齊問題 */
+/* (MOD_v18.2) 左側標題專用樣式覆寫: 修正垂直置中問題 */
 .name-block h1 .t-type,
 .name-block h1 .t-paren {
     margin-left: 0;
     /* 換行後不需要左側間距 */
-    vertical-align: baseline;
-    /* 恢復基線對齊，避免跑馬燈的 middle 對齊影響垂直佈局 */
-    top: 0;
-    /* 移除微調位移 */
+    vertical-align: middle;
+    /* 改為垂直置中對齊 */
 }
 
 .name-block h1 .t-type {
     font-size: 0.4em;
     /* 在 H1 巨大字體下，讓類型字稍微更小一點以符合比例 */
+    position: relative;
+    top: -0.1em;
+    /* 微調向上，讓文字視覺上位於括號正中央 */
+}
+
+.name-block h1 .t-paren {
+    position: relative;
+    top: -0.05em;
+    /* 括號也稍微調整以平衡視覺 */
+    line-height: 1;
 }
 
 .info-divider-block {
