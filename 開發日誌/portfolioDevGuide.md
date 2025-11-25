@@ -1,15 +1,15 @@
-# 專案開發指南與進度記錄 (v17)
+# 專案開發指南與進度記錄 (v20)
 
-本文件統整了 Portfolio 專案的最終架構、核心流程、技術細節與注意事項。此版本 (v17) 代表了專案在互動手感、移動端體驗與程式碼架構上的成熟穩定狀態。
+本文件統整了 Portfolio 專案的最終架構、核心流程、技術細節與注意事項。此版本 (v20) 代表了專案在互動手感、移動端體驗與程式碼架構上的成熟穩定狀態。
 
-## 1. 專案目前進度 (Project Status v17)
+## 1. 專案目前進度 (Project Status v20)
 
-目前專案已達到 **v17 正式版本**。此版本確立了 "Native Scroll + Custom Visuals" 的核心互動邏輯，並針對移動端進行了深度優化。
+目前專案已達到 **v20 正式版本**。此版本確立了 "Native Scroll + Custom Visuals" 的核心互動邏輯，並針對移動端進行了深度優化，同時完善了視覺細節與跑馬燈系統。
 
 *   **核心互動 (The Picker)**: 捨棄第三方庫 (Swiper.js)，採用原生 CSS Scroll Snap 結合 JS 3D 運算，實現了極致的 "iOS Alarm Picker" 滾動手感。
-*   **移動端體驗 (Mobile)**: 解決了手機版滾動卡頓、佈局錯亂問題，並實現了與桌面版一致的 3D 滾輪視覺體驗。
-*   **畫廊系統 (Gallery)**: 穩定的全螢幕無限畫布，支援慣性拖曳 (Inertia) 與平滑縮放 (Zoom)，並優化了圖片分佈邏輯。
-*   **視覺表現**: 導入了 "Cascading Entrance Animation" (層次化進場動畫系統)，提升頁面切換質感。
+*   **移動端體驗 (Mobile)**: 解決了手機版滾動卡頓、佈局錯亂問題，並實現了與桌面版一致的 3D 滾輪視覺體驗。優化了 Footer 與 Filter 的觸控操作 (v19)。
+*   **畫廊系統 (Gallery)**: 穩定的全螢幕無限畫布，支援慣性拖曳 (Inertia) 與平滑縮放 (Zoom)，並優化了圖片分佈邏輯 (Centralized Distribution)。
+*   **視覺表現**: 導入了 "Cascading Entrance Animation" (層次化進場動畫系統)，並針對長標題實作了 "Sync Marquee" (同步跑馬燈) 視覺系統 (v18)。
 
 ---
 
@@ -29,7 +29,7 @@
 ├── css/
 │   └── main.css      # 全站樣式表 (CSS Variables, Grid, Scroll Snap, Animations)
 └── js/
-    ├── index.js      # portfolio.html 核心邏輯 (Picker Loop, Filter, State Sync)
+    ├── index.js      # portfolio.html 核心邏輯 (Picker Loop, Filter, State Sync, Marquee)
     ├── project.js    # project.html 渲染邏輯 (Fetch Data, Render Content)
     └── gallery.js    # gallery.html 互動邏輯 (Pan, Zoom, Inertia)
 ```
@@ -57,7 +57,9 @@
 3.  **狀態同步 (State Sync)**:
     *   Loop 內同時判斷 "哪個項目離中心最近" (Closest Item)。
     *   一旦最近項目改變，立即觸發 `setActiveItem`，更新左側資訊欄 (Title, Bio, Info) 與背景預覽圖。
-    *   **跑馬燈 (Marquee)**: 當標題過長時，動態插入 `.marquee-track` 結構實現無縫滾動 (v17.2)。
+    *   **跑馬燈 (Marquee v18)**:
+        *   當標題過長時，動態插入 `.marquee-track` 結構實現無縫滾動。
+        *   **視覺同步**: 左側標題 (`#previewTitle`) 與列表標題同步應用 "括號分離" 與 "小字級類型" 的樣式處理 (Regex 解析)。
 
 ### B. 專案內頁渲染 (Project Detail Rendering)
 位於 `project.html`，採用動態渲染模式。
@@ -91,12 +93,14 @@
 *   **Variables**: 使用 `:root` 定義全站色票 (`--primary-color`, `--secondary-color`) 與字體。
 *   **Scroll Snap**: 關鍵屬性 `scroll-snap-align: center` (Item) 與 `scroll-snap-type: y mandatory` (Container)。
 *   **Masking**: 使用 `mask-image` (linear-gradient) 在列表上下邊緣製造淡出效果。
+*   **Marquee Styling (v18)**: 統一使用 CSS class (`.t-paren`, `.t-type`) 管理跑馬燈內的括號與類型樣式，移除行內樣式。
 
 ### 進場動畫系統 (Cascading Entrance)
 *   **機制**: 定義 `.is-loaded` 狀態下的元素樣式 (Opacity 1, Transform 0)。
 *   **錯落感**: 使用 `nth-child` 選擇器為列表項目與圖片設定遞增的 `transition-delay` (0.1s, 0.15s, 0.2s...)，創造瀑布流般的進場效果。
 
 ### JavaScript 優化
+*   **Fisher-Yates Shuffle (v17.5)**: 專案列表載入時自動隨機打亂順序，確保每次進入體驗不同。
 *   **RequestAnimationFrame**: 所有的視覺更新 (Picker Loop, Gallery Inertia) 皆透過 rAF 執行，確保 60fps 流暢度。
 *   **Event Delegation**: 篩選器 (Filter) 使用事件委派，減少 Event Listeners 數量。
 *   **Passive Listeners**: 滾動監聽使用 `{ passive: true }` 優化效能。
@@ -109,10 +113,10 @@
     *   確保 `data/projects.json` 中的圖片路徑正確。
     *   建議對圖片進行壓縮與 Lazy Loading (Gallery 已實作 `loading="lazy"`)。
 
-2.  **移動端適配 (Mobile)**:
-    *   **滾動鎖定**: `body.portfolio-scroll-lock` 用於防止背景滾動。
+2.  **移動端適配 (Mobile v19)**:
+    *   **滾動鎖定**: `body.portfolio-scroll-lock` 用於防止背景滾動，確保 Picker 體驗。
+    *   **Footer 優化**: 手機版 Footer 連結順序調整為 Me, Gallery, Instagram, Email，並優化觸控區域。
     *   **瀏覽器導航列**: CSS `100vh` 在手機上可能會被網址列遮擋，目前使用 `calc(100vh - 60px)` 配合 `position: fixed` header 處理。
-    *   **Footer**: 手機版 Footer 連結順序已調整為 Me, Gallery, Instagram, Email (v17.3)。
 
 3.  **效能監控**:
     *   目前 Picker Loop 對所有 `visibleItems` 進行計算。若專案數量超過 100+，建議優化 Loop 邏輯 (僅計算視窗內的項目) 以節省 CPU 資源。
@@ -123,5 +127,5 @@
 
 ---
 
-**Version**: v17.0
-**Last Updated**: 2025-11-23
+**Version**: v20.0
+**Last Updated**: 2025-11-25

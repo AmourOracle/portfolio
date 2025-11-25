@@ -325,9 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (match) {
                 const name = match[1];
                 const type = match[2];
-                // 建構帶有括號和小字的 HTML 結構
-                // 注意：這裡不使用 .t-name，因為左側標題的樣式已經由 #previewTitle 和 h1 定義
-                previewTitleElement.innerHTML = `${name} <span class="t-paren">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
+                // (MOD_v18.1) 修改：在 Name 和 Type 之間加入 <br> 換行
+                previewTitleElement.innerHTML = `${name}<br><span class="t-paren">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
             } else {
                 // 沒有空白，直接顯示原始標題
                 previewTitleElement.textContent = title;

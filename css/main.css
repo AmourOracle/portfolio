@@ -165,6 +165,22 @@ header {
     word-break: break-word;
 }
 
+/* (ADD_v18.1) 左側標題專用樣式覆寫: 解決換行後的對齊問題 */
+.name-block h1 .t-type,
+.name-block h1 .t-paren {
+    margin-left: 0;
+    /* 換行後不需要左側間距 */
+    vertical-align: baseline;
+    /* 恢復基線對齊，避免跑馬燈的 middle 對齊影響垂直佈局 */
+    top: 0;
+    /* 移除微調位移 */
+}
+
+.name-block h1 .t-type {
+    font-size: 0.4em;
+    /* 在 H1 巨大字體下，讓類型字稍微更小一點以符合比例 */
+}
+
 .info-divider-block {
     border-top: 1px solid var(--divider-color);
     padding-top: 1rem;
