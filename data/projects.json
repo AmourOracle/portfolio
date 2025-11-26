@@ -39,14 +39,13 @@
   },
   {
     "id": "landingpage_1212_gopower",
-    "title": "1212經典賞活動攻略 總覽頁面",
+    "title": "1212年度經典賞活動攻略 總覽頁面",
     "category": "Visual",
-    "bio": "UI/UX design for a music discovery application. The interface is designed to be intuitive, personalized, and visually engaging for music lovers.",
-    "info": "Role: UI/UX Design, Prototyping<br>Year: 2024",
-    "coverImage": "./assets/images/coda_cover.jpg",
+    "bio": "1212活動攻略頁面",
+    "info": "Role: Layout Design<br>Year: 2025",
+    "coverImage": "./assets/images/1212_年度經典賞_攻略頁面_cover.png",
     "images": [
-      "./assets/images/coda_01.jpg",
-      "./assets/images/coda_02.jpg"
+      "./assets/images/1212_年度經典賞_攻略頁面_1.png"
     ]
   },
   {
