@@ -39,7 +39,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     // MOD: (Request 1) 修正資料存取邏輯，顯示 Category 而非 Number
                     projectNumberElement.textContent = project.category;
 
-                    projectTitleElement.textContent = project.title;
+                    // (MOD_v18.3) 同步左側標題視覺效果 (換行 + 括號風格)
+                    const match = project.title.match(/^(.*)[\s\u3000]+(.*)$/);
+                    if (match) {
+                        const name = match[1];
+                        const type = match[2];
+                        // 插入與 Portfolio 頁面一致的 HTML 結構
+                        projectTitleElement.innerHTML = `${name}<br><span class="t-paren">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
+                    } else {
+                        projectTitleElement.textContent = project.title;
+                    }
+
                     projectBioElement.textContent = project.bio;
                     projectInfoElement.innerHTML = project.info;
 

@@ -243,30 +243,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const link = activeItem.querySelector('a');
         const originalTitle = activeItem.getAttribute('data-title');
 
-        if (link && originalTitle && link.scrollWidth > link.clientWidth) {
+        // (MOD_v18.3) 強制啟用跑馬燈效果
+        // 移除 if (link && originalTitle && link.scrollWidth > link.clientWidth) 的判斷
+        // 改為只要有 link 和 title 就執行
+        if (link && originalTitle) {
             // (MOD_v17.8/v17.9) 跑馬燈視覺風格化更新
-            // 支援全形空白切割，並分離括號元素
-
             let contentHtml = '';
 
-            // 使用 Regex 抓取：(任意文字) + (一個以上的空白或全形空白) + (剩餘文字)
             const match = originalTitle.match(/^(.*)[\s\u3000]+(.*)$/);
 
             if (match) {
-                // 有空白：拆分為 "主標題" 和 "類型"
                 const name = match[1];
                 const type = match[2];
-
-                // (MOD_v17.9) 關鍵修改：將括號 ( ) 獨立為 .t-paren 元素
-                // 結構：Name + 左括號 + Type + 右括號
                 // (MOD_v18.0) 移除行內樣式，樣式交由 CSS 統一管理
                 contentHtml = `<span class="t-name">${name}</span><span class="t-paren">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
             } else {
-                // 無空白：僅顯示名字
                 contentHtml = `<span class="t-name">${originalTitle}</span>`;
             }
 
-            // 分隔符號 (特殊符號)
             const separatorHtml = `<span class="t-sep">❋</span>`;
 
             // 組合跑馬燈結構
@@ -320,7 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // (MOD_v18.0) 左側標題同步跑馬燈的視覺效果
         if (previewTitleElement) {
-            // 使用相同的 Regex 拆分標題
             const match = title.match(/^(.*)[\s\u3000]+(.*)$/);
             if (match) {
                 const name = match[1];
@@ -328,7 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // (MOD_v18.1) 修改：在 Name 和 Type 之間加入 <br> 換行
                 previewTitleElement.innerHTML = `${name}<br><span class="t-paren">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
             } else {
-                // 沒有空白，直接顯示原始標題
                 previewTitleElement.textContent = title;
             }
         }
