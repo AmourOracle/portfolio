@@ -6,10 +6,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const projectInfoElement = document.getElementById('projectInfo');
     const imageContainer = document.getElementById('projectImages');
 
-    // ADD: (Request 4) 獲取 "Next Project" 按鈕的元素
+    // ADD: (Request 4) 獲取 "Next Project" 按鈕的元素 (Desktop)
     const nextProjectLink = document.getElementById('nextProjectLink');
     const nextProjectCategory = document.getElementById('nextProjectCategory');
     const nextProjectTitle = document.getElementById('nextProjectTitle');
+
+    // (ADD_v20.2) 獲取手機版導航元素
+    const mobileNextProjectLink = document.getElementById('mobileNextProjectLink');
+    const mobileNextProjectCategory = document.getElementById('mobileNextProjectCategory');
+    const mobileNextProjectTitle = document.getElementById('mobileNextProjectTitle');
 
     // (MOD_v16.0) 重新啟用並選取正確的容器 (middle-container) 以觸發進場動畫
     const projectMainContainer = document.querySelector('.middle-container');
@@ -59,25 +64,40 @@ document.addEventListener('DOMContentLoaded', () => {
                         const img = document.createElement('img');
                         img.src = imageUrl;
                         img.alt = `${project.title} image`;
+                        // (MOD_v20.2) 確保圖片有 loading="lazy" 以優化手機載入
+                        img.loading = 'lazy';
                         imageContainer.appendChild(img);
                     });
 
                     // 6. ADD: (Request 4) 載入隨機的「Next Project」
                     const otherProjects = projects.filter(p => p.id !== projectId);
 
-                    if (otherProjects.length > 0 && nextProjectLink) {
+                    if (otherProjects.length > 0) {
                         const randomProject = otherProjects[Math.floor(Math.random() * otherProjects.length)];
-                        nextProjectLink.href = `project.html?id=${randomProject.id}`;
-                        nextProjectCategory.textContent = randomProject.category;
-                        nextProjectTitle.textContent = randomProject.title;
-                    } else if (nextProjectLink) {
-                        nextProjectLink.style.display = 'none';
+
+                        // Update Desktop Link
+                        if (nextProjectLink) {
+                            nextProjectLink.href = `project.html?id=${randomProject.id}`;
+                            nextProjectCategory.textContent = randomProject.category;
+                            nextProjectTitle.textContent = randomProject.title;
+                        }
+
+                        // (ADD_v20.2) Update Mobile Link
+                        if (mobileNextProjectLink) {
+                            mobileNextProjectLink.href = `project.html?id=${randomProject.id}`;
+                            mobileNextProjectCategory.textContent = randomProject.category;
+                            mobileNextProjectTitle.textContent = randomProject.title;
+                        }
+                    } else {
+                        if (nextProjectLink) nextProjectLink.style.display = 'none';
+                        if (mobileNextProjectLink) mobileNextProjectLink.style.display = 'none';
                     }
 
                 } else {
                     projectTitleElement.textContent = 'Project Not Found';
                     projectBioElement.textContent = 'Please check the project ID and try again.';
                     if (nextProjectLink) nextProjectLink.style.display = 'none';
+                    if (mobileNextProjectLink) mobileNextProjectLink.style.display = 'none';
                 }
 
                 // (MOD_v16.0) 觸發進場動畫 (資料載入完成後)

@@ -59,7 +59,9 @@
     *   一旦最近項目改變，立即觸發 `setActiveItem`，更新左側資訊欄 (Title, Bio, Info) 與背景預覽圖。
     *   **跑馬燈 (Marquee v18)**:
         *   當標題過長時，動態插入 `.marquee-track` 結構實現無縫滾動。
+        *   **強制啟用 (v18.3)**: 只要有標題即啟用跑馬燈結構，確保視覺一致性。
         *   **視覺同步**: 左側標題 (`#previewTitle`) 與列表標題同步應用 "括號分離" 與 "小字級類型" 的樣式處理 (Regex 解析)。
+        *   **垂直對齊 (v18.2)**: 修正了跑馬燈內不同字級元素的垂直對齊問題。
 
 ### B. 專案內頁渲染 (Project Detail Rendering)
 位於 `project.html`，採用動態渲染模式。
@@ -127,5 +129,5 @@
 
 ---
 
-**Version**: v20.0
-**Last Updated**: 2025-11-25
+**Version**: v20.1
+**Last Updated**: 2025-11-26

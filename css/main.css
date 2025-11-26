@@ -785,6 +785,11 @@ header {
     opacity: 1;
 }
 
+/* Mobile Nav Block (Hidden on desktop) */
+.mobile-project-nav {
+    display: none;
+}
+
 /* --- About Page Static Content Styles --- */
 .about-intro-text {
     margin-bottom: 4rem;
@@ -1211,18 +1216,27 @@ header {
 
 /* Mobile Subpages */
 @media (max-width: 768px) {
-    body:not(.portfolio-scroll-lock) {
-        overflow-y: scroll;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        padding-bottom: 60px;
-        height: auto;
+
+    /* (MOD_v20.2) 鎖定 Body 捲動，改為容器內捲動以實現遮罩效果 */
+    body {
+        overflow: hidden;
     }
 
+    /* 確保所有 middle-container 高度填滿並可捲動 */
     .middle-container {
+        height: calc(100vh - 60px);
+        overflow-y: auto;
+        padding: 0;
+        /* (MOD_v20.2) 移除預設內距以支援滿版 */
         grid-template-columns: 1fr;
-        padding: 2rem 2rem 60px 2rem;
-        height: auto;
+        grid-template-rows: auto 1fr;
+
+        /* (ADD_v20.2) 應用底部遮罩效果 */
+        -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 100px), transparent 100%);
+        mask-image: linear-gradient(to bottom, black calc(100% - 100px), transparent 100%);
+
+        /* 增加底部空間供 Footer 與遮罩使用 */
+        padding-bottom: 100px;
     }
 
     .middle-container.project-layout,
@@ -1231,32 +1245,68 @@ header {
         grid-template-rows: auto 1fr;
     }
 
-    .middle-container.gallery-layout {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-    }
-
+    /* (MOD_v20.2) 恢復文字區域的 padding */
     .middle-container .left-column {
         display: flex;
         flex-direction: column;
         position: static;
         height: auto;
-        margin-bottom: 3rem;
-        gap: 2rem;
+
+        /* (MOD_v20.2) 縮減間距 50%: margin-bottom 3rem -> 1.5rem, gap 2rem -> 1rem */
+        margin-bottom: 1.5rem;
+        gap: 1rem;
+
+        padding: 1.5rem 2rem 0 2rem;
+        /* 頂部文字區塊保留內距 */
         grid-row: 1;
         z-index: auto;
+    }
+
+    .middle-container.gallery-layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        padding: 2rem 2rem 60px 2rem;
+        /* Gallery 保持原有 padding */
+        mask-image: none;
+        /* Gallery 不需要遮罩 */
     }
 
     .middle-container .left-column-bottom {
         display: none;
     }
 
+    /* (MOD_v20.2) 讓圖片容器滿版 */
     .middle-container .project-content-column {
         overflow-y: visible;
         padding-right: 0;
         padding-top: 0;
         mask-image: none;
         grid-row: 2;
+        width: 100%;
+        /* 確保滿版 */
+    }
+
+    /* (ADD_v20.2) 手機版專用底部導航 */
+    .mobile-project-nav {
+        display: flex;
+        flex-direction: column;
+        padding: 4rem 2rem 2rem 2rem;
+        /* 給予足夠的 Padding */
+        gap: 2rem;
+    }
+
+    .mobile-project-nav .back-button-block,
+    .mobile-project-nav .next-project-block {
+        display: flex;
+        color: var(--secondary-color);
+        text-decoration: none;
+        font-family: var(--font-mono);
+        transition: color 0.3s ease;
+    }
+
+    .mobile-project-nav .next-project-block {
+        justify-content: flex-end;
+        /* Next Project 靠右 */
     }
 
     .gallery-layout .gallery-content-column {
@@ -1291,6 +1341,7 @@ header {
         border-top: 1px solid var(--divider-color);
     }
 
+    /* (MOD_v20.2) 優化 subpage-footer 樣式 */
     body:not(.portfolio-scroll-lock) .main-footer.subpage-footer {
         display: flex;
         position: fixed;
@@ -1302,9 +1353,16 @@ header {
         box-sizing: border-box;
         justify-content: center;
         align-items: center;
-        background-color: var(--background-color);
+
+        /* 移除上邊框 */
+        border-top: none;
+
+        /* 改為半透明背景與模糊效果 */
+        background-color: rgba(18, 18, 18, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+
         z-index: 1000;
-        border-top: 1px solid var(--divider-color);
     }
 
     .subpage-footer .footer-right {
@@ -1357,11 +1415,14 @@ header {
         left: 0.2rem;
     }
 
+    /* About 頁面的特殊處理 */
+    .middle-container.about-layout .project-content-column {
+        padding: 0 2rem;
+        /* About 頁面不需要滿版 */
+    }
+
     .middle-container:not(.portfolio-container) .project-content-column {
-        overflow-y: visible;
-        padding-right: 0;
-        padding: 0;
-        mask-image: none;
+        /* 此規則已被更具體的上方規則覆蓋 */
     }
 
     .middle-container .project-list {
