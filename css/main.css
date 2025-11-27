@@ -1252,14 +1252,37 @@ header {
         position: static;
         height: auto;
 
-        /* (MOD_v20.2) 縮減間距 50%: margin-bottom 3rem -> 1.5rem, gap 2rem -> 1rem */
-        margin-bottom: 1.5rem;
-        gap: 1rem;
+        /* (MOD_v20.3) 極致壓縮上方空間: 
+           margin-bottom: 1.5rem -> 0.5rem
+           gap: 1rem -> 0.5rem 
+        */
+        margin-bottom: 0.5rem;
+        gap: 0.5rem;
 
-        padding: 1.5rem 2rem 0 2rem;
-        /* 頂部文字區塊保留內距 */
+        /* padding-top: 1.5rem -> 1rem */
+        padding: 1rem 2rem 0 2rem;
+
         grid-row: 1;
         z-index: auto;
+    }
+
+    /* (MOD_v20.3) 壓縮標題字級與行高 */
+    .project-layout .name-block h1 {
+        font-size: clamp(2rem, 5vw, 3rem);
+        /* 稍微縮小最小值 */
+        line-height: 1;
+        /* 更緊湊的行高 */
+        margin-bottom: 0;
+    }
+
+    /* (MOD_v20.3) 壓縮資訊區塊間距 */
+    .project-layout .info-divider-block {
+        margin-top: 0.5rem;
+        /* 1.5rem -> 0.5rem */
+        padding-top: 0.5rem;
+        /* 1rem -> 0.5rem */
+        border-top: none;
+        /* 移除分隔線以減少視覺雜訊 */
     }
 
     .middle-container.gallery-layout {
