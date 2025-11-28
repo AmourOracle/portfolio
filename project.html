@@ -85,8 +85,13 @@
         </aside>
 
         <!-- 右欄：專案圖片展示 -->
-        <section id="projectImages" class="project-content-column">
-            <!-- 圖片將由 js/project.js 填入 -->
+        <!-- (MOD_v20.5) 保持 .project-content-column 作為捲動容器 -->
+        <section class="project-content-column">
+
+            <!-- (ADD_v20.5) 新增內部容器供 JS 填充圖片，避免清除掉下方的按鈕 -->
+            <div id="projectImages">
+                <!-- 圖片將由 js/project.js 填入此處 -->
+            </div>
 
             <!-- (ADD_v20.2) 手機版專用底部導航 (圖片列表結束後顯示) -->
             <div class="mobile-project-nav">

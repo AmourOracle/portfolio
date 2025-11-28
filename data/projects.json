@@ -1,10 +1,10 @@
 [
   {
     "id": "branding_amouroracle",
-    "title": "AmourOracle 品牌視覺規劃",
+    "title": "AmourOracle個人品牌 品牌視覺規劃",
     "category": "Identity",
     "bio": "AmourOracle 是一個專注於聆聽、撰寫、分享的個人品牌。",
-    "info": "Role: Art Direction, Graphic Design<br>Year: 2025",
+    "info": "Role: Art Direction, Graphic Design<br>Year: 2025<br>Client: AmourOracle",
     "coverImage": "./assets/images/amouroracle_cover.jpg",
     "images": [
       "./assets/images/amouroracle_01.jpg",
@@ -17,7 +17,7 @@
     "title": "1111購物節活動攻略 總覽頁面",
     "category": "Visual",
     "bio": "1111活動攻略頁面",
-    "info": "Role: Layout Design<br>Year: 2025",
+    "info": "Role: Layout Design<br>Year: 2025<br>Client: GOpower",
     "coverImage": "./assets/images/aura_cover.jpg",
     "images": [
       "./assets/images/aura_01.jpg",
@@ -25,11 +25,11 @@
     ]
   },
   {
-    "id": "productpage_proteinchips_spicycarry",
-    "title": "ProteinChips蛋白香酥脆 商品銷售頁",
+    "id": "productpage_proteinchips_spicycarry_gopower",
+    "title": "ProteinChips蛋白香酥脆feat.朱雀咖喱 商品銷售頁",
     "category": "Visual",
     "bio": "商品銷售頁(蛋白香酥脆) feat. 朱雀咖喱",
-    "info": "Role: Editorial Design, Layout<br>Year: 2023",
+    "info": "Role: Editorial Design, Layout<br>Year: 2023<br>Client: GOpower",
     "coverImage": "./assets/images/nomad_cover.jpg",
     "images": [
       "./assets/images/nomad_01.jpg",
@@ -38,26 +38,25 @@
     ]
   },
   {
-    "id": "landingpage_1212_gopower",
+    "id": "landingpage_1212_classic_gopower",
     "title": "1212年度經典賞活動攻略 總覽頁面",
     "category": "Visual",
     "bio": "1212活動攻略頁面",
-    "info": "Role: Layout Design<br>Year: 2025",
+    "info": "Role: Layout Design<br>Year: 2025<br>Client: GOpower",
     "coverImage": "./assets/images/1212_年度經典賞_攻略頁面_cover.png",
     "images": [
       "./assets/images/1212_年度經典賞_攻略頁面_1.png"
     ]
   },
   {
-    "id": "",
-    "title": "",
-    "category": "",
-    "bio": "",
-    "info": "",
-    "coverImage": "",
+    "id": "productpage_newbieset_gopower",
+    "title": "ALLinOne超值新人體驗組 商品銷售頁",
+    "category": "Visual",
+    "bio": "商品銷售頁",
+    "info": "Role: Layout Design<br>Year: 2024<br>Client: GOpower",
+    "coverImage": "./assets/images/1212_年度經典賞_攻略頁面_cover.png",
     "images": [
-      "",
-      ""
+      "./assets/images/1212_年度經典賞_攻略頁面_1.png"
     ]
-  }
+  },
 ]

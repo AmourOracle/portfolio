@@ -1257,7 +1257,8 @@ header {
         margin-bottom: 0.5rem;
         gap: 0.5rem;
 
-        padding: 1rem 2rem 0 2rem;
+        /* (FIX_v20.5) 確保文字不被Header遮擋：增加Padding-top並移除絕對定位 */
+        padding: 2rem 2rem 0 2rem;
 
         grid-row: 1;
         z-index: auto;
@@ -1276,6 +1277,17 @@ header {
         height: auto;
         overflow: visible;
         padding-top: 0;
+    }
+
+    /* (FIX_v20.5) 修正 Category 標籤定位：改為相對定位，自適應高度，避免被遮擋 */
+    .name-block .label {
+        position: relative;
+        /* 取消絕對定位 */
+        top: auto;
+        left: auto;
+        display: block;
+        margin-bottom: 0.5rem;
+        /* 給標題一點距離 */
     }
 
     /* (MOD_v20.3) 壓縮標題字級與行高 */
@@ -1435,12 +1447,6 @@ header {
     body.portfolio-scroll-lock .main-footer .footer-right {
         width: 100%;
         justify-content: center;
-    }
-
-    .name-block .label {
-        position: absolute;
-        top: -1.5rem;
-        left: 0.2rem;
     }
 
     /* About 頁面的特殊處理 */
