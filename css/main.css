@@ -48,6 +48,7 @@ body.gallery-scroll-lock {
 }
 
 /* --- Header --- */
+/* (MOD_v20.7) Header 樣式更新：統一使用毛玻璃與半透明背景 */
 header {
     position: fixed;
     top: 0;
@@ -57,7 +58,10 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: transparent;
+    /* (Request 3) 透明度與毛玻璃效果 */
+    background-color: rgba(18, 18, 18, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
     box-shadow: none;
 }
@@ -232,6 +236,7 @@ header {
 
 /* --- INDEX Page Styles --- */
 .portfolio-container {
+    /* (Request 1) 確保所有頁面的左側欄位寬度一致 (28.57%) */
     /* (MOD_v17.5) 右欄寬度維持 9vw */
     grid-template-columns: 28.57% 1fr 9vw;
     grid-template-rows: 1fr;
@@ -685,6 +690,7 @@ header {
 /* --- PROJECT Page Styles --- */
 .middle-container.project-layout,
 .middle-container.about-layout {
+    /* (Request 1) 確保與 Portfolio 頁面左欄 (28.57%) 寬度完全一致 */
     grid-template-columns: 28.57% 1fr;
 }
 
@@ -766,9 +772,29 @@ header {
 .project-content-column {
     padding-top: 1.5rem;
     overflow-y: auto;
+    /* 移除通用右邊距，讓特殊 layout 控制 */
     padding-right: 1rem;
     grid-row: 1;
     scrollbar-width: none;
+}
+
+/* (MOD_v20.7) 針對 Desktop Project Layout 做滿版修正 */
+@media (min-width: 1025px) {
+    .middle-container.project-layout .project-content-column {
+        /* (Request 2) 使用負邊距抵消容器 padding，讓圖片延伸至右側與底部邊緣 */
+        margin-right: -4rem;
+        margin-bottom: -60px;
+        /* 移除內部 padding 實現滿版 */
+        padding-right: 0;
+        /* 底部留空以確保內容不被截斷 (若需要完全貼底可設為 0) */
+        padding-bottom: 60px;
+    }
+
+    /* 修正圖片寬度確保填滿 */
+    .middle-container.project-layout .project-content-column img {
+        width: 100%;
+        display: block;
+    }
 }
 
 .project-content-column::-webkit-scrollbar {
@@ -1026,6 +1052,14 @@ header {
 
 /* --- Mobile Styles (max-width: 768px) --- */
 @media (max-width: 768px) {
+
+    /* (Request 4) 強制鎖定水平捲動，防止頁面左右晃動 */
+    body {
+        overflow-x: hidden;
+        width: 100%;
+        /* 確保不超過視窗寬度 */
+    }
+
     body.portfolio-scroll-lock {
         overflow: hidden;
         padding-bottom: 121px;
