@@ -131,17 +131,27 @@ document.addEventListener('DOMContentLoaded', () => {
         li.setAttribute('data-cover-image', project.coverImage);
         li.setAttribute('data-info', project.info);
 
+        // (FIX_v20.6) 移除行內 onclick="event.preventDefault()"
+        // 將所有點擊邏輯統一由 addEventListener 處理，避免 Mobile Safari 解析錯誤
         li.innerHTML = `
             <span class="project-category">${project.category}</span>
-            <a href="project.html?id=${project.id}" onclick="event.preventDefault()">${project.title}</a>
+            <a href="project.html?id=${project.id}">${project.title}</a>
         `;
 
         li.addEventListener('click', (e) => {
+            // 防止連結預設跳轉，統一由 JS 控制
+            e.preventDefault();
+
             if (li.classList.contains('is-active')) {
                 window.location.href = `project.html?id=${project.id}`;
             } else {
-                e.preventDefault();
-                li.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // (FIX_v20.6) 包裹 try-catch 以防止部分瀏覽器不支援參數物件時拋出 SyntaxError
+                try {
+                    li.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } catch (err) {
+                    // Fallback for older browsers
+                    li.scrollIntoView();
+                }
             }
         });
 
@@ -162,6 +172,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderPickerLoop() {
         if (!centerColumn) return;
+
+        // 安全檢查：若列表為空則跳過運算
+        if (visibleItems.length === 0) {
+            pickerLoopId = requestAnimationFrame(renderPickerLoop);
+            return;
+        }
 
         const containerRect = centerColumn.getBoundingClientRect();
         let containerCenter;
@@ -232,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.classList.remove('marquee-active');
 
                 const originalTitle = item.getAttribute('data-title');
+                // (FIX_v20.6) 確保 title 存在才操作
                 if (originalTitle) {
                     link.textContent = originalTitle;
                 }
@@ -244,13 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const originalTitle = activeItem.getAttribute('data-title');
 
         // (MOD_v18.3) 強制啟用跑馬燈效果
-        // 移除 if (link && originalTitle && link.scrollWidth > link.clientWidth) 的判斷
-        // 改為只要有 link 和 title 就執行
         if (link && originalTitle) {
             // (MOD_v17.8/v17.9) 跑馬燈視覺風格化更新
             let contentHtml = '';
 
-            const match = originalTitle.match(/^(.*)[\s\u3000]+(.*)$/);
+            // (FIX_v20.6) 增加 null 檢查，確保 regex 不會報錯
+            const match = originalTitle ? originalTitle.match(/^(.*)[\s\u3000]+(.*)$/) : null;
 
             if (match) {
                 const name = match[1];
@@ -281,8 +297,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 4. Filter Events ---
     function bindFilterEvents() {
         const handleFilter = (event) => {
+            // (FIX_v20.6) 增加安全性檢查
+            if (!event.target) return;
             const targetLink = event.target.closest('a[data-filter]');
             if (!targetLink) return;
+
             event.preventDefault();
             const newFilter = targetLink.getAttribute('data-filter');
             if (newFilter === currentFilter) return;
@@ -295,6 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateFilterUI(activeFilter) {
+        // (FIX_v20.6) 使用靜態 Selector 確保語法安全
         const allLinks = document.querySelectorAll('a[data-filter]');
         allLinks.forEach(link => {
             if (link.getAttribute('data-filter') === activeFilter) link.classList.add('active');
@@ -314,23 +334,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // (MOD_v18.0) 左側標題同步跑馬燈的視覺效果
         if (previewTitleElement) {
-            const match = title.match(/^(.*)[\s\u3000]+(.*)$/);
+            // (FIX_v20.6) 增加 null 檢查
+            const match = title ? title.match(/^(.*)[\s\u3000]+(.*)$/) : null;
             if (match) {
                 const name = match[1];
                 const type = match[2];
                 // (MOD_v18.1) 修改：在 Name 和 Type 之間加入 <br> 換行
                 previewTitleElement.innerHTML = `${name}<br><span class="t-paren">(</span><span class="t-type">${type}</span><span class="t-paren">)</span>`;
             } else {
-                previewTitleElement.textContent = title;
+                previewTitleElement.textContent = title || '';
             }
         }
 
-        if (previewBioElement) previewBioElement.textContent = bio;
-        if (previewInfoElement) previewInfoElement.innerHTML = info;
+        if (previewBioElement) previewBioElement.textContent = bio || '';
+        if (previewInfoElement) previewInfoElement.innerHTML = info || '';
 
         if (previewLabelCategory) {
             previewLabelCategory.style.display = 'inline-block';
-            previewLabelCategory.textContent = category;
+            previewLabelCategory.textContent = category || '';
         }
 
         const docsBlock = document.getElementById('previewBlockDocs');
