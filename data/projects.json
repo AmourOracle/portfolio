@@ -49,15 +49,15 @@
     ]
   },
   {
-    "id": "still-life-photo",
-    "title": "Still Life",
-    "category": "Visual",
-    "bio": "A photography series that explores the beauty in everyday objects. The collection plays with light, shadow, and composition to create painterly images.",
-    "info": "Role: Photography, Art Direction<br>Year: 2022",
-    "coverImage": "./assets/images/still_cover.jpg",
+    "id": "",
+    "title": "",
+    "category": "",
+    "bio": "",
+    "info": "",
+    "coverImage": "",
     "images": [
-      "./assets/images/still_01.jpg",
-      "./assets/images/still_02.jpg"
+      "",
+      ""
     ]
   }
 ]

@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextProjectCategory = document.getElementById('nextProjectCategory');
     const nextProjectTitle = document.getElementById('nextProjectTitle');
 
-    // (ADD_v20.2) 獲取手機版導航元素 (務必確認 HTML 結構已包含這些 ID)
+    // (ADD_v20.2) 獲取手機版導航元素
     const mobileNextProjectLink = document.getElementById('mobileNextProjectLink');
     const mobileNextProjectCategory = document.getElementById('mobileNextProjectCategory');
     const mobileNextProjectTitle = document.getElementById('mobileNextProjectTitle');
