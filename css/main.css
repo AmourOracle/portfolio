@@ -48,7 +48,7 @@ body.gallery-scroll-lock {
 }
 
 /* --- Header --- */
-/* (MOD_v20.7) Header 樣式更新：統一使用毛玻璃與半透明背景 */
+/* (MOD_v20.8) Header 樣式更新：降低透明度以增強毛玻璃效果 */
 header {
     position: fixed;
     top: 0;
@@ -58,8 +58,8 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* (Request 3) 透明度與毛玻璃效果 */
-    background-color: rgba(18, 18, 18, 0.85);
+    /* (Fix Request 2) 將透明度從 0.85 降至 0.5，讓模糊效果更明顯 */
+    background-color: rgba(18, 18, 18, 0.5);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
@@ -236,8 +236,12 @@ header {
 
 /* --- INDEX Page Styles --- */
 .portfolio-container {
-    /* (Request 1) 確保所有頁面的左側欄位寬度一致 (28.57%) */
-    /* (MOD_v17.5) 右欄寬度維持 9vw */
+    /* (Fix Request 1) 
+       這裡控制 portfolio.html 的左側欄位寬度。
+       28.57% 與下方的 project-layout 設定完全一致。
+       若視覺上感覺不同，可能是因為 3 欄式佈局 (9vw) 壓縮了 1fr 區域的視覺比例，
+       但左側欄位的像素寬度在數學上是相同的。
+    */
     grid-template-columns: 28.57% 1fr 9vw;
     grid-template-rows: 1fr;
 }
@@ -784,10 +788,10 @@ header {
         /* (Request 2) 使用負邊距抵消容器 padding，讓圖片延伸至右側與底部邊緣 */
         margin-right: -4rem;
         margin-bottom: -60px;
-        /* 移除內部 padding 實現滿版 */
+        /* (Fix Request 3) 移除內部 padding，確保內容能完全貼底 */
+        padding-bottom: 0;
+        /* 移除內部 padding-right */
         padding-right: 0;
-        /* 底部留空以確保內容不被截斷 (若需要完全貼底可設為 0) */
-        padding-bottom: 60px;
     }
 
     /* 修正圖片寬度確保填滿 */
@@ -1371,8 +1375,11 @@ header {
     .mobile-project-nav {
         display: flex;
         flex-direction: column;
-        padding: 4rem 2rem 2rem 2rem;
-        /* 給予足夠的 Padding */
+        /* (Fix Request 4) 調整 padding: 
+           - padding-top: 4rem -> 2rem (減少圖片與按鈕間距)
+           - padding-bottom: 2rem -> 150px (確保按鈕位於遮罩與Footer上方)
+        */
+        padding: 2rem 2rem 150px 2rem;
         gap: 2rem;
     }
 
