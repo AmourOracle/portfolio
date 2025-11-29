@@ -48,7 +48,7 @@ body.gallery-scroll-lock {
 }
 
 /* --- Header --- */
-/* (MOD_v20.8) Header 樣式更新：降低透明度以增強毛玻璃效果 */
+/* (MOD_v20.9) Header 樣式更新：全透明背景以實現最佳毛玻璃效果 */
 header {
     position: fixed;
     top: 0;
@@ -58,8 +58,8 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    /* (Fix Request 2) 將透明度從 0.85 降至 0.5，讓模糊效果更明顯 */
-    background-color: rgba(18, 18, 18, 0.5);
+    /* (Fix Request 1) 移除背景色 (全透明)，僅保留模糊濾鏡 */
+    background-color: transparent;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
@@ -83,6 +83,28 @@ header {
     height: calc(100vh - 60px);
     padding: 0 4rem 60px 4rem;
     box-sizing: border-box;
+}
+
+/* --- (FIX v20.10) Project Page Header Blur Fix --- */
+/* 針對 Project 頁面，將容器向上拉提 60px 以覆蓋 Body 的 Padding，
+   讓內容可以滾動到 Header 正後方，觸發 backdrop-filter。
+*/
+.middle-container.project-layout {
+    margin-top: -60px;
+    height: 100vh;
+    /* 填滿視窗高度 */
+    padding-bottom: 0;
+}
+
+/* 修正 Project 頁面左欄頂部間距，補償向上拉提的位移 */
+.project-layout .left-column {
+    /* 60px (Header) + 2rem (Original Padding) approx 92px */
+    padding-top: 92px;
+}
+
+.project-layout .left-column-top {
+    padding-top: 0;
+    /* 避免重複 padding */
 }
 
 /* --- 左側欄位 (通用) --- */
@@ -236,13 +258,8 @@ header {
 
 /* --- INDEX Page Styles --- */
 .portfolio-container {
-    /* (Fix Request 1) 
-       這裡控制 portfolio.html 的左側欄位寬度。
-       28.57% 與下方的 project-layout 設定完全一致。
-       若視覺上感覺不同，可能是因為 3 欄式佈局 (9vw) 壓縮了 1fr 區域的視覺比例，
-       但左側欄位的像素寬度在數學上是相同的。
-    */
-    grid-template-columns: 28.57% 1fr 9vw;
+    /* (Fix Request 2) 左側欄位寬度調整為 35% */
+    grid-template-columns: 35% 1fr 9vw;
     grid-template-rows: 1fr;
 }
 
@@ -458,8 +475,11 @@ header {
 
 /* --- Center Column --- */
 .center-column {
-    /* (MOD_v17.6) 縮減內距: padding-right 從 1rem 降為 0.5rem，使文字更靠近右側邊界 */
-    padding: 0 0.5rem 0 2rem;
+    /* (Fix Request 2 - Padding Confirmation)
+       強制將左側內距設為 0，確保跑馬燈緊貼 Grid 分界線。
+       若先前有 32px (2rem)，此規則將其覆蓋。
+    */
+    padding: 0 0.5rem 0 0;
     box-sizing: border-box;
     overflow: hidden;
     height: 100%;
@@ -694,8 +714,8 @@ header {
 /* --- PROJECT Page Styles --- */
 .middle-container.project-layout,
 .middle-container.about-layout {
-    /* (Request 1) 確保與 Portfolio 頁面左欄 (28.57%) 寬度完全一致 */
-    grid-template-columns: 28.57% 1fr;
+    /* (Fix Request 2) 左側欄位寬度調整為 35% */
+    grid-template-columns: 35% 1fr;
 }
 
 .back-button-block {
@@ -785,12 +805,22 @@ header {
 /* (MOD_v20.7) 針對 Desktop Project Layout 做滿版修正 */
 @media (min-width: 1025px) {
     .middle-container.project-layout .project-content-column {
-        /* (Request 2) 使用負邊距抵消容器 padding，讓圖片延伸至右側與底部邊緣 */
+        /* (FIX v20.10) 配合上層容器拉提，重新調整間距確保內容正確起始 */
+        /* margin-top: -60px; (此規則已由容器層級處理，此處移除) */
+
+        /* 內容起始點補償：
+           60px (Header高度) + 1.5rem (原設計間距，約24px) = 約 84px
+           這樣內容初始位置會避開 Header，但滾動時能穿過 Header 後方
+        */
+        padding-top: 84px;
+
+        /* 負邊距抵消容器左右 padding (4rem)，讓圖片延伸至邊緣
+        */
         margin-right: -4rem;
+
+        /* 底部調整 */
         margin-bottom: -60px;
-        /* (Fix Request 3) 移除內部 padding，確保內容能完全貼底 */
         padding-bottom: 0;
-        /* 移除內部 padding-right */
         padding-right: 0;
     }
 
@@ -910,7 +940,8 @@ header {
 }
 
 .middle-container.gallery-layout {
-    grid-template-columns: 28.57% 1fr;
+    /* (Fix Consistency) 保持一致的左側寬度 */
+    grid-template-columns: 35% 1fr;
 }
 
 .gallery-content-column:active {
